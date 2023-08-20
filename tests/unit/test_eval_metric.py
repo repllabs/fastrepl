@@ -49,6 +49,13 @@ class TestHuggingfaceMetric:
                     references=[0, 0, 1, 1, 1],
                 )
                 assert result[name] == pytest.approx(0.66, abs=1e-2)
+            if name == "precision":
+                # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/precision/precision.py#L56
+                result = m.compute(
+                    predictions=[0, 1, 0, 1, 1],
+                    references=[0, 0, 1, 1, 1],
+                )
+                assert result[name] == pytest.approx(0.66, abs=1e-2)
 
             if name == "accuracy":
                 # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/accuracy/accuracy.py#L49
@@ -67,6 +74,20 @@ class TestHuggingfaceMetric:
                 assert result[name] == pytest.approx(0.54, abs=1e-2)
         except NotImplementedError:
             pass
+
+    def test_compare_sklearn_multi_label(self):
+        import sklearn.metrics
+
+        # https://towardsdatascience.com/evaluating-multi-label-classifiers-a31be83da6ea
+        # http://iamirmasoud.com/2022/06/19/understanding-micro-macro-and-weighted-averages-for-scikit-learn-metrics-in-multi-class-classification-with-example/
+
+        # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.classification_report.html
+        result = sklearn.metrics.classification_report(
+            [0, 0, 1, 1, 0],
+            [0, 1, 0, 1, 0],
+            output_dict=True,
+        )
+        assert result == ""
 
 
 class TestSemanticAnswerSimilarityMetric:
