@@ -75,6 +75,37 @@ class TestHuggingfaceMetric:
         except NotImplementedError:
             pass
 
+    def test_kwargs_average(self):
+        # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/f1/f1.py#L66
+        result = load_metric("f1").compute(
+            predictions=[0, 2, 1, 0, 0, 1],
+            references=[0, 1, 2, 0, 1, 2],
+            average="macro",
+        )
+        assert result["f1"] == pytest.approx(0.26, abs=1e-2)
+
+        result = load_metric("f1").compute(
+            predictions=[0, 2, 1, 0, 0, 1],
+            references=[0, 1, 2, 0, 1, 2],
+            average="micro",
+        )
+        assert result["f1"] == pytest.approx(0.33, abs=1e-2)
+
+        # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/precision/precision.py#L72
+        result = load_metric("precision").compute(
+            predictions=[0, 2, 1, 0, 0, 1],
+            references=[0, 1, 2, 0, 1, 2],
+            average="macro",
+        )
+        assert result["precision"] == pytest.approx(0.22, abs=1e-2)
+
+        result = load_metric("precision").compute(
+            predictions=[0, 2, 1, 0, 0, 1],
+            references=[0, 1, 2, 0, 1, 2],
+            average="micro",
+        )
+        assert result["precision"] == pytest.approx(0.33, abs=1e-2)
+
     def test_compare_sklearn_multi_label(self):
         import sklearn.metrics
 
