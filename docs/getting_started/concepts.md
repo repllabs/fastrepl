@@ -13,6 +13,9 @@ All about evaluating a LLM app.
 ## Polish
 All about improving a LLM app.
 
+### Selectable
+TBD
+
 ### Updatable
 TBD
 

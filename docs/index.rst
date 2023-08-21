@@ -21,17 +21,25 @@ No.
    :caption: Getting Started
    :hidden:
 
-   getting_started/installation.md
+   getting_started/quickstart.md
+   getting_started/design_goals.md
    getting_started/concepts.md
-   getting_started/general_guideline.md
-   getting_started/observability.md
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Basic Usage
+   :hidden:
+
+   basic_usage/dataset_loading.md
+   basic_usage/model_graded_eval.md
+   basic_usage/meta_eval.md
 
 .. toctree::
    :maxdepth: 1
    :caption: Advanced Usage
    :hidden:
 
-   docs/advanced_usage/dataset_management.md
+   advanced_usage/dataset_management.md
 
 .. toctree::
    :maxdepth: 1
@@ -39,3 +47,4 @@ No.
    :hidden:
 
    miscellaneous/caching.md
+   miscellaneous/observability.md
