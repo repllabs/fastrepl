@@ -3,7 +3,7 @@
 Every functions in `FastREPL` that requires dataset as input will accept [Huggingface Datasets](https://huggingface.co/docs/datasets/).
 
 
-## From Dict
+## From Dictionary
 ```python
 from datasets import Dataset
 
