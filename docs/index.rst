@@ -23,6 +23,7 @@ No.
 
    getting_started/installation.md
    getting_started/concepts.md
+   getting_started/general_guideline.md
    getting_started/observability.md
 
 .. toctree::
