@@ -28,6 +28,13 @@ No.
 
 .. toctree::
    :maxdepth: 1
+   :caption: Advanced Usage
+   :hidden:
+
+   docs/advanced_usage/dataset_management.md
+
+.. toctree::
+   :maxdepth: 1
    :caption: Miscellaneous
    :hidden:
 
