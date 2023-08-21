@@ -19,25 +19,25 @@ class TestClassifier:
         input = "What a great day!"
         labels = {"A": "POSITIVE", "B": "NEGATIVE"}
 
-        thinker = LLMChainOfThought(
-            model="gpt-3.5-turbo",
-            labels=labels,
-            context="You will get a input text by a liar. Take it as the opposite.",
-        )
+        pipeline = [
+            LLMChainOfThought(
+                model="gpt-3.5-turbo",
+                labels=labels,
+                context="You will get a input text by a liar. Take it as the opposite.",
+            ),
+            LLMClassifier(
+                model="gpt-4",
+                labels=labels,
+            ),
+        ]
 
-        thought = thinker.compute(input)
-
-        classifier = LLMClassifier(
-            model="gpt-4",
-            context=thought,
-            labels=labels,
-        )
-
-        assert classifier.compute(input) == "NEGATIVE"
+        thought = pipeline[0].compute(input)
+        answer = pipeline[1].compute(input, context=thought)
+        assert answer == "NEGATIVE"
 
     def test_cot_and_classify(self):
         eval = LLMChainOfThoughtClassifier(
-            model="gpt-4",
+            model="gpt-3.5-turbo",
             context="You will get a input text by a liar. Take it as the opposite.",
             labels={"A": "POSITIVE", "B": "NEGATIVE"},
         )
