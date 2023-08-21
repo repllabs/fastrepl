@@ -1,13 +1,13 @@
 import random
-from typing import Tuple, Dict, List
+from typing import Tuple, List, Dict
 
 from fastrepl.run import completion, SUPPORTED_MODELS
 from fastrepl.eval.model.base import BaseModelEval
 from fastrepl.eval.model.utils import render_labels
 
 
-class LLMChainOfThoughtClassifier(BaseModelEval):
-    __slots__ = ("criteria", "labels", "references", "rg", "model")
+class LLMChainOfThought(BaseModelEval):
+    __slots__ = ("context", "labels", "references", "rg", "model", "length")
 
     def __init__(
         self,
@@ -16,27 +16,28 @@ class LLMChainOfThoughtClassifier(BaseModelEval):
         model: SUPPORTED_MODELS = "gpt-3.5-turbo",
         rg=random.Random(42),
         references: List[Tuple[str, str]] = [],
+        length=2,
     ) -> None:
-        self.criteria = context
+        self.model = model
+        self.context = context
         self.labels = labels
         self.references = references
-        self.model = model
         self.rg = rg
+        self.length = length
 
     def compute(self, sample: str, context="") -> str:
         references = self.rg.sample(self.references, len(self.references))
 
-        system_content = f"""If user gave you the text, do step by step thinking and classify it.
+        system_content = f"""If user gave you the text, do step by step thinking that is needed to classify it.
+Use less than 50 words.
 
-When do step-by-step thinking, you must consider the following:
-{self.criteria}
-
-Step-by-step thinking should use less than 30 words.
-
-For classification, use the following labels(<LABEL>:<DESCRIPTION>):
+These are the labels that will be used later to classify the text:
 {render_labels(self.labels)}
 
-Output only this format: ### Thoghts: <STEP_BY_STEP_THOUGHTS>\n### Label: <LABEL>"""
+When do step-by-step thinking, you must consider the following:
+{self.context}
+
+### Thoghts:"""
 
         messages = [
             {
@@ -49,14 +50,5 @@ Output only this format: ### Thoghts: <STEP_BY_STEP_THOUGHTS>\n### Label: <LABEL
             messages.append({"role": "assistant", "content": output})
         messages.append({"role": "user", "content": sample})
 
-        result = (
-            completion(
-                self.model,
-                messages=messages,
-                max_tokens=200,
-            )
-            .choices[0]
-            .message.content
-        )
-        # TODO: validate
-        return self.labels.get(result[-1], "UNKNOWN")
+        result = completion(self.model, messages=messages).choices[0].message.content
+        return result
