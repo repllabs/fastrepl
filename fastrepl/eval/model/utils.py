@@ -4,9 +4,7 @@ from typing import Dict, Set
 from fastrepl.run import SUPPORTED_MODELS, tokenize
 
 
-def logit_bias_for_classification(
-    model: SUPPORTED_MODELS, labels: Set[str]
-) -> Dict[int, int]:
+def logit_bias_from_labels(model: SUPPORTED_MODELS, labels: Set[str]) -> Dict[int, int]:
     def get_token_id(label: str) -> int:
         ids = tokenize(model, label)
         if len(ids) != 1:
