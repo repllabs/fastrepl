@@ -24,3 +24,10 @@ No.
    getting_started/installation.md
    getting_started/concepts.md
    getting_started/observability.md
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Miscellaneous
+   :hidden:
+
+   miscellaneous/caching.md
