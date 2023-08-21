@@ -7,7 +7,7 @@ from fastrepl.eval.model.utils import render_labels
 
 
 class LLMChainOfThought(BaseModelEval):
-    __slots__ = ("model", "references", "rg", "length", "system_msg")
+    __slots__ = ("model", "references", "rg", "system_msg")
 
     def __init__(
         self,
@@ -16,12 +16,10 @@ class LLMChainOfThought(BaseModelEval):
         model: SUPPORTED_MODELS = "gpt-3.5-turbo",
         rg=random.Random(42),
         references: List[Tuple[str, str]] = [],
-        length=2,  # TODO
     ) -> None:
         self.model = model
         self.references = references
         self.rg = rg
-        self.length = length
         self.system_msg = {
             "role": "system",
             "content": f"""If user gave you the text, do step by step thinking that is needed to classify it.
