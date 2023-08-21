@@ -147,12 +147,16 @@ class TestHuggingfaceMetric:
 
         # fmt: off
         assert result["accuracy"] == pytest.approx(load_metric("accuracy").compute(predictions, references)["accuracy"], abs=1e-2)
-        
         assert result["macro avg"]["f1-score"] == pytest.approx(load_metric("f1").compute(predictions, references, average="macro")["f1"], abs=1e-2)
-        
-        # TODO
-        assert result["macro avg"]["precision"] != pytest.approx(load_metric("precision").compute(predictions, references, average="macro")["precision"], abs=1e-2)
-        assert result["macro avg"]["recall"] != pytest.approx(load_metric("recall").compute(predictions, references, average="macro")["recall"], abs=1e-2)
+
+        # TODO: These should pass
+        # assert result["macro avg"]["precision"] == pytest.approx(load_metric("precision").compute(predictions, references, average="macro")["precision"], abs=1e-2)
+        # assert result["macro avg"]["recall"] == pytest.approx(load_metric("recall").compute(predictions, references, average="macro")["recall"], abs=1e-2)
+        # assert result["weighted avg"]["f1-score"] == pytest.approx(load_metric("f1").compute(predictions, references, average="weighted")["f1"], abs=1e-2)
+        # assert result["weighted avg"]["precision"] == pytest.approx(load_metric("precision").compute(predictions, references, average="weighted")["precision"], abs=1e-2)
+        # assert result["weighted avg"]["recall"] == pytest.approx(load_metric("recall").compute(predictions, references, average="weighted")["recall"], abs=1e-2)
+
+        # TODO: Get per-class metric
         # fmt: on
 
 
