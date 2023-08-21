@@ -3,3 +3,7 @@ There are some metric like [`rouge`](https://huggingface.co/spaces/evaluate-metr
 
 ## Multi-label Classification
 [Style Over Substance: Evaluation Biases for Large Language Models](https://arxiv.org/abs/2307.03025)
+
+## `LLMChainOfThought` + `LLMClassifier`
+
+## `LLMChainOfThoughtClassifier`

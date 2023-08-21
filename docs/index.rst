@@ -33,7 +33,8 @@ No. **FastREPL** will help you to evaluate and polish your LLM based app.
    basic_usage/dataset_loading.md
    basic_usage/model_graded_eval.md
    basic_usage/meta_eval.md
-
+   basic_usage/eval_result.md
+   
 .. toctree::
    :maxdepth: 1
    :caption: Advanced Usage
