@@ -1,3 +1,4 @@
+import random
 from typing import Dict, Set
 
 from fastrepl.run import SUPPORTED_MODELS, tokenize
@@ -20,3 +21,10 @@ def logit_bias_for_classification(
         return {get_token_id(k): OPENAI_MAX for k in labels}
     else:
         return {}
+
+
+def render_labels(mapping: Dict[str, str], rg=random.Random(42)) -> str:
+    options = list(mapping.items())
+    rg.shuffle(options)
+
+    return "\n".join(f"{k}: {v}" for k, v in options)

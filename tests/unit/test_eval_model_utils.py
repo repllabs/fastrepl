@@ -1,7 +1,9 @@
 import pytest
+import random
 
 from fastrepl.eval.model.utils import (
     logit_bias_for_classification,
+    render_labels,
 )
 
 
@@ -72,3 +74,22 @@ class TestLogitBiasForClassification:
     def test_invalid(self):
         with pytest.raises(ValueError):
             logit_bias_for_classification("gpt-3.5-turbo", set(["GOOD", "GREAT"]))
+
+
+def test_render_labels():
+    text = render_labels(
+        mapping={
+            "A": "Given text meets the criteria.",
+            "B": "Given text does not meet the criteria.",
+            "C": "Given text is not even related to the criteria.",
+        },
+        rg=random.Random(42),
+    )
+    assert (
+        text
+        == """
+B: Given text does not meet the criteria.
+A: Given text meets the criteria.
+C: Given text is not even related to the criteria.
+""".strip()
+    )
