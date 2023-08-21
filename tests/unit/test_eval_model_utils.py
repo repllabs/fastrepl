@@ -1,9 +1,11 @@
 import pytest
 
-from fastrepl.eval.model.utils import logit_bias_for_classification
+from fastrepl.eval.model.utils import (
+    logit_bias_for_classification,
+)
 
 
-class TestLogitBias:
+class TestLogitBiasForClassification:
     @pytest.mark.parametrize(
         "model, choices, expected",
         [
@@ -40,7 +42,7 @@ class TestLogitBias:
         ],
     )
     def test_openai(self, model, choices, expected):
-        actual = logit_bias_for_classification(model, choices)
+        actual = logit_bias_for_classification(model, set(choices))
         assert actual == expected
 
     @pytest.mark.parametrize(
@@ -59,13 +61,14 @@ class TestLogitBias:
         ],
     )
     def test_cohere(self, model, choices, expected):
-        actual = logit_bias_for_classification(model, choices)
+        actual = logit_bias_for_classification(model, set(choices))
         assert actual == expected
 
     @pytest.mark.parametrize("model", ["j2-ultra", "togethercomputer/llama-2-70b-chat"])
     def test_empty(self, model):
         assert logit_bias_for_classification(model, "") == {}
+        assert logit_bias_for_classification(model, "ABC") == {}
 
     def test_invalid(self):
         with pytest.raises(ValueError):
-            logit_bias_for_classification("gpt-3.5-turbo", "ABCA")
+            logit_bias_for_classification("gpt-3.5-turbo", set(["GOOD", "GREAT"]))

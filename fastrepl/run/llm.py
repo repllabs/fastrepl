@@ -40,10 +40,8 @@ def completion(
 from fastrepl.utils import getenv
 
 
-def tokenize(
-    model: SUPPORTED_MODELS,
-    text: str,
-) -> List[int]:
+@functools.lru_cache(maxsize=None)
+def tokenize(model: SUPPORTED_MODELS, text: str) -> List[int]:
     if model == "command-nightly":
         import cohere
 
