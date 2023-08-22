@@ -4,6 +4,9 @@ You **must also evaluate** how well your `automated evaluation` works, otherwise
 ## Prepare Dataset
 To run meta-eval, you need human-labelled reference datasets. It might be convenient to use [Argilla](https://argilla.io) to manage them. You can always load fresh annotated dataset from Argilla.
 
+`Figure 2: Human Evaluation Scores`[(LARGE LANGUAGE MODELS ON WIKIPEDIA-STYLE SURVEY GENERATION)](https://arxiv.org/pdf/2308.10410.pdf) is interesting. (High level of consensus)
+
+
 ## Run Evaluation
 Run evaluation and grap `EvaluationResult`.
 
