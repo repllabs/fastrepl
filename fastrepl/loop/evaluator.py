@@ -17,6 +17,7 @@ class Evaluator:
         "evals",
         "input_feature",
         "prediction_feature",
+        "initial_context",
     ]
 
     def __init__(
@@ -34,12 +35,16 @@ class Evaluator:
         self.input_feature = input_feature
         self.prediction_feature = prediction_feature
 
-    def _run_evals(self, input: str, context="") -> str:
+    def _run_evals(self, input: str) -> str:
         return functools.reduce(
-            lambda previous, eval: eval.compute(input, previous), self.evals, context
+            lambda previous, eval: eval.compute(input, previous),
+            self.evals,
+            self.initial_context,
         )
 
-    def run(self) -> Dataset:
+    def run(self, context="") -> Dataset:
+        self.initial_context = context
+
         results = []
 
         with Progress() as progress:
@@ -47,7 +52,6 @@ class Evaluator:
             task = progress.add_task("[cyan]Processing...", total=len(inputs))
 
             with ThreadPool(NUM_THREADS) as pool:
-                # TODO: we can not provide context to the first node
                 for result in pool.imap(self._run_evals, inputs):
                     results.append(result)
                     progress.update(task, advance=1)
