@@ -26,10 +26,10 @@ class TestEvaluator:
         assert "input" in output_ds.features
         assert "output" in output_ds.features
 
-    def test_eval_pipe(self):
+    def test_eval_pipe_single(self):
         class MockEval(BaseModelEval):
             def compute(self, sample: str, context="") -> str:
-                return context + sample + "2"
+                return context + sample + "0"
 
         input_ds = Dataset.from_dict({"input": ["1"]})
         output_ds = Evaluator(
@@ -37,4 +37,17 @@ class TestEvaluator:
             evals=[MockEval(), MockEval()],
         ).run()
 
-        assert output_ds["output"] == ["1212"]
+        assert output_ds["output"] == ["1010"]
+
+    def test_eval_pipe_multiple(self):
+        class MockEval(BaseModelEval):
+            def compute(self, sample: str, context="") -> str:
+                return context + sample + "0"
+
+        input_ds = Dataset.from_dict({"input": ["1", "2", "3"]})
+        output_ds = Evaluator(
+            dataset=input_ds,
+            evals=[MockEval(), MockEval()],
+        ).run()
+
+        assert output_ds["output"] == ["1010", "2020", "3030"]
