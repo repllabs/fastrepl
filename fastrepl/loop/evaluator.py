@@ -1,4 +1,4 @@
-import time
+import functools
 from typing import List
 
 from rich.progress import Progress
@@ -17,12 +17,20 @@ class Evaluator:
         self.dataset = dataset
         self.evals = evals
 
+    def _run_evals(self, input: str, context="") -> str:
+        return functools.reduce(
+            lambda previous, eval: eval.compute(input, previous), self.evals, context
+        )
+
     def run(self) -> Dataset:
-        result = []
+        results = []
+
         with Progress() as progress:
             task = progress.add_task("[cyan]Processing...", total=len(self.dataset))
+
             for row in self.dataset:
-                time.sleep(0.01)
+                result = self._run_evals(row["input"])
+                results.append(result)
                 progress.update(task, advance=1)
-                result.append(0)
-        return self.dataset.add_column("output", result)
+
+        return self.dataset.add_column("output", results)
