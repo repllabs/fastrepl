@@ -1,10 +1,14 @@
 import functools
 from typing import List
+from multiprocessing.pool import ThreadPool
 
 from rich.progress import Progress
 from datasets import Dataset
 
 from fastrepl.eval.model.base import BaseModelEval
+from fastrepl.utils import getenv
+
+NUM_THREADS = getenv("NUM_THREADS", 8)
 
 
 class Evaluator:
@@ -28,9 +32,10 @@ class Evaluator:
         with Progress() as progress:
             task = progress.add_task("[cyan]Processing...", total=len(self.dataset))
 
-            for row in self.dataset:
-                result = self._run_evals(row["input"])
-                results.append(result)
-                progress.update(task, advance=1)
+            with ThreadPool(NUM_THREADS) as pool:
+                # TODO: we can not provide context to the first node
+                for result in pool.imap(self._run_evals, self.dataset["input"]):
+                    results.append(result)
+                    progress.update(task, advance=1)
 
         return self.dataset.add_column("output", results)
