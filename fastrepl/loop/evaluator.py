@@ -30,11 +30,12 @@ class Evaluator:
         results = []
 
         with Progress() as progress:
-            task = progress.add_task("[cyan]Processing...", total=len(self.dataset))
+            inputs = self.dataset["input"]
+            task = progress.add_task("[cyan]Processing...", total=len(inputs))
 
             with ThreadPool(NUM_THREADS) as pool:
                 # TODO: we can not provide context to the first node
-                for result in pool.imap(self._run_evals, self.dataset["input"]):
+                for result in pool.imap(self._run_evals, inputs):
                     results.append(result)
                     progress.update(task, advance=1)
 
