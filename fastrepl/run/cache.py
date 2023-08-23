@@ -29,7 +29,6 @@ class SQLAlchemyCache:
     ) -> None:
         self.engine = engine
         self.schema = schema
-        self.schema.metadata.create_all(self.engine)
 
     def lookup(self, model: str, prompt: str) -> Optional[str]:
         stmt = (
