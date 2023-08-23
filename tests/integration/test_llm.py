@@ -1,6 +1,6 @@
 import pytest
 
-from fastrepl.run.llm import tokenize
+from fastrepl.run import cache, tokenize, completion
 
 
 class TestTokenize:
@@ -51,3 +51,19 @@ class TestTokenize:
     def test_ai21(self):
         with pytest.raises(NotImplementedError):
             tokenize("j2-ultra", "A")
+
+
+def test_llm_cache():
+    cache.clear()
+
+    result_1 = completion(
+        model="gpt-3.5-turbo", messages=[{"role": "user", "content": "hello"}]
+    )
+    assert result_1.get("_fastrepl_cached", None) is None
+
+    result_2 = completion(
+        model="gpt-3.5-turbo", messages=[{"role": "user", "content": "hello"}]
+    )
+    assert result_2.pop("_fastrepl_cached")
+
+    assert result_1 == result_2

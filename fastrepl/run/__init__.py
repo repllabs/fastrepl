@@ -1,6 +1,7 @@
-from fastrepl.run.llm import completion, tokenize, SUPPORTED_MODELS
+from fastrepl.run.llm import cache, completion, tokenize, SUPPORTED_MODELS
 
 __all__ = [
+    "cache",
     "completion",
     "tokenize",
     "SUPPORTED_MODELS",
