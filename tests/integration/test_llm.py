@@ -55,18 +55,36 @@ class TestTokenize:
             tokenize("j2-ultra", "A")
 
 
-def test_llm_cache():
-    fastrepl.cache = SQLiteCache()
-    fastrepl.cache.clear()
+class TestCache:
+    def test_mark(self):
+        fastrepl.cache = SQLiteCache()
+        fastrepl.cache.clear()
 
-    result_1 = completion(
-        model="gpt-3.5-turbo", messages=[{"role": "user", "content": "hello"}]
-    )
-    assert result_1.get("_fastrepl_cached", None) is None
+        result_1 = completion(
+            model="gpt-3.5-turbo", messages=[{"role": "user", "content": "hello"}]
+        )
+        assert result_1.get("_fastrepl_cached", None) is None
 
-    result_2 = completion(
-        model="gpt-3.5-turbo", messages=[{"role": "user", "content": "hello"}]
-    )
-    assert result_2.pop("_fastrepl_cached")
+        result_2 = completion(
+            model="gpt-3.5-turbo", messages=[{"role": "user", "content": "hello"}]
+        )
+        assert result_2.pop("_fastrepl_cached")
 
-    assert result_1 == result_2
+        assert result_1 == result_2
+
+    def test_response(self):
+        fastrepl.cache = SQLiteCache()
+        fastrepl.cache.clear()
+        fastrepl.cache.update(
+            "gpt-3.5-turbo",
+            prompt='[{"role": "user", "content": "hello"}]',
+            response='{"text": "hello"}',
+        )
+
+        assert fastrepl.cache is not None
+
+        result = completion(
+            model="gpt-3.5-turbo", messages=[{"role": "user", "content": "hello"}]
+        )
+        assert result.pop("_fastrepl_cached")
+        assert result == {"text": "hello"}
