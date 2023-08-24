@@ -29,6 +29,7 @@ class SQLAlchemyCache:
     ) -> None:
         self.engine = engine
         self.schema = schema
+        self.schema.metadata.create_all(self.engine)
 
     def lookup(self, model: str, prompt: str) -> Optional[str]:
         stmt = (
@@ -47,9 +48,6 @@ class SQLAlchemyCache:
             session.merge(self.schema(model=model, prompt=prompt, response=response))
 
     def clear(self) -> None:
-        if not inspect(self.engine).has_table(self.schema.__tablename__):
-            return
-
         with Session(self.engine) as session:
             session.query(self.schema).delete()
             session.commit()
