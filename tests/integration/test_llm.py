@@ -1,6 +1,8 @@
 import pytest
 
-from fastrepl.run import cache, tokenize, completion
+import fastrepl
+from fastrepl.run import tokenize, completion
+from fastrepl.run.cache import SQLiteCache
 
 
 class TestTokenize:
@@ -54,6 +56,9 @@ class TestTokenize:
 
 
 def test_llm_cache():
+    fastrepl.cache = SQLiteCache()
+    fastrepl.cache.clear()
+
     result_1 = completion(
         model="gpt-3.5-turbo", messages=[{"role": "user", "content": "hello"}]
     )
