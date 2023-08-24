@@ -9,6 +9,8 @@ try:
 except ImportError:
     from sqlalchemy.ext.declarative import declarative_base
 
+from fastrepl.run.cache.base import BaseCache
+
 Base = declarative_base()
 
 
@@ -19,7 +21,7 @@ class LLMCache(Base):  # type: ignore
     response = Column(String)
 
 
-class SQLAlchemyCache:
+class SQLAlchemyCache(BaseCache):
     __slot__ = ["engine", "schema"]
 
     def __init__(
