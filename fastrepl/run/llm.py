@@ -21,6 +21,22 @@ SUPPORTED_MODELS = Literal[  # pragma: no cover
 ]
 
 
+import openai.error
+import backoff
+
+
+@backoff.on_exception(
+    wait_gen=backoff.expo,
+    exception=(
+        openai.error.ServiceUnavailableError,
+        openai.error.APIError,
+        openai.error.RateLimitError,
+        openai.error.APIConnectionError,
+        openai.error.Timeout,
+    ),
+    max_value=60,
+    factor=1.5,
+)
 def completion(
     model: SUPPORTED_MODELS,
     messages: List[Dict[str, str]],
