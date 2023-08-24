@@ -1,5 +1,5 @@
 from fastrepl.run.cache.base import BaseCache
-from fastrepl.run.cache.sqlalchemy import SQLiteCache
+from fastrepl.run.cache.disk import SQLiteCache
 
 
 __all__ = [
