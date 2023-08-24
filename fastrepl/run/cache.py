@@ -1,6 +1,6 @@
 from typing import Type, Optional
 
-from sqlalchemy import Column, Integer, String, create_engine, select
+from sqlalchemy import Column, Integer, String, create_engine, select, inspect
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import Session
 
@@ -47,6 +47,9 @@ class SQLAlchemyCache:
             session.merge(self.schema(model=model, prompt=prompt, response=response))
 
     def clear(self) -> None:
+        if not inspect(self.engine).has_table(self.schema.__tablename__):
+            return
+
         with Session(self.engine) as session:
             session.query(self.schema).delete()
             session.commit()
