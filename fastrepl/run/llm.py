@@ -9,6 +9,7 @@ litellm.telemetry = False  # pragma: no cover
 litellm.caching = False  # pragma: no cover
 litellm.caching_with_models = False  # pragma: no cover
 
+import fastrepl
 from fastrepl.utils import getenv
 from fastrepl.run.error import check_retryable_and_log, RetryableException
 
@@ -28,8 +29,6 @@ SUPPORTED_MODELS = Literal[  # pragma: no cover
 from fastrepl.run.cache import SQLiteCache
 import json
 
-cache = SQLiteCache()
-
 
 @backoff.on_exception(
     wait_gen=backoff.expo,
@@ -44,11 +43,12 @@ def completion(
     logit_bias: Dict[int, int] = {},
     max_tokens: int = 100,
 ) -> ModelResponse:
-    hit = cache.lookup(model, prompt=json.dumps(messages))
-    if hit is not None:
-        ret = json.loads(hit)
-        ret["_fastrepl_cached"] = True
-        return ret  # TODO: This is not ModelResponse anymore
+    if fastrepl.cache is not None:
+        hit = fastrepl.cache.lookup(model, prompt=json.dumps(messages))
+        if hit is not None:
+            ret = json.loads(hit)
+            ret["_fastrepl_cached"] = True
+            return ret  # TODO: This is not ModelResponse anymore
 
     try:
         result = litellm_completion(  # pragma: no cover
@@ -59,7 +59,10 @@ def completion(
             max_tokens=max_tokens,
             force_timeout=30,
         )
-        cache.update(model, prompt=json.dumps(messages), response=json.dumps(result))
+        if fastrepl.cache is not None:
+            fastrepl.cache.update(
+                model, prompt=json.dumps(messages), response=json.dumps(result)
+            )
         return result
     except Exception as e:
         if check_retryable_and_log(e):
