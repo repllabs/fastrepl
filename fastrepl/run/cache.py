@@ -1,6 +1,6 @@
 from typing import Type, Optional
 
-from sqlalchemy import Column, Integer, String, create_engine, select, inspect
+from sqlalchemy import Column, String, create_engine, select, inspect
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import Session
 
@@ -29,7 +29,9 @@ class SQLAlchemyCache:
     ) -> None:
         self.engine = engine
         self.schema = schema
-        self.schema.metadata.create_all(self.engine)
+
+        if not inspect(self.engine).has_table(self.schema.__tablename__):
+            self.schema.metadata.create_all(self.engine)
 
     def lookup(self, model: str, prompt: str) -> Optional[str]:
         stmt = (
