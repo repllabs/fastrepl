@@ -54,8 +54,6 @@ class TestTokenize:
 
 
 def test_llm_cache():
-    cache.clear()
-
     result_1 = completion(
         model="gpt-3.5-turbo", messages=[{"role": "user", "content": "hello"}]
     )
