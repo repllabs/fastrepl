@@ -1,8 +1,15 @@
+import pytest
+
 from fastrepl.eval.model import (
     LLMClassifier,
     LLMChainOfThought,
     LLMChainOfThoughtClassifier,
 )
+
+
+@pytest.mark.fastrepl
+def test_try_pytest_plugin():
+    assert True
 
 
 class TestClassifier:
