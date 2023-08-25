@@ -1,7 +1,7 @@
 import pytest
 from datasets import Dataset
 
-from fastrepl.loop import Evaluator
+from fastrepl.eval import Evaluator
 from fastrepl.eval.model.base import BaseModelEval
 
 

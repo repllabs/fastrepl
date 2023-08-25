@@ -11,6 +11,7 @@ from fastrepl.utils import getenv
 NUM_THREADS = getenv("NUM_THREADS", 8)
 
 
+# TODO: we assume only model-eval here.
 class Evaluator:
     __slots__ = [
         "dataset",
