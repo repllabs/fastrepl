@@ -1,11 +1,6 @@
 import warnings
-from typing import ClassVar, OrderedDict
+from typing import ClassVar, OrderedDict, List
 
-from fastrepl.utils.context import LocalContext
-from fastrepl.utils import get_cuid
-
-
-from typing import List
 from contextlib import ContextDecorator
 import importlib.metadata
 
@@ -13,7 +8,7 @@ from rich.progress import Progress
 from multiprocessing.pool import ThreadPool
 
 from fastrepl.eval import Evaluator
-from fastrepl.utils import getenv, get_cuid
+from fastrepl.utils import LocalContext, getenv, get_cuid
 
 
 NUM_THREADS = getenv("NUM_THREADS", 8)
