@@ -1,5 +1,7 @@
-from fastrepl.loop.evaluator import Evaluator
+from fastrepl.loop.analyze import Analyze
+from fastrepl.loop.repl import REPL
 
 __all__ = [
-    "Evaluator",
+    "Analyze",
+    "REPL",
 ]
