@@ -24,6 +24,18 @@ def system_prompt(context, labels, label_keys):
     {{label_keys}}"""
 
 
+@text.prompt
+def final_message_prompt(sample, context=""):
+    """{% if context != '' %}
+    Info about the text: {{ context }}
+    {% endif %}
+    Text to think about: {{ sample }}"""
+
+
+if __name__ == "__main__":
+    print(final_message_prompt("this is samle", "this is context"))
+
+
 class LLMClassifier(BaseModelEval):
     __slots__ = ("model", "mapping", "rg", "references", "system_msg")
 
@@ -55,10 +67,8 @@ class LLMClassifier(BaseModelEval):
         for input, output in references:
             messages.append({"role": "user", "content": input})
             messages.append({"role": "assistant", "content": output})
-
-        additional_info = f"Info about the text: {context}\n" if context else ""
         messages.append(
-            {"role": "user", "content": f"{additional_info}Text to classify: {sample}"}
+            {"role": "user", "content": final_message_prompt(sample, context)}
         )
 
         result = completion(

@@ -30,6 +30,14 @@ def system_prompt(context, labels, label_keys):
     <LABEL>"""
 
 
+@text.prompt
+def final_message_prompt(sample, context=""):
+    """{% if context != '' %}
+    Info about the text: {{ context }}
+    {% endif %}
+    Text to think about: {{ sample }}"""
+
+
 class LLMChainOfThoughtClassifier(BaseModelEval):
     __slots__ = ("model", "mapping", "references", "rg", "system_msg")
 
@@ -61,11 +69,10 @@ class LLMChainOfThoughtClassifier(BaseModelEval):
         for input, output in references:
             messages.append({"role": "user", "content": input})
             messages.append({"role": "assistant", "content": output})
-
-        additional_info = f"Info about the text: {context}\n" if context else ""
         messages.append(
-            {"role": "user", "content": f"{additional_info}Text to classify: {sample}"}
+            {"role": "user", "content": final_message_prompt(sample, context)}
         )
+
         # fmt: off
         result = completion(
             model=self.model,
