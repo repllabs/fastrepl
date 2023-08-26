@@ -3,14 +3,18 @@ from typing import (
     Tuple,
     List,
     Dict,
-    OrderedDict,
     DefaultDict,
 )
 
-import rich
 import graphviz
 
-from fastrepl.utils import LocalContext, get_cuid, GraphInfo, build_graph
+from fastrepl.utils import (
+    LocalContext,
+    GraphInfo,
+    build_graph,
+    get_cuid,
+    pairwise,
+)
 
 
 def set_status(status: str):
@@ -21,9 +25,27 @@ def update(pairs: List[Tuple[str, str]]):
     REPLContext.update(pairs)
 
 
-def visualize() -> graphviz.Digraph:
+def graph(level=2) -> graphviz.Digraph:
     nodes: List[Tuple[str, str]] = []
     edges: List[Tuple[str, str]] = []
+
+    def _get_node_name(ctx: LocalContext):
+        # NOTE: : is reserved in graphviz
+        return str(ctx).replace(":", "_")
+
+    def _get_node_label(ctx: LocalContext, keys: List[str]):
+        if level >= 3:
+            return f"{str(ctx)}\n{keys}"
+        elif level >= 2:
+            return f"{ctx.function}\n{keys}"
+        elif level >= 1:
+            return ctx.function
+
+    for ctx, key_values in REPLContext._trace.items():
+        name, label = _get_node_name(ctx), _get_node_label(ctx, list(key_values.keys()))
+        nodes.append((name, label))
+    for ctx_a, ctx_b in pairwise(REPLContext._trace.keys()):
+        edges.append((_get_node_name(ctx_a), _get_node_name(ctx_b)))
 
     return build_graph(GraphInfo(id=REPLContext._status, nodes=nodes, edges=edges))
 
@@ -36,7 +58,7 @@ class REPLContext:
     _history: ClassVar[List[str]] = [_status]
     """history of REPL status"""
     # fmt: off
-    _trace: Dict[LocalContext, Dict[str, OrderedDict[str, str]]] = DefaultDict(lambda: DefaultDict(OrderedDict))
+    _trace: Dict[LocalContext, Dict[str, Dict[str, str]]] = DefaultDict(lambda: DefaultDict(dict))
     """mapping: ctx -> key -> status -> value"""
     # fmt: on
 
@@ -44,7 +66,7 @@ class REPLContext:
     def reset():
         REPLContext._status = get_cuid()
         REPLContext._history = [REPLContext._status]
-        REPLContext._trace = DefaultDict(lambda: DefaultDict(OrderedDict))
+        REPLContext._trace = DefaultDict(lambda: DefaultDict(dict))
 
     @staticmethod
     def trace(ctx: LocalContext, key: str, value: str):
