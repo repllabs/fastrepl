@@ -1,5 +1,5 @@
-from typing import Optional
+import fastrepl.cache as cache
+from fastrepl.cache import llm_cache
 
-from fastrepl.run.cache import BaseCache
-
-cache: Optional[BaseCache] = None
+import fastrepl.eval as eval
+from fastrepl.polish import Updatable

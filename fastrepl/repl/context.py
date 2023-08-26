@@ -6,7 +6,7 @@ from typing import (
     DefaultDict,
 )
 
-import graphviz
+from graphviz import Digraph
 
 from fastrepl.utils import (
     LocalContext,
@@ -25,7 +25,7 @@ def update(pairs: List[Tuple[str, str]]):
     REPLContext.update(pairs)
 
 
-def graph(level=2) -> graphviz.Digraph:
+def graph(level=2) -> Digraph:
     nodes: List[Tuple[str, str]] = []
     edges: List[Tuple[str, str]] = []
 
