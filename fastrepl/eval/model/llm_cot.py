@@ -1,20 +1,23 @@
 import random
 from typing import Tuple, List, Dict
 
+import outlines.text as text
+
 from fastrepl.run import completion, SUPPORTED_MODELS
 from fastrepl.eval.model.base import BaseModelEval
 from fastrepl.eval.model.utils import render_labels
 
-LLM_COT_SYSTEM_TPL = """If user gave you the text, do step by step thinking that is needed to classify it.
-Use less than 50 words.
 
-These are the labels that will be used later to classify the text:
-{labels}
+@text.prompt
+def system_prompt(labels, context):
+    """If user gave you the text, do step by step thinking that is needed to classify the given text.
+    Use less than 50 words.
 
-When do step-by-step thinking, you must consider the following:
-{context}
+    These are the labels that will be used later to classify the text:
+    {{labels}}
 
-### Thoghts:"""
+    When do step-by-step thinking, you must consider the following:
+    {{context}}"""
 
 
 class LLMChainOfThought(BaseModelEval):
@@ -24,6 +27,7 @@ class LLMChainOfThought(BaseModelEval):
         self,
         context: str,
         labels: Dict[str, str],
+        previous="",
         model: SUPPORTED_MODELS = "gpt-3.5-turbo",
         rg=random.Random(42),
         references: List[Tuple[str, str]] = [],
@@ -33,7 +37,7 @@ class LLMChainOfThought(BaseModelEval):
         self.rg = rg
         self.system_msg = {
             "role": "system",
-            "content": LLM_COT_SYSTEM_TPL.format(
+            "content": system_prompt(
                 context=context,
                 labels=render_labels(labels),
             ),

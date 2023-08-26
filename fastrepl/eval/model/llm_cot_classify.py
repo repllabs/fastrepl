@@ -1,23 +1,33 @@
 import random
 from typing import Tuple, Dict, List
 
+import outlines.text as text
+
 from fastrepl.run import completion, SUPPORTED_MODELS
 from fastrepl.eval.model.base import BaseModelEval
 from fastrepl.eval.model.utils import render_labels, mapping_from_labels
 
-LLM_COT_CLASSIFY_SYSTEM_TPL = """You are master of classification who can classify any text according to the user's instructions.
-If user gave you the text, do step by step thinking first, and classify it.
 
-When do step-by-step thinking(less than 30 words), you must consider the following:
-{context}
+@text.prompt
+def system_prompt(context, labels, label_keys):
+    """You are master of classification who can classify any text according to the user's instructions.
+    If user gave you the text, do step by step thinking first, and classify it.
 
-These are the labels you can use:
-{labels}
+    When do step-by-step thinking(less than 30 words), you must consider the following:
+    {{context}}
 
-For classification, only output one of these label keys:
-{label_keys}
+    These are the labels you can use:
+    {{labels}}
 
-When responding, strictly follow this format: ### Thoghts: <STEP_BY_STEP_THOUGHTS>\n### Label: <LABEL>"""
+    For classification, only output one of these label keys:
+    {{label_keys}}
+
+    When responding, strictly follow this format:
+    ### Thoghts
+    <STEP_BY_STEP_THOUGHTS>
+
+    ### Label
+    <LABEL>"""
 
 
 class LLMChainOfThoughtClassifier(BaseModelEval):
@@ -37,10 +47,10 @@ class LLMChainOfThoughtClassifier(BaseModelEval):
         self.rg = rg
         self.system_msg = {
             "role": "system",
-            "content": LLM_COT_CLASSIFY_SYSTEM_TPL.format(
+            "content": system_prompt(
                 context=context,
                 labels=render_labels(self.mapping),
-                label_keys=self.mapping.keys(),
+                label_keys=", ".join(self.mapping.keys()),
             ),
         }
 

@@ -1,6 +1,8 @@
 import random
 from typing import Tuple, Dict, List
 
+import outlines.text as text
+
 from fastrepl.run import completion, SUPPORTED_MODELS
 from fastrepl.eval.model.base import BaseModelEval
 from fastrepl.eval.model.utils import (
@@ -9,14 +11,17 @@ from fastrepl.eval.model.utils import (
     mapping_from_labels,
 )
 
-LLM_CLASSIFIER_SYSTEM_TPL = """You are master of classification who can classify any text according to the user's instructions.
-{context}
 
-These are the labels you can use:
-{labels}
+@text.prompt
+def system_prompt(context, labels, label_keys):
+    """You are master of classification who can classify any text according to the user's instructions.
+    {{context}}
 
-Only output one of these label keys:
-{label_keys}"""
+    These are the labels you can use:
+    {{labels}}
+
+    Only output one of these label keys:
+    {{label_keys}}"""
 
 
 class LLMClassifier(BaseModelEval):
@@ -36,10 +41,10 @@ class LLMClassifier(BaseModelEval):
         self.references = references
         self.system_msg = {
             "role": "system",
-            "content": LLM_CLASSIFIER_SYSTEM_TPL.format(
+            "content": system_prompt(
                 context=context,
                 labels=render_labels(self.mapping),
-                label_keys=self.mapping.keys(),
+                label_keys=", ".join(self.mapping.keys()),
             ),
         }
 
