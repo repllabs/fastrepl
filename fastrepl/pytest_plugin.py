@@ -19,10 +19,7 @@ def pytest_addoption(parser: pytest.Parser):
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_configure(config: pytest.Config):
-    config.addinivalue_line("markers", "fastrepl: this marker takes no arguments.")
-    # config.addinivalue_line(
-    #     "markers", "fastrepl(arg, arg2): this marker takes arguments."
-    # )
+    config.addinivalue_line("markers", "fastrepl: exepeiemental fastrepl testing")
 
 
 def pytest_sessionstart(session: pytest.Session):
@@ -37,21 +34,33 @@ def pytest_sessionfinish(session: pytest.Session):
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: List[pytest.Item]):
-    for item in items:
-        for marker in item.iter_markers():
-            if marker.name != "fastrepl":
-                continue
-
-            if config.getoption("--fastrepl"):
-                # TODO: We need to do some clever stuffs here
-                # item.obj = fastrepl.test(item.obj)
-                pass
-            else:
-                item.add_marker(
-                    pytest.mark.skip(
-                        "test marked with fastrepl will be skipped without --fastrepl"
+    """
+    If --fastrepl is specified, we will run all tests marked with fastrepl and skip the rest.
+    If --fastrepl is not specified, we will skip all tests marked with fastrepl and run the rest.
+    """
+    if config.getoption("--fastrepl"):
+        for item in items:
+            for marker in item.iter_markers():
+                if marker.name == "fastrepl":
+                    # TODO: We can do some interesting stuffs here
+                    # item.obj = fastrepl.test(item.obj)
+                    pass
+                else:
+                    item.add_marker(
+                        pytest.mark.skip(
+                            "--fastrepl is specified, skipping tests without fastrepl marker"
+                        )
                     )
-                )
+
+    else:
+        for item in items:
+            for marker in item.iter_markers():
+                if marker.name == "fastrepl":
+                    item.add_marker(
+                        pytest.mark.skip(
+                            "--fastrepl is not specified, skipping tests with fastrepl marker"
+                        )
+                    )
 
 
 def pytest_terminal_summary(terminalreporter: _pytest.terminal.TerminalReporter):

@@ -9,6 +9,15 @@ from fastrepl.eval.model import (
 )
 
 
+def _mapper(label):
+    if label == "POSITIVE":
+        return 1
+    elif label == "NEGATIVE":
+        return 0
+    else:
+        raise ValueError("Invalid label")
+
+
 class TestClassifier:
     @pytest.mark.fastrepl
     def test_single_classifier(self):
@@ -31,18 +40,23 @@ class TestClassifier:
                     "I am so sad.",
                 ],
                 "reference": [
-                    "POSITIVE",
                     "NEGATIVE",
+                    "POSITIVE",
                     "NEGATIVE",
                     "POSITIVE",
                 ],
             }
         )
 
-        predictions, references = [eval.compute(input) for input in tc["input"]]
+        predictions = [eval.compute(input) for input in tc["input"]]
         references = tc["reference"]
 
-        assert load_metric("accuracy").compute(predictions, references) > 0.5
+        predictions = [_mapper(label) for label in predictions]
+        references = [_mapper(label) for label in references]
+
+        assert (
+            load_metric("accuracy").compute(predictions, references)["accuracy"] > 0.5
+        )
 
     @pytest.mark.fastrepl
     def test_cot_with_classifier(self):
@@ -73,17 +87,27 @@ class TestClassifier:
                     "I am so sad.",
                 ],
                 "reference": [
-                    "POSITIVE",
                     "NEGATIVE",
+                    "POSITIVE",
                     "NEGATIVE",
                     "POSITIVE",
                 ],
             }
         )
 
-        thought = pipeline[0].compute(input)
-        answer = pipeline[1].compute(input, context=thought)
-        assert answer in labels.keys()
+        def predict(input):
+            thought = pipeline[0].compute(input)
+            return pipeline[1].compute(input, context=thought)
+
+        predictions = [predict(input) for input in tc["input"]]
+        references = tc["reference"]
+
+        predictions = [_mapper(label) for label in predictions]
+        references = [_mapper(label) for label in references]
+
+        assert (
+            load_metric("accuracy").compute(predictions, references)["accuracy"] > 0.5
+        )
 
     @pytest.mark.fastrepl
     def test_cot_and_classify(self):
@@ -96,5 +120,30 @@ class TestClassifier:
             context="You will get a input text by a liar. Take it as the opposite.",
             labels=labels,
         )
-        assert eval.compute("What a great day! I am so happy.") in labels.keys()
-        assert eval.compute("What a bad day! I am so sad.") in labels.keys()
+
+        tc = Dataset.from_dict(
+            {
+                "input": [
+                    "What a great day!",
+                    "What a bad day!",
+                    "I am so happy.",
+                    "I am so sad.",
+                ],
+                "reference": [
+                    "NEGATIVE",
+                    "POSITIVE",
+                    "NEGATIVE",
+                    "POSITIVE",
+                ],
+            }
+        )
+
+        predictions = [eval.compute(input) for input in tc["input"]]
+        references = tc["reference"]
+
+        predictions = [_mapper(label) for label in predictions]
+        references = [_mapper(label) for label in references]
+
+        assert (
+            load_metric("accuracy").compute(predictions, references)["accuracy"] > 0.5
+        )
