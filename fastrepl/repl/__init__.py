@@ -5,3 +5,8 @@ import fastrepl.llm as llm
 import fastrepl.eval as eval
 import fastrepl.cache as cache
 from fastrepl.cache import llm_cache
+
+from fastrepl.errors import (
+    DuplicatedKeyError,
+    InvalidStatusError,
+)

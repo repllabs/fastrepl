@@ -3,3 +3,8 @@ from fastrepl.cache import llm_cache
 
 import fastrepl.eval as eval
 from fastrepl.polish import Updatable
+
+from fastrepl.errors import (
+    DuplicatedKeyError,
+    InvalidStatusError,
+)

@@ -8,6 +8,10 @@ from typing import (
 
 from graphviz import Digraph
 
+from fastrepl.errors import (
+    DuplicatedKeyError,
+    InvalidStatusError,
+)
 from fastrepl.utils import (
     LocalContext,
     GraphInfo,
@@ -72,7 +76,7 @@ class REPLContext:
     def trace(ctx: LocalContext, key: str, value: str):
         for key_status_value in REPLContext._trace.values():
             if key in key_status_value.keys():
-                raise ValueError(f"{key!r} already exists")
+                raise DuplicatedKeyError()
 
         REPLContext._trace[ctx][key][REPLContext._status] = value
 
@@ -94,7 +98,7 @@ class REPLContext:
     @staticmethod
     def set_status(status: str):
         if status not in REPLContext._history:
-            raise ValueError(f"{status!r} is not valid status")
+            raise InvalidStatusError()
 
         REPLContext._status = status
 
