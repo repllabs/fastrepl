@@ -9,8 +9,6 @@ from fastrepl.eval import (
     Evaluator,
 )
 
-
-from fastrepl.polish import Updatable
 from fastrepl.runner import (
     LocalRunner,
     RemoteRunner,
@@ -19,3 +17,5 @@ from fastrepl.runner import (
 from fastrepl.errors import (
     InvalidStatusError,
 )
+
+from fastrepl.repl import Updatable
