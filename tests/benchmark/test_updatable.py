@@ -1,5 +1,4 @@
-from fastrepl import Updatable
-from fastrepl.repl import Updatable as UpdatableREPL
+import fastrepl.repl as fastrepl
 
 
 def fn_without_updatable():
@@ -7,11 +6,12 @@ def fn_without_updatable():
 
 
 def fn_with_updatable():
-    return Updatable(key="test", value="long text" * 100)
+    return fastrepl.Updatable(key="test", value="long text" * 100)
 
 
 def fn_with_updatable_repl():
-    return UpdatableREPL(key="test", value="long text" * 100)
+    with fastrepl.REPL():
+        fastrepl.Updatable(key="test", value="long text" * 100)
 
 
 def test_fn_without_updatable(benchmark):
