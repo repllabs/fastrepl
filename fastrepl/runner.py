@@ -2,13 +2,12 @@ from abc import ABC, abstractmethod
 
 from rich.progress import Progress
 from multiprocessing.pool import ThreadPool
+from datasets import Dataset
+
+import fastrepl
 from fastrepl.utils import getenv
 
 NUM_THREADS = getenv("NUM_THREADS", 8)
-
-
-from datasets import Dataset
-from fastrepl.eval import Evaluator
 
 
 class BaseRunner(ABC):
@@ -20,10 +19,10 @@ class BaseRunner(ABC):
 class LocalRunner(BaseRunner):
     def __init__(
         self,
-        evaluator: Evaluator,
+        evaluator: fastrepl.Evaluator,
         dataset: Dataset,
-        input_feature: str,
-        output_feature: str,
+        input_feature: str = "input",
+        output_feature: str = "prediction",
     ) -> None:
         self._evaluator = evaluator
         self._dataset = dataset

@@ -1,5 +1,5 @@
-import fastrepl.eval.metric as metric
-import fastrepl.eval.model as model
-import fastrepl.eval.human as human
+from fastrepl.eval.metric import *
+from fastrepl.eval.model import *
+from fastrepl.eval.human import *
 
-from fastrepl.eval.evaluator import Evaluator
+from fastrepl.eval.evaluator import *
