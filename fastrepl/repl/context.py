@@ -5,13 +5,11 @@ from typing import (
     Dict,
     DefaultDict,
 )
+import warnings
 
 from graphviz import Digraph
 
-from fastrepl.errors import (
-    DuplicatedKeyError,
-    InvalidStatusError,
-)
+from fastrepl.errors import InvalidStatusError
 from fastrepl.utils import (
     LocalContext,
     GraphInfo,
@@ -74,11 +72,16 @@ class REPLContext:
 
     @staticmethod
     def trace(ctx: LocalContext, key: str, value: str):
-        for key_status_value in REPLContext._trace.values():
-            if key in key_status_value.keys():
-                raise DuplicatedKeyError()
-
-        REPLContext._trace[ctx][key][REPLContext._status] = value
+        try:
+            existing = REPLContext._trace[ctx][key][REPLContext._status]
+            if existing != value:
+                warnings.warn(
+                    f"value of {key!r} has been overwritten at status {REPLContext._status}",
+                )
+        except KeyError:
+            pass
+        finally:
+            REPLContext._trace[ctx][key][REPLContext._status] = value
 
     @staticmethod
     def update(pairs: List[Tuple[str, str]]):
