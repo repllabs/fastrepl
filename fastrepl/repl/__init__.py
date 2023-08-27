@@ -1,5 +1,5 @@
 from fastrepl.repl.context import graph, set_status, update
-from fastrepl.polish import UpdatableREPL as Updatable
+from fastrepl.repl.polish import Updatable
 
 import fastrepl.llm as llm
 import fastrepl.eval as eval
