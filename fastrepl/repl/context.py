@@ -9,7 +9,10 @@ import warnings
 
 from graphviz import Digraph
 
-from fastrepl.errors import InvalidStatusError
+from fastrepl.errors import (
+    InvalidStatusError,
+    EmptyGraphError,
+)
 from fastrepl.utils import (
     LocalContext,
     GraphInfo,
@@ -48,6 +51,9 @@ def graph(level=2) -> Digraph:
         nodes.append((name, label))
     for ctx_a, ctx_b in pairwise(REPLContext._trace.keys()):
         edges.append((_get_node_name(ctx_a), _get_node_name(ctx_b)))
+
+    if len(nodes) < 1:
+        raise EmptyGraphError()
 
     return build_graph(GraphInfo(id=REPLContext._status, nodes=nodes, edges=edges))
 
