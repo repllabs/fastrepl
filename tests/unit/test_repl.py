@@ -1,7 +1,9 @@
 import pytest
+import warnings
 
 from fastrepl.utils import LocalContext
 from fastrepl.repl.context import REPLContext
+from fastrepl.errors import InvalidStatusError
 
 
 @pytest.fixture(autouse=True)
@@ -30,7 +32,12 @@ class TestREPLContext:
 
     def test_duplicate_key(self):
         REPLContext.trace(MockLocalContext("a", "b"), "key", "value1")
-        with pytest.raises(ValueError):
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            REPLContext.trace(MockLocalContext("a", "b"), "key", "value1")
+
+        with pytest.warns(UserWarning):
             REPLContext.trace(MockLocalContext("a", "b"), "key", "value2")
 
     def test_current_value_without_update(self):
@@ -50,7 +57,7 @@ class TestREPLContext:
         current = REPLContext._status
         REPLContext.set_status(current)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(InvalidStatusError):
             REPLContext.set_status("status")
 
     def test_current_value_set_status(self):
