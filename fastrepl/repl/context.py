@@ -5,7 +5,6 @@ from typing import (
     Dict,
     DefaultDict,
 )
-import warnings
 
 from graphviz import Digraph
 
@@ -78,19 +77,19 @@ class REPLContext:
 
     @staticmethod
     def trace(ctx: LocalContext, key: str, value: str):
+        """
+        try-except will prevent re-initialization the value of key after update
+        TODO: We can not prevent user to provide duplicated key
+        """
         try:
-            existing = REPLContext._trace[ctx][key][REPLContext._status]
-            if existing != value:
-                warnings.warn(
-                    f"value of {key!r} has been overwritten at status {REPLContext._status}",
-                )
+            _ = REPLContext._trace[ctx][key][REPLContext._status]
         except KeyError:
-            pass
-        finally:
             REPLContext._trace[ctx][key][REPLContext._status] = value
 
     @staticmethod
     def update(pairs: List[Tuple[str, str]]):
+        # TODO: Warn user if pairs contain invalid key
+
         next_status = get_cuid()
 
         for key_status_value in REPLContext._trace.values():

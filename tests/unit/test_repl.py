@@ -30,16 +30,6 @@ class TestREPLContext:
         REPLContext.reset()
         assert REPLContext._status != status
 
-    def test_duplicate_key(self):
-        REPLContext.trace(MockLocalContext("a", "b"), "key", "value1")
-
-        with warnings.catch_warnings():
-            warnings.simplefilter("error")
-            REPLContext.trace(MockLocalContext("a", "b"), "key", "value1")
-
-        with pytest.warns(UserWarning):
-            REPLContext.trace(MockLocalContext("a", "b"), "key", "value2")
-
     def test_current_value_without_update(self):
         REPLContext.trace(MockLocalContext("a", "b"), "key", "value")
 
