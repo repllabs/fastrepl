@@ -6,6 +6,8 @@ from fastrepl.eval import (
     LLMChainOfThought,
     LLMClassifier,
     LLMChainOfThoughtClassifier,
+    HumanClassifierRich,
+    HumanClassifierTexual,
     Evaluator,
 )
 
