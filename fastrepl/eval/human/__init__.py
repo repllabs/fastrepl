@@ -1,1 +1,1 @@
-from fastrepl.eval.human.classify import HumanClassifierRich, HumanClassifierTexual
+from fastrepl.eval.human.classify import HumanClassifierRich
