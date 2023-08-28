@@ -4,10 +4,10 @@ import functools
 from rich.prompt import Prompt
 from rich.console import Console
 
-from fastrepl.eval.human.base import BaseHumanEval
+from fastrepl.eval.base import BaseEval
 
 
-class HumanClassifierRich(BaseHumanEval):
+class HumanClassifierRich(BaseEval):
     def __init__(
         self,
         labels: Dict[str, str],
@@ -27,10 +27,21 @@ class HumanClassifierRich(BaseHumanEval):
         prompt = self.render_prompt(sample=sample)
         choices = list(self.labels.keys())  # TODO: Render descriptions
 
-        return Prompt.ask(
-            prompt,
-            choices=choices,
-            default=context,
-            console=self.console,
-            stream=self.stream,
-        )
+        if context is None:
+            return Prompt.ask(
+                prompt,
+                choices=choices,
+                console=self.console,
+                stream=self.stream,
+            )
+        else:
+            return Prompt.ask(
+                prompt,
+                choices=choices,
+                default=context,
+                console=self.console,
+                stream=self.stream,
+            )
+
+    def is_interactive(self) -> bool:
+        return True
