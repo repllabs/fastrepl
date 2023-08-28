@@ -17,7 +17,7 @@ class TestHumanEvalWithRich:
             ("A\nc\na", "a"),
         ],
     )
-    def test_basic(self, input, expected):
+    def test_without_default(self, input, expected):
         console = Console(file=io.StringIO())
 
         eval = fastrepl.HumanClassifierRich(
@@ -26,4 +26,26 @@ class TestHumanEvalWithRich:
             stream=io.StringIO(input),
         )
 
-        assert eval.compute("some sample") == expected
+        actual = eval.compute("some sample")
+        assert actual == expected
+
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            ("a", "a"),
+            ("a\n", "a"),
+            ("c\n", "b"),
+            ("", "b"),
+        ],
+    )
+    def test_with_default(self, input, expected):
+        console = Console(file=io.StringIO())
+
+        eval = fastrepl.HumanClassifierRich(
+            labels={"a": "this is a", "b": "this is b"},
+            console=console,
+            stream=io.StringIO(input),
+        )
+
+        actual = eval.compute("some sample", context="b")
+        assert actual == expected
