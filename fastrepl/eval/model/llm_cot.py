@@ -66,7 +66,7 @@ class LLMChainOfThought(BaseEvalWithoutReference):
         # fmt: off
         result = completion(
             model=self.model,
-            messages=messages, 
+            messages=messages,
         )["choices"][0]["message"]["content"]
         # fmt: on
 

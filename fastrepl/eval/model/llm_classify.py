@@ -57,8 +57,8 @@ class LLMClassifier(BaseEvalWithoutReference):
 
         instruction = system_prompt(
             context=self.global_context,
-            labels="\n".join(f"{k}: {v}" for k, v in mapping.items()),
-            label_keys=", ".join(mapping.keys()),
+            labels="\n".join(f"{m.token}: {m.description}" for m in mapping),
+            label_keys=", ".join(m.token for m in mapping),
         )
 
         messages = [{"role": "system", "content": instruction}]
@@ -73,14 +73,17 @@ class LLMClassifier(BaseEvalWithoutReference):
             self.model,
             messages=messages,
             max_tokens=1,  #  NOTE: when using logit_bias for classification, max_tokens should be 1
-            logit_bias=logit_bias_from_labels(self.model, set(mapping.keys())),
+            logit_bias=logit_bias_from_labels(
+                self.model, set(m.token for m in mapping)
+            ),
         )["choices"][0]["message"]["content"]
 
-        try:
-            return mapping[result]
-        except KeyError:
-            warnings.warn(f"classification result not in mapping: {result!r}")
-            return "UNKNOWN"
+        for m in mapping:
+            if m.token == result:
+                return m.label
+
+        warnings.warn(f"classification result not in mapping: {result!r}")
+        return "UNKNOWN"
 
     def is_interactive(self) -> bool:
         return False

@@ -1,5 +1,7 @@
 import random
-from typing import Set, Dict
+from dataclasses import dataclass
+from typing import Set, List, Dict
+
 
 from fastrepl.llm import SUPPORTED_MODELS, tokenize
 
@@ -21,8 +23,18 @@ def logit_bias_from_labels(model: SUPPORTED_MODELS, labels: Set[str]) -> Dict[in
         return {}
 
 
+@dataclass
+class LabelMapping:
+    token: str
+    label: str
+    description: str
+
+
 def mapping_from_labels(
     labels: Dict[str, str], start=ord("A"), rg=random.Random(42)
-) -> dict[str, str]:
+) -> List[LabelMapping]:
     keys = rg.sample(list(labels.keys()), len(labels))
-    return {chr(start + i): label for i, label in enumerate(keys)}
+    return [
+        LabelMapping(token=chr(start + i), label=label, description=labels[label])
+        for i, label in enumerate(keys)
+    ]

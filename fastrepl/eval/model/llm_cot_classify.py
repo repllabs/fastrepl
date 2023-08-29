@@ -65,8 +65,8 @@ class LLMChainOfThoughtClassifier(BaseEvalWithoutReference):
 
         instruction = system_prompt(
             context=self.context,
-            labels="\n".join(f"{k}: {v}" for k, v in mapping.items()),
-            label_keys=", ".join(mapping.keys()),
+            labels="\n".join(f"{m.token}: {m.description}" for m in mapping),
+            label_keys=", ".join(m.token for m in mapping),
         )
 
         messages = [{"role": "system", "content": instruction}]
@@ -80,15 +80,16 @@ class LLMChainOfThoughtClassifier(BaseEvalWithoutReference):
         # fmt: off
         result = completion(
             model=self.model,
-            messages=messages, 
+            messages=messages,
         )["choices"][0]["message"]["content"]
         # fmt: on
 
-        try:
-            return mapping[result[-1]]
-        except KeyError:
-            warnings.warn(f"classification result not in mapping: {result!r}")
-            return "UNKNOWN"
+        for m in mapping:
+            if m.token == result[-1]:
+                return m.label
+
+        warnings.warn(f"classification result not in mapping: {result!r}")
+        return "UNKNOWN"
 
     def is_interactive(self) -> bool:
         return False

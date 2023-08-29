@@ -4,6 +4,7 @@ import random
 from fastrepl.eval.model.utils import (
     logit_bias_from_labels,
     mapping_from_labels,
+    LabelMapping,
 )
 
 
@@ -86,18 +87,8 @@ def test_mapping_from_labels():
         start=ord("A"),
         rg=random.Random(42),
     )
-    assert mapping == (
-        {
-            "A": "NEUTRAL",
-            "B": "POSITIVE",
-            "C": "NEGATIVE",
-        }
-    )
-    assert mapping == (
-        {
-            "C": "NEGATIVE",
-            "B": "POSITIVE",
-            "A": "NEUTRAL",
-        }
-    )
-    assert list(mapping.keys()) == ["A", "B", "C"]
+    assert mapping == [
+        LabelMapping("A", "NEUTRAL", "Given text is neutral."),
+        LabelMapping("B", "POSITIVE", "Given text is positive."),
+        LabelMapping("C", "NEGATIVE", "Given text is negative."),
+    ]
