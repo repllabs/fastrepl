@@ -7,7 +7,7 @@ from fastrepl.llm import completion, SUPPORTED_MODELS
 from fastrepl.eval.base import BaseEvalWithoutReference
 from fastrepl.eval.model.utils import (
     logit_bias_from_labels,
-    mapping_from_labels,
+    mappings_from_labels,
 )
 
 
@@ -47,17 +47,17 @@ class LLMClassifier(BaseEvalWithoutReference):
         self.references = references
 
     def _shuffle(self):
-        mapping = mapping_from_labels(self.labels, rg=self.rg)
+        mappings = mappings_from_labels(self.labels, rg=self.rg)
         references = self.rg.sample(self.references, len(self.references))
-        return mapping, references
+        return mappings, references
 
     def compute(self, sample: str, context: str) -> str:
-        mapping, references = self._shuffle()
+        mappings, references = self._shuffle()
 
         instruction = system_prompt(
             context=self.global_context,
-            labels="\n".join(f"{m.token}: {m.description}" for m in mapping),
-            label_keys=", ".join(m.token for m in mapping),
+            labels="\n".join(f"{m.token}: {m.description}" for m in mappings),
+            label_keys=", ".join(m.token for m in mappings),
         )
 
         messages = [{"role": "system", "content": instruction}]
@@ -73,11 +73,11 @@ class LLMClassifier(BaseEvalWithoutReference):
             messages=messages,
             max_tokens=1,  #  NOTE: when using logit_bias for classification, max_tokens should be 1
             logit_bias=logit_bias_from_labels(
-                self.model, set(m.token for m in mapping)
+                self.model, set(m.token for m in mappings)
             ),
         )["choices"][0]["message"]["content"]
 
-        for m in mapping:
+        for m in mappings:
             if m.token == result:
                 return m.label
 

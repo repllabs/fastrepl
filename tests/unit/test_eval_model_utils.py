@@ -3,7 +3,7 @@ import random
 
 from fastrepl.eval.model.utils import (
     logit_bias_from_labels,
-    mapping_from_labels,
+    mappings_from_labels,
     LabelMapping,
 )
 
@@ -78,7 +78,7 @@ class TestLogitBiasForClassification:
 
 
 def test_mapping_from_labels():
-    mapping = mapping_from_labels(
+    mapping = mappings_from_labels(
         labels={
             "POSITIVE": "Given text is positive.",
             "NEGATIVE": "Given text is negative.",

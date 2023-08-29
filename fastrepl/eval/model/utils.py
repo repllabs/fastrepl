@@ -30,7 +30,7 @@ class LabelMapping:
     description: str
 
 
-def mapping_from_labels(
+def mappings_from_labels(
     labels: Dict[str, str], start=ord("A"), rg=random.Random(42)
 ) -> List[LabelMapping]:
     keys = rg.sample(list(labels.keys()), len(labels))
