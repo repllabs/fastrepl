@@ -11,7 +11,6 @@ from fastrepl.eval.model.utils import (
 )
 
 
-# TODO!: INFO loss. We don't care label's descripton here
 @prompt
 def system_prompt(context, labels, label_keys):
     """You are master of classification who can classify any text according to the user's instructions.
