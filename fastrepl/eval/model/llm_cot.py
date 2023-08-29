@@ -46,7 +46,7 @@ class LLMChainOfThought(BaseEvalWithoutReference):
             "role": "system",
             "content": system_prompt(
                 context=context,
-                labels=render_labels(labels),
+                labels=render_labels(labels, rg=rg),
             ),
         }
 
@@ -58,10 +58,7 @@ class LLMChainOfThought(BaseEvalWithoutReference):
             messages.append({"role": "user", "content": input})
             messages.append({"role": "assistant", "content": output})
         messages.append(
-            {
-                "role": "user",
-                "content": final_message_prompt(prediction, context),
-            }
+            {"role": "user", "content": final_message_prompt(prediction, context)}
         )
 
         # fmt: off

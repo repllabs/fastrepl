@@ -51,7 +51,7 @@ class LLMClassifier(BaseEvalWithoutReference):
             "role": "system",
             "content": system_prompt(
                 context=context,
-                labels=render_labels(self.mapping),
+                labels=render_labels(self.mapping, rg=rg),
                 label_keys=", ".join(self.mapping.keys()),
             ),
         }
