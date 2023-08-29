@@ -1,6 +1,6 @@
 import random
 from dataclasses import dataclass
-from typing import Set, List, Dict
+from typing import Optional, Set, List, Dict
 
 
 from fastrepl.llm import SUPPORTED_MODELS, tokenize
@@ -38,3 +38,17 @@ def mappings_from_labels(
         LabelMapping(token=chr(start + i), label=label, description=labels[label])
         for i, label in enumerate(keys)
     ]
+
+
+def next_mappings_for_consensus(
+    mappings: List[LabelMapping], result: LabelMapping
+) -> Optional[List[LabelMapping]]:
+    i = mappings.index(result)
+    mid = len(mappings) // 2
+    if i >= mid:
+        return None
+
+    ret = mappings[:]
+    ret[i], ret[0] = ret[0], ret[i]
+    ret.reverse()
+    return ret

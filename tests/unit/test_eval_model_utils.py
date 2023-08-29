@@ -5,6 +5,7 @@ from fastrepl.eval.model.utils import (
     logit_bias_from_labels,
     mappings_from_labels,
     LabelMapping,
+    next_mappings_for_consensus,
 )
 
 
@@ -92,3 +93,77 @@ def test_mapping_from_labels():
         LabelMapping("B", "POSITIVE", "Given text is positive."),
         LabelMapping("C", "NEGATIVE", "Given text is negative."),
     ]
+
+
+class TestNextMappingsForConsensus:
+    @pytest.mark.parametrize(
+        "mappings, result, expected",
+        [
+            (
+                [
+                    LabelMapping("A", "POSITIVE", "Given text is positive."),
+                    LabelMapping("B", "NEGATIVE", "Given text is negative."),
+                ],
+                LabelMapping("B", "NEGATIVE", "Given text is negative."),
+                None,
+            ),
+            (
+                [
+                    LabelMapping("A", "NEUTRAL", "Given text is neutral."),
+                    LabelMapping("B", "POSITIVE", "Given text is positive."),
+                    LabelMapping("C", "NEGATIVE", "Given text is negative."),
+                ],
+                LabelMapping("C", "NEGATIVE", "Given text is negative."),
+                None,
+            ),
+        ],
+    )
+    def test_no_need(self, mappings, result, expected):
+        assert next_mappings_for_consensus(mappings, result) == expected
+
+    @pytest.mark.parametrize(
+        "mappings, result, expected",
+        [
+            (
+                [
+                    LabelMapping("A", "POSITIVE", "Given text is positive."),
+                    LabelMapping("B", "NEGATIVE", "Given text is negative."),
+                ],
+                LabelMapping("A", "POSITIVE", "Given text is positive."),
+                [
+                    LabelMapping("B", "NEGATIVE", "Given text is negative."),
+                    LabelMapping("A", "POSITIVE", "Given text is positive."),
+                ],
+            ),
+            (
+                [
+                    LabelMapping("A", "NEUTRAL", "Given text is neutral."),
+                    LabelMapping("B", "POSITIVE", "Given text is positive."),
+                    LabelMapping("C", "NEGATIVE", "Given text is negative."),
+                ],
+                LabelMapping("A", "NEUTRAL", "Given text is neutral."),
+                [
+                    LabelMapping("C", "NEGATIVE", "Given text is negative."),
+                    LabelMapping("B", "POSITIVE", "Given text is positive."),
+                    LabelMapping("A", "NEUTRAL", "Given text is neutral."),
+                ],
+            ),
+            (
+                [
+                    LabelMapping("A", "NEUTRAL", "Given text is neutral."),
+                    LabelMapping("B", "POSITIVE", "Given text is positive."),
+                    LabelMapping("C", "NEGATIVE", "Given text is negative."),
+                    LabelMapping("D", "SOMETHING", "Given text is something."),
+                ],
+                LabelMapping("B", "POSITIVE", "Given text is positive."),
+                [
+                    LabelMapping("D", "SOMETHING", "Given text is something."),
+                    LabelMapping("C", "NEGATIVE", "Given text is negative."),
+                    LabelMapping("A", "NEUTRAL", "Given text is neutral."),
+                    LabelMapping("B", "POSITIVE", "Given text is positive."),
+                ],
+            ),
+        ],
+    )
+    def test_need(self, mappings, result, expected):
+        assert next_mappings_for_consensus(mappings, result) == expected
