@@ -12,23 +12,24 @@ else:
     from typing_extensions import TypeAlias
 
 from fastrepl.utils import truncate
-from fastrepl.llm import SUPPORTED_MODELS, tokenize
+import fastrepl.llm as llm
 
 
-def _get_token_id(model: SUPPORTED_MODELS, s: str) -> int:
-    ids = tokenize(model, s)
-    if len(ids) != 1:
-        raise ValueError(f"{s!r} is not a single token in {model!r}")
-    return ids[0]
+def logit_bias_from(
+    model: llm.SUPPORTED_MODELS, strings: Iterable[str]
+) -> Dict[int, int]:
+    def _get_token_id(s: str) -> int:
+        ids = llm.tokenize(model, s)
+        if len(ids) != 1:
+            raise ValueError(f"{s!r} is not a single token in {model!r}")
+        return ids[0]
 
-
-def logit_bias_from(model: SUPPORTED_MODELS, strings: Iterable[str]) -> Dict[int, int]:
     if model == "command-nightly":
         COHERE_MAX = 10
-        return {_get_token_id(model, s): COHERE_MAX for s in strings}
+        return {_get_token_id(s): COHERE_MAX for s in strings}
     elif model in ["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4"]:
         OPENAI_MAX = 100
-        return {_get_token_id(model, s): OPENAI_MAX for s in strings}
+        return {_get_token_id(s): OPENAI_MAX for s in strings}
     else:
         return {}
 

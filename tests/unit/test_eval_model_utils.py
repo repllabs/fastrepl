@@ -2,6 +2,7 @@ import pytest
 import random
 import warnings
 
+import fastrepl.llm
 from fastrepl.eval.model.utils import (
     logit_bias_from,
     mappings_from_labels,
@@ -11,39 +12,31 @@ from fastrepl.eval.model.utils import (
 )
 
 
+@pytest.fixture(autouse=True)
+def mock_tokenize(monkeypatch):
+    def mock(model, text):
+        if model == "command-nightly":
+            return [ord(s) for s in text]
+        elif model in ["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4"]:
+            return [ord(s) for s in text]
+        raise NotImplementedError
+
+    monkeypatch.setattr(fastrepl.llm, "tokenize", mock)
+
+
 class TestLogitBiasForClassification:
     @pytest.mark.parametrize(
         "model, choices, expected",
         [
             (
                 "gpt-3.5-turbo",
-                "ABCDE",
-                {32: 100, 33: 100, 34: 100, 35: 100, 36: 100},
-            ),
-            (
-                "gpt-3.5-turbo",
-                "123",
-                {16: 100, 17: 100, 18: 100},
-            ),
-            (
-                "gpt-3.5-turbo-16k",
-                "ABCDE",
-                {32: 100, 33: 100, 34: 100, 35: 100, 36: 100},
-            ),
-            (
-                "gpt-3.5-turbo-16k",
-                "123",
-                {16: 100, 17: 100, 18: 100},
-            ),
-            (
-                "gpt-4",
-                "ABCDE",
-                {32: 100, 33: 100, 34: 100, 35: 100, 36: 100},
+                "AB",
+                {65: 100, 66: 100},
             ),
             (
                 "gpt-4",
                 "123",
-                {16: 100, 17: 100, 18: 100},
+                {49: 100, 50: 100, 51: 100},
             ),
         ],
     )
@@ -56,13 +49,13 @@ class TestLogitBiasForClassification:
         [
             (
                 "command-nightly",
-                "ABCDE",
-                {40: 10, 41: 10, 42: 10, 43: 10, 44: 10},
+                "AB",
+                {65: 10, 66: 10},
             ),
             (
                 "command-nightly",
                 "123",
-                {24: 10, 25: 10, 26: 10},
+                {49: 10, 50: 10, 51: 10},
             ),
         ],
     )
