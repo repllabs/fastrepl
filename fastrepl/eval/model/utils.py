@@ -1,6 +1,6 @@
 import random
 from dataclasses import dataclass
-from typing import Optional, Set, List, Dict
+from typing import Optional, TypeAlias, Literal, Set, List, Dict
 
 
 from fastrepl.llm import SUPPORTED_MODELS, tokenize
@@ -38,6 +38,9 @@ def mappings_from_labels(
         LabelMapping(token=chr(start + i), label=label, description=labels[label])
         for i, label in enumerate(keys)
     ]
+
+
+PositionDebiasStrategy: TypeAlias = Literal["shuffle", "consensus"]
 
 
 def next_mappings_for_consensus(

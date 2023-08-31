@@ -1,15 +1,18 @@
 import random
 import warnings
-from typing import Optional, Tuple, Literal, Dict, List
+import functools
+from typing import Optional, Tuple, Dict, List
 
 from fastrepl.utils import prompt
 from fastrepl.llm import completion, SUPPORTED_MODELS
 from fastrepl.eval.base import BaseEvalWithoutReference
+
 from fastrepl.eval.model.utils import (
     logit_bias_from_labels,
     mappings_from_labels,
     next_mappings_for_consensus,
     LabelMapping,
+    PositionDebiasStrategy,
 )
 
 
@@ -43,16 +46,14 @@ class LLMClassifier(BaseEvalWithoutReference):
         model: SUPPORTED_MODELS = "gpt-3.5-turbo",
         rg=random.Random(42),
         references: List[Tuple[str, str]] = [],
-        position_debias_strategy: Literal["shuffle", "consensus"] = "shuffle",
+        position_debias_strategy: PositionDebiasStrategy = "shuffle",
     ) -> None:
         self.labels = labels
         self.global_context = context
         self.model = model
         self.rg = rg
         self.references = references
-        self.position_debias_strategy: Literal[
-            "shuffle", "consensus"
-        ] = position_debias_strategy
+        self.position_debias_strategy: PositionDebiasStrategy = position_debias_strategy
 
     def _compute(
         self,
@@ -92,28 +93,25 @@ class LLMClassifier(BaseEvalWithoutReference):
         return None
 
     def compute(self, sample: str, context="") -> Optional[str]:
-        mappings = mappings_from_labels(self.labels, rg=self.rg)
         references = self.rg.sample(self.references, len(self.references))
+        mappings = mappings_from_labels(self.labels, rg=self.rg)
 
-        mapping1 = self._compute(sample, context, mappings, references)
-        if mapping1 is None:
+        result1 = self._compute(sample, context, mappings, references)
+        if result1 is None:
             return None
 
         if self.position_debias_strategy == "shuffle":
-            return mapping1.label
+            return result1.label
 
-        next_mappings = next_mappings_for_consensus(mappings, mapping1)
+        next_mappings = next_mappings_for_consensus(mappings, result1)
         if next_mappings is None:
-            return mapping1.label
+            return result1.label
 
-        mapping2 = self._compute(sample, context, next_mappings, references)
-        if mapping2 is None:
+        result2 = self._compute(sample, context, next_mappings, references)
+        if result2 is None:
             return None
 
-        if mapping1.label == mapping2.label:
-            return mapping1.label
-        else:
-            return None
+        return result1.label if result1.label == result2.label else None
 
     def is_interactive(self) -> bool:
         return False
