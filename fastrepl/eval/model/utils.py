@@ -1,7 +1,13 @@
 import random
 from dataclasses import dataclass
-from typing import Optional, TypeAlias, Literal, Set, List, Dict
+from typing import Optional, Literal, Set, List, Dict
 
+import sys
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    from typing_extensions import TypeAlias
 
 from fastrepl.llm import SUPPORTED_MODELS, tokenize
 
