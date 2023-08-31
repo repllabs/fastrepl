@@ -1,7 +1,7 @@
 import random
 import warnings
 from dataclasses import dataclass
-from typing import Optional, Literal, Set, List, Dict
+from typing import Optional, Literal, Iterable, Set, List, Dict
 from itertools import combinations
 
 import sys
@@ -66,9 +66,8 @@ def next_mappings_for_consensus(
     return ret
 
 
-def warn_verbosity_bias(texts: List[str]):
-    pairs = list(combinations(texts, 2))
-    for a, b in pairs:
+def warn_verbosity_bias(texts: Iterable[str]):
+    for a, b in combinations(texts, 2):
         (longer, shorter) = (a, b) if len(a) > len(b) else (b, a)
         if len(shorter) / len(longer) < 0.5:
             warnings.warn(
