@@ -8,7 +8,7 @@ from fastrepl.llm import completion, SUPPORTED_MODELS
 from fastrepl.eval.base import BaseEvalWithoutReference
 
 from fastrepl.eval.model.utils import (
-    logit_bias_from_labels,
+    logit_bias_from,
     mappings_from_labels,
     next_mappings_for_consensus,
     warn_verbosity_bias,
@@ -81,9 +81,7 @@ class LLMClassifier(BaseEvalWithoutReference):
             self.model,
             messages=messages,
             max_tokens=1,  #  NOTE: when using logit_bias for classification, max_tokens should be 1
-            logit_bias=logit_bias_from_labels(
-                self.model, set(m.token for m in mappings)
-            ),
+            logit_bias=logit_bias_from(self.model, set(m.token for m in mappings)),
         )["choices"][0]["message"]["content"]
 
         for m in mappings:

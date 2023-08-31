@@ -3,7 +3,7 @@ import random
 import warnings
 
 from fastrepl.eval.model.utils import (
-    logit_bias_from_labels,
+    logit_bias_from,
     mappings_from_labels,
     LabelMapping,
     next_mappings_for_consensus,
@@ -48,7 +48,7 @@ class TestLogitBiasForClassification:
         ],
     )
     def test_openai(self, model, choices, expected):
-        actual = logit_bias_from_labels(model, set(choices))
+        actual = logit_bias_from(model, set(choices))
         assert actual == expected
 
     @pytest.mark.parametrize(
@@ -67,17 +67,17 @@ class TestLogitBiasForClassification:
         ],
     )
     def test_cohere(self, model, choices, expected):
-        actual = logit_bias_from_labels(model, set(choices))
+        actual = logit_bias_from(model, set(choices))
         assert actual == expected
 
     @pytest.mark.parametrize("model", ["j2-ultra", "togethercomputer/llama-2-70b-chat"])
     def test_empty(self, model):
-        assert logit_bias_from_labels(model, "") == {}
-        assert logit_bias_from_labels(model, "ABC") == {}
+        assert logit_bias_from(model, "") == {}
+        assert logit_bias_from(model, "ABC") == {}
 
-    def test_invalid(self):
+    def test_not_single_token(self):
         with pytest.raises(ValueError):
-            logit_bias_from_labels("gpt-3.5-turbo", set(["GOOD", "GREAT"]))
+            logit_bias_from("gpt-3.5-turbo", set(["GOOD", "GREAT"]))
 
 
 def test_mapping_from_labels():
