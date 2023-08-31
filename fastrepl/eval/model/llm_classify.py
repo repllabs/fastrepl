@@ -1,6 +1,5 @@
 import random
 import warnings
-import functools
 from typing import Optional, Tuple, Dict, List
 
 from fastrepl.utils import prompt
