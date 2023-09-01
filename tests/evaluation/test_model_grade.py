@@ -50,11 +50,8 @@ class TestClassifier:
 
         result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run()
 
-        predictions = result["prediction"]
-        references = ds["reference"]
-
-        predictions = [_mapper(label) for label in predictions]
-        references = [_mapper(label) for label in references]
+        predictions = [_mapper(label) for label in result["prediction"]]
+        references = [_mapper(label) for label in result["reference"]]
 
         metric = fastrepl.load_metric("accuracy")
         assert metric.compute(predictions, references)["accuracy"] > -1
@@ -100,11 +97,8 @@ class TestClassifier:
 
         result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run()
 
-        predictions = result["prediction"]
-        references = ds["reference"]
-
-        predictions = [_mapper(label) for label in predictions]
-        references = [_mapper(label) for label in references]
+        predictions = [_mapper(label) for label in result["prediction"]]
+        references = [_mapper(label) for label in result["reference"]]
 
         metric = fastrepl.load_metric("accuracy")
         assert metric.compute(predictions, references)["accuracy"] > -1
@@ -143,11 +137,8 @@ class TestClassifier:
 
         result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run()
 
-        predictions = result["prediction"]
-        references = ds["reference"]
-
-        predictions = [_mapper(label) for label in predictions]
-        references = [_mapper(label) for label in references]
+        predictions = [_mapper(label) for label in result["prediction"]]
+        references = [_mapper(label) for label in result["reference"]]
 
         metric = fastrepl.load_metric("accuracy")
         assert metric.compute(predictions, references)["accuracy"] > -1
