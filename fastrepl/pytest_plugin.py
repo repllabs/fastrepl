@@ -22,7 +22,7 @@ def pytest_addoption(parser: pytest.Parser):
         "--fastrepl",
         action="store_true",
         default=False,
-        help="Enable experimental fastrepl testing",
+        help="Enable experimental fastrepl evaluation runner",
     )
 
 
