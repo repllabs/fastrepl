@@ -46,12 +46,14 @@ def pytest_collection_modifyitems(config: pytest.Config, items: List[pytest.Item
     if not config.getoption("--fastrepl"):
         for item in items:
             for marker in item.iter_markers():
-                if marker.name == "fastrepl":
-                    item.add_marker(
-                        pytest.mark.skip(
-                            "--fastrepl is not specified, skipping tests with fastrepl marker"
-                        )
+                if marker.name != "fastrepl":
+                    continue
+
+                item.add_marker(
+                    pytest.mark.skip(
+                        "--fastrepl is not specified, skipping tests with fastrepl marker"
                     )
+                )
 
 
 def pytest_terminal_summary(terminalreporter: _pytest.terminal.TerminalReporter):
