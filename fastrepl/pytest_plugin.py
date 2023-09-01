@@ -3,8 +3,17 @@ from typing import Optional, List
 import pytest
 import _pytest.terminal
 
+from fastrepl.utils import getenv
 
 run_url: Optional[str] = None
+
+
+def set_proxy():
+    import litellm
+
+    api_base = getenv("LITELLM_PROXY_API_BASE", "")
+    if api_base != "":
+        litellm.api_base = api_base
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -24,7 +33,7 @@ def pytest_configure(config: pytest.Config):
 
 def pytest_sessionstart(session: pytest.Session):
     if session.config.getoption("--fastrepl"):
-        print("Initializing fastrepl session")
+        set_proxy()
 
 
 def pytest_sessionfinish(session: pytest.Session):
