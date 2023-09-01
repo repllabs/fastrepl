@@ -12,8 +12,7 @@ def set_proxy():
     import litellm
 
     api_base = getenv("LITELLM_PROXY_API_BASE", "")
-    if api_base != "":
-        litellm.api_base = api_base
+    litellm.api_base = api_base if api_base != "" else None
 
 
 @pytest.hookimpl(tryfirst=True)
