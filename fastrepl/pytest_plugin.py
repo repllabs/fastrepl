@@ -11,6 +11,7 @@ run_url: Optional[str] = None
 def set_proxy():
     import litellm
 
+    # NOTE: This will be provided in Github App
     api_base = getenv("LITELLM_PROXY_API_BASE", "")
     litellm.api_base = api_base if api_base != "" else None
 
