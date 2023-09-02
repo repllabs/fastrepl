@@ -48,7 +48,7 @@ class LLMGrader(BaseEvalWithoutReference):
         sample: str,
         context: str,
         references: List[Tuple[str, str]],
-    ) -> Optional[int]:
+    ) -> Optional[str]:
         instruction = system_prompt(context=self.global_context)
 
         messages = [{"role": "system", "content": instruction}]
@@ -67,12 +67,12 @@ class LLMGrader(BaseEvalWithoutReference):
         )["choices"][0]["message"]["content"]
 
         try:
-            return int(result)
+            return str(int(result))
         except ValueError:
             warnings.warn(f"{result!r} not in {self.range}")
             return None
 
-    def compute(self, sample: str, context="") -> Optional[int]:
+    def compute(self, sample: str, context="") -> Optional[str]:
         references = self.rg.sample(self.references, len(self.references))
 
         return self._compute(sample, context, references=references)

@@ -1,6 +1,7 @@
 import random
 from abc import abstractmethod
-from typing import Optional, Tuple, Iterable, Unpack, TypedDict, NotRequired, List, Dict
+from typing import Optional, Tuple, Iterable, TypedDict, List, Dict, cast
+from typing_extensions import Unpack, NotRequired
 
 from fastrepl.utils import prompt
 from fastrepl.llm import completion, SUPPORTED_MODELS
@@ -18,8 +19,8 @@ class LLMEvaluationHeadParams(TypedDict):
 
 class LLMEvaluationHead(BaseEvalWithoutReference):
     def __init__(self, **kwargs: Unpack[LLMEvaluationHeadParams]) -> None:
-        self.global_context = kwargs.get("context")
-        self.options = kwargs.get("options")
+        self.global_context = kwargs["context"]
+        self.options = kwargs["options"]
         self.model = kwargs.get("model", "gpt-3.5-turbo")
         self.rg = kwargs.get("rg", random.Random(42))
         self.references = kwargs.get("references", [])
@@ -61,7 +62,7 @@ class LLMClassificationHead(LLMEvaluationHead):
         labels: Dict[str, str],
         **kwargs: Unpack[LLMEvaluationHeadParams],
     ) -> None:
-        kwargs.update(options=labels.keys())  # TODO: Shuffling?
+        kwargs.update({"options": labels.keys()})  # TODO: Shuffling?
         super().__init__(**kwargs)
 
     def _system_message(self, sample: str, context: str) -> Dict[str, str]:
@@ -78,7 +79,7 @@ class LLMGradingHead(LLMEvaluationHead):
         number_to: int,
         **kwargs: Unpack[LLMEvaluationHeadParams],
     ) -> None:
-        kwargs.update(options=[str(i) for i in range(number_from, number_to + 1)])
+        kwargs.update({"options": [str(i) for i in range(number_from, number_to + 1)]})
         super().__init__(**kwargs)
 
     def _system_message(self, sample: str, context: str) -> Dict[str, str]:
