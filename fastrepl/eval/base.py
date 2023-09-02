@@ -10,5 +10,5 @@ class BaseEvalWithReference(ABC):
 
 class BaseEvalWithoutReference(ABC):
     @abstractmethod
-    def compute(self, prediction: str, context: str) -> Optional[str]:
+    def compute(self, prediction: str, context: Optional[str]) -> Optional[str]:
         ...
