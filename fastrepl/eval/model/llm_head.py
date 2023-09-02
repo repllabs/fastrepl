@@ -1,6 +1,7 @@
 import random
 from abc import abstractmethod
-from typing import Optional, Tuple, Iterable, TypedDict, Unpack, NotRequired, List, Dict
+from typing import Optional, Tuple, Iterable, TypedDict, List, Dict
+from typing_extensions import Unpack, NotRequired
 
 from fastrepl.utils import prompt
 from fastrepl.llm import completion, SUPPORTED_MODELS
