@@ -1,4 +1,4 @@
-from typing import Any, List, Union
+from typing import Optional, Any, List
 from abc import ABC, abstractmethod
 
 
@@ -10,5 +10,5 @@ class BaseEvalWithReference(ABC):
 
 class BaseEvalWithoutReference(ABC):
     @abstractmethod
-    def compute(self, prediction: str, context: str) -> Union[None, int, str]:
+    def compute(self, prediction: str, context: str) -> Optional[str]:
         ...

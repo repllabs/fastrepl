@@ -12,6 +12,8 @@ from fastrepl.eval import (
     LLMChainOfThoughtClassifier,
     HumanClassifierRich,
     LLMGrader,
+    LLMGradingHead,
+    LLMClassificationHead,
     Evaluator,
 )
 
