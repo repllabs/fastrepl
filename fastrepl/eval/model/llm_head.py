@@ -1,4 +1,5 @@
 import random
+import itertools
 from abc import abstractmethod
 from typing import Optional, Tuple, Iterable, TypedDict, List, Dict
 from typing_extensions import Unpack, NotRequired
@@ -44,20 +45,32 @@ class LLMEvaluationHead(BaseEvalWithoutReference):
     ) -> Dict[str, str]:
         ...
 
-    def _messages(self, sample, local_context) -> List[Dict[str, str]]:
-        references = self.rg.sample(self.references, len(self.references))
-
-        messages = [self._system_message(sample, self.global_context, local_context)]
-        for input, output in references:
-            messages.append({"role": "user", "content": input})
-            messages.append({"role": "assistant", "content": output})
-        messages.append(self._final_message(sample, self.global_context, local_context))
-        return messages
+    def _reference_messages(
+        self,
+        references: List[Tuple[str, str]],
+    ) -> List[Dict[str, str]]:
+        return list(
+            itertools.chain.from_iterable(
+                (
+                    {"role": "user", "content": input},
+                    {"role": "assistant", "content": output},
+                )
+                for input, output in references
+            )
+        )
 
     def compute(self, sample: str, context="") -> Optional[str]:
+        messages = [
+            self._system_message(sample, self.global_context, context),
+            *self._reference_messages(
+                self.rg.sample(self.references, len(self.references))
+            ),
+            self._final_message(sample, self.global_context, context),
+        ]
+
         result = completion(
             model=self.model,
-            messages=self._messages(sample, context),
+            messages=messages,
             max_tokens=1,  # NOTE: when using logit_bias for classification, max_tokens should be 1
             logit_bias=logit_bias_from(self.model, [str(i) for i in self.options]),
         )["choices"][0]["message"]["content"]
@@ -104,6 +117,16 @@ class LLMClassificationHead(LLMEvaluationHead):
                 label_keys=", ".join(m.token for m in self.mapping),
             ),
         }
+
+    def _reference_messages(
+        self, references: List[Tuple[str, str]]
+    ) -> List[Dict[str, str]]:
+        def label2token(label: str) -> str:
+            return next(m.token for m in self.mapping if m.label == label)
+
+        return super()._reference_messages(
+            [(input, label2token(output)) for input, output in references]
+        )
 
     def _final_message(
         self, sample: str, global_context: str, local_context: str
