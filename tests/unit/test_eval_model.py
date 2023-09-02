@@ -1,4 +1,5 @@
 import pytest
+import warnings
 import litellm.gpt_cache
 
 import fastrepl
@@ -6,11 +7,13 @@ import fastrepl
 
 @pytest.fixture
 def mock_completion(monkeypatch):
-    def ret(return_value):
+    def ret(values):
+        iter_values = iter(values)
+
         def mock(*args, **kwargs):
             return {
                 "choices": [
-                    {"message": {"content": return_value}, "finish_reason": "stop"}
+                    {"message": {"content": next(iter_values)}, "finish_reason": "stop"}
                 ]
             }
 
@@ -19,49 +22,80 @@ def mock_completion(monkeypatch):
     return ret
 
 
-class TestLLMClassificationHead:
-    @pytest.mark.parametrize(
-        "return_value, labels",
-        [
-            (
-                "B",
-                {
-                    "A": "this is A",
-                    "B": "this is B",
-                    "C": "this is C",
-                },
-            )
-        ],
-    )
-    def test_return_result(self, mock_completion, return_value, labels):
-        mock_completion(return_value)
-
+class TestLLMClassificationHeadBasic:
+    def test_return_result(self, mock_completion):
         eval = fastrepl.LLMClassificationHead(
             context="test",
-            labels=labels,
+            labels={
+                "POSITIVE": "this is positive",
+                "NEGATIVE": "this is negative",
+            },
         )
-        assert eval.compute("") == return_value
 
-    @pytest.mark.parametrize(
-        "return_value, labels",
-        [
-            (
-                "D",
-                {
-                    "A": "this is A",
-                    "B": "this is B",
-                    "C": "this is C",
-                },
-            )
-        ],
-    )
-    def test_return_none(self, mock_completion, return_value, labels):
-        mock_completion(return_value)
+        mock_completion([eval.mapping[0].token])
+        assert eval.compute("") == eval.mapping[0].label
 
+    def test_return_none(self, mock_completion):
         eval = fastrepl.LLMClassificationHead(
             context="test",
-            labels=labels,
+            labels={
+                "POSITIVE": "this is positive",
+                "NEGATIVE": "this is negative",
+            },
         )
+
+        mock_completion(["D"])
+        assert eval.compute("") is None
+
+
+class TestClassificationHeadShuffle:
+    def test_basic(self):
+        pass
+
+
+class TestClassificationHeadConsensus:
+    def test_no_need_for_consensus(self, mock_completion):
+        eval = fastrepl.LLMClassificationHead(
+            context="test",
+            labels={"POSITIVE": "this is positive", "NEGATIVE": "this is negative"},
+            position_debias_strategy="consensus",
+        )
+
+        mock_completion([eval.mapping[-1].token])
+        assert eval.compute("") is not None
+
+    def test_triggered_twice(self, mock_completion):
+        eval = fastrepl.LLMClassificationHead(
+            context="test",
+            labels={"POSITIVE": "this is positive", "NEGATIVE": "this is negative"},
+            position_debias_strategy="consensus",
+        )
+
+        mock_completion([eval.mapping[0].token])
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            with pytest.raises(StopIteration):
+                eval.compute("")
+
+    def test_consensus_success(self, mock_completion):
+        eval = fastrepl.LLMClassificationHead(
+            context="test",
+            labels={"POSITIVE": "this is positive", "NEGATIVE": "this is negative"},
+            position_debias_strategy="consensus",
+        )
+
+        mock_completion([eval.mapping[0].token, eval.mapping[0].token])
+        assert eval.compute("") is not None
+
+    def test_consensus_failed(self, mock_completion):
+        eval = fastrepl.LLMClassificationHead(
+            context="test",
+            labels={"POSITIVE": "this is positive", "NEGATIVE": "this is negative"},
+            position_debias_strategy="consensus",
+        )
+
+        mock_completion([eval.mapping[0].token, eval.mapping[1].token])
         assert eval.compute("") is None
 
 
@@ -74,13 +108,13 @@ class TestLLMGradingHead:
         ],
     )
     def test_return_result(self, mock_completion, return_value, number_from, number_to):
-        mock_completion(return_value)
-
         eval = fastrepl.LLMGradingHead(
             context="test",
             number_from=number_from,
             number_to=number_to,
         )
+
+        mock_completion([return_value])
         assert eval.compute("") == return_value
 
     @pytest.mark.parametrize(
@@ -91,11 +125,11 @@ class TestLLMGradingHead:
         ],
     )
     def test_return_none(self, mock_completion, return_value, number_from, number_to):
-        mock_completion(return_value)
-
         eval = fastrepl.LLMGradingHead(
             context="test",
             number_from=number_from,
             number_to=number_to,
         )
+
+        mock_completion([return_value])
         assert eval.compute("") is None

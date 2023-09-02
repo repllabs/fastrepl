@@ -1,7 +1,7 @@
 import random
 import warnings
 from dataclasses import dataclass
-from typing import Optional, Literal, Iterable, List, Dict
+from typing import Optional, Union, Literal, Iterable, List, Dict
 from itertools import combinations
 
 import sys
@@ -55,15 +55,17 @@ PositionDebiasStrategy: TypeAlias = Literal["shuffle", "consensus"]
 
 
 def next_mappings_for_consensus(
-    mappings: List[LabelMapping], result: LabelMapping
+    mappings: List[LabelMapping], result: Union[LabelMapping, str]
 ) -> Optional[List[LabelMapping]]:
-    i = mappings.index(result)
+    token = result.token if isinstance(result, LabelMapping) else result
+    index = next(i for i, v in enumerate(mappings) if v.token == token)
+
     mid = len(mappings) // 2
-    if i >= mid:
+    if index >= mid:
         return None
 
     ret = mappings[:]
-    ret[i], ret[0] = ret[0], ret[i]
+    ret[index], ret[0] = ret[0], ret[index]
     ret.reverse()
     return ret
 

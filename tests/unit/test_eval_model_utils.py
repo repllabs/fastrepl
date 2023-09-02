@@ -104,11 +104,19 @@ class TestNextMappingsForConsensus:
             ),
             (
                 [
+                    LabelMapping("A", "POSITIVE", "Given text is positive."),
+                    LabelMapping("B", "NEGATIVE", "Given text is negative."),
+                ],
+                "B",
+                None,
+            ),
+            (
+                [
                     LabelMapping("A", "NEUTRAL", "Given text is neutral."),
                     LabelMapping("B", "POSITIVE", "Given text is positive."),
                     LabelMapping("C", "NEGATIVE", "Given text is negative."),
                 ],
-                LabelMapping("C", "NEGATIVE", "Given text is negative."),
+                "C",
                 None,
             ),
         ],
@@ -136,7 +144,7 @@ class TestNextMappingsForConsensus:
                     LabelMapping("B", "POSITIVE", "Given text is positive."),
                     LabelMapping("C", "NEGATIVE", "Given text is negative."),
                 ],
-                LabelMapping("A", "NEUTRAL", "Given text is neutral."),
+                "A",
                 [
                     LabelMapping("C", "NEGATIVE", "Given text is negative."),
                     LabelMapping("B", "POSITIVE", "Given text is positive."),
@@ -150,7 +158,7 @@ class TestNextMappingsForConsensus:
                     LabelMapping("C", "NEGATIVE", "Given text is negative."),
                     LabelMapping("D", "SOMETHING", "Given text is something."),
                 ],
-                LabelMapping("B", "POSITIVE", "Given text is positive."),
+                "B",
                 [
                     LabelMapping("D", "SOMETHING", "Given text is something."),
                     LabelMapping("C", "NEGATIVE", "Given text is negative."),
