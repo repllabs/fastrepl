@@ -12,7 +12,3 @@ class BaseEvalWithoutReference(ABC):
     @abstractmethod
     def compute(self, prediction: str, context: str) -> Union[None, int, str]:
         ...
-
-    @abstractmethod
-    def is_interactive(self) -> bool:
-        ...

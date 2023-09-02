@@ -18,6 +18,3 @@ class Evaluator:
             self.pipeline,
             initial_context,
         )
-
-    def is_interactive(self) -> bool:
-        return any(eval.is_interactive() for eval in self.pipeline)

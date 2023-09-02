@@ -110,6 +110,3 @@ class LLMClassifier(BaseEvalWithoutReference):
             return None
 
         return result1.label if result1.label == result2.label else None
-
-    def is_interactive(self) -> bool:
-        return False

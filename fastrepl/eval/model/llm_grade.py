@@ -5,11 +5,7 @@ from typing import Optional, Tuple, List
 from fastrepl.utils import prompt
 from fastrepl.llm import completion, SUPPORTED_MODELS
 from fastrepl.eval.base import BaseEvalWithoutReference
-
-from fastrepl.eval.model.utils import (
-    logit_bias_from,
-    LabelMapping,
-)
+from fastrepl.eval.model.utils import logit_bias_from
 
 
 @prompt
@@ -27,8 +23,6 @@ def final_message_prompt(sample, context=""):
 
 
 class LLMGrader(BaseEvalWithoutReference):
-    __slots__ = ("model", "mapping", "rg", "references", "system")
-
     def __init__(
         self,
         number_from: int,  # TODO: enable providing more info about number
@@ -82,6 +76,3 @@ class LLMGrader(BaseEvalWithoutReference):
         references = self.rg.sample(self.references, len(self.references))
 
         return self._compute(sample, context, references=references)
-
-    def is_interactive(self) -> bool:
-        return False
