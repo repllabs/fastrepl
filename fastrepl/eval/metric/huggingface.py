@@ -98,7 +98,7 @@ class HuggingfaceMetric(BaseEvalWithReference):
 
     def _validate(self, predictions: List[Any], references: List[Any]) -> None:
         if any(v is None for v in predictions):
-            warn(category=IncompletePredictionWarning)
+            warn(IncompletePredictionWarning)
         if any(v is None for v in references):
             raise NoneReferenceError
 

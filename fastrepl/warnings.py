@@ -20,7 +20,7 @@ def warning_formatter(message, category, filename, lineno, line=None):
 warnings.formatwarning = warning_formatter
 
 
-def warn(context="", category=Warning):
+def warn(category=Warning, context=""):
     warnings.warn(context, category)
 
 

@@ -81,7 +81,7 @@ def handle_llm_exception(e: Exception):
     ):
         raise e
     else:
-        warn(type(e), UnknownLLMExceptionWarning)
+        warn(UnknownLLMExceptionWarning, context=type(e))
         raise e
 
 
