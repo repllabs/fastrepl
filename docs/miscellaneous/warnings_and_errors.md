@@ -4,6 +4,16 @@
 
 ### VerbosityBias
 
+### IncompletePrediction
+
+### CompletionTruncated
+
+### UnknownLLMException
+
 ## Errors
 
-### Something
+### EmptyPipeline
+
+### NoneReference
+
+### TokenizeNotImplemented

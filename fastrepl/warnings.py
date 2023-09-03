@@ -20,8 +20,8 @@ def warning_formatter(message, category, filename, lineno, line=None):
 warnings.formatwarning = warning_formatter
 
 
-def warn(message="", category=Warning):
-    warnings.warn(message, category)
+def warn(context="", category=Warning):
+    warnings.warn(context, category)
 
 
 class Warning(UserWarning):
@@ -34,13 +34,27 @@ class Warning(UserWarning):
         raise NotImplementedError
 
 
-class VerbosityBias(Warning):
+class VerbosityBiasWarning(Warning):
     @staticmethod
     def doc_url() -> str:
-        return "https://docs.fastrepl.com"
+        return (
+            "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#verbositybias"
+        )
 
 
-class IncompletePrediction(Warning):
+class IncompletePredictionWarning(Warning):
     @staticmethod
     def doc_url() -> str:
-        return "https://docs.fastrepl.com"
+        return "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#incompleteprediction"
+
+
+class CompletionTruncatedWarning(Warning):
+    @staticmethod
+    def doc_url() -> str:
+        return "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#completiontruncated"
+
+
+class UnknownLLMExceptionWarning(Warning):
+    @staticmethod
+    def doc_url() -> str:
+        return "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#unknownllmexception"

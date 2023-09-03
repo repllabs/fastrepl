@@ -8,7 +8,7 @@ from fastrepl.utils import prompt
 from fastrepl.llm import completion, SUPPORTED_MODELS
 from fastrepl.eval.base import BaseEvalWithoutReference
 
-from fastrepl.warnings import warn, VerbosityBias
+from fastrepl.warnings import warn, VerbosityBiasWarning
 from fastrepl.eval.model.utils import (
     logit_bias_from,
     mappings_from_labels,
@@ -88,7 +88,7 @@ class LLMClassificationHead(LLMEvaluationHead):
         **kwargs: Unpack[LLMEvaluationHeadParams],
     ) -> None:
         if check_length_inbalance(labels.values()):
-            warn(VerbosityBias)
+            warn(VerbosityBiasWarning)
 
         self.labels = labels
         self.mapping = mappings_from_labels(labels)

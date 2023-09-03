@@ -27,9 +27,18 @@ class EmptyGraphError(Error):
 
 class EmptyPipelineError(Error):
     def doc_url(self) -> str:
-        return "https://docs.fastrepl.com"
+        return (
+            "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#emptypipeline"
+        )
 
 
 class NoneReferenceError(Error):
     def doc_url(self) -> str:
-        return "https://docs.fastrepl.com"
+        return (
+            "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#nonereference"
+        )
+
+
+class TokenizeNotImplementedError(Error, NotImplementedError):
+    def doc_url(self) -> str:
+        return "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#tokenizenotimplemented"

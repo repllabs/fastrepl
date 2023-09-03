@@ -2,7 +2,7 @@ from typing import List, Any, Literal, get_args
 
 import evaluate
 
-from fastrepl.warnings import warn, IncompletePrediction
+from fastrepl.warnings import warn, IncompletePredictionWarning
 from fastrepl.errors import NoneReferenceError
 from fastrepl.eval.base import BaseEvalWithReference
 
@@ -98,7 +98,7 @@ class HuggingfaceMetric(BaseEvalWithReference):
 
     def _validate(self, predictions: List[Any], references: List[Any]) -> None:
         if any(v is None for v in predictions):
-            warn(category=IncompletePrediction)
+            warn(category=IncompletePredictionWarning)
         if any(v is None for v in references):
             raise NoneReferenceError
 
