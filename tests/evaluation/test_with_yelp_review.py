@@ -132,7 +132,7 @@ def test_llm_classification_head_cot(dataset, model):
 
     assert accuracy > 0.1
     assert mse < 5
-    assert mae < 5
+    assert mae < 3
 
 
 @pytest.mark.parametrize(
