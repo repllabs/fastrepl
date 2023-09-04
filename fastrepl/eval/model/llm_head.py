@@ -10,7 +10,7 @@ from fastrepl.utils import prompt
 from fastrepl.llm import completion, SUPPORTED_MODELS
 from fastrepl.eval.base import BaseEvalWithoutReference
 
-from fastrepl.warnings import warn, VerbosityBiasWarning
+from fastrepl.warnings import warn, VerbosityBiasWarning, InvalidPredictionWarning
 from fastrepl.eval.model.utils import (
     logit_bias_from,
     mappings_from_labels,
@@ -74,7 +74,7 @@ class LLMEvaluationHead(BaseEvalWithoutReference):
         return [system_message, *reference_messages, final_message]
 
     def compute(self, sample: str, context: Optional[str] = None) -> Optional[str]:
-        result = completion(
+        prediction = completion(
             model=self.model,
             messages=self.messages(sample, context),
             max_tokens=1,  # NOTE: when using logit_bias for classification, max_tokens should be 1
@@ -82,7 +82,14 @@ class LLMEvaluationHead(BaseEvalWithoutReference):
         )["choices"][0]["message"]["content"]
 
         # NOTE: Some LLM provider does not have logit_bias option
-        return result if result in self.options else None
+        if prediction not in self.options:
+            warn(
+                InvalidPredictionWarning,
+                context=f"{prediction!r} not in {self.options}.",
+            )
+            return None
+
+        return prediction
 
 
 class LLMClassificationHead(LLMEvaluationHead):

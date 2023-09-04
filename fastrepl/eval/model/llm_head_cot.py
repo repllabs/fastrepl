@@ -13,7 +13,7 @@ class LLMClassificationHeadCOT(LLMClassificationHead):
         @prompt
         def p(context):
             """You are master of classification who can classify any text according to the user's instructions.
-            When user give you the text to classify, you do step-by-step thinking within 5 sentences and give a final result.
+            When user give you the text to classify, you do step-by-step thinking within 3 sentences and give a final result.
 
             When doing step-by-step thinking, you must consider the following:
             {{context}}
@@ -46,7 +46,7 @@ class LLMClassificationHeadCOT(LLMClassificationHead):
         )["choices"][0]["message"]["content"]
         # fmt: on
 
-        prediction = result[-1]
+        prediction = result.split("### Result")[-1].strip()
 
         if prediction not in self.options:
             warn(
@@ -98,7 +98,7 @@ class LLMGradingHeadCOT(LLMGradingHead):
         )["choices"][0]["message"]["content"]
         # fmt: on
 
-        prediction = result[-1]
+        prediction = result.split("### Result")[-1].strip()
 
         if prediction not in self.options:
             warn(
