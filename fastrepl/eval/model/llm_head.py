@@ -8,7 +8,7 @@ from typing_extensions import Unpack, NotRequired
 
 from fastrepl.utils import prompt
 from fastrepl.llm import completion, SUPPORTED_MODELS
-from fastrepl.eval.base import BaseEvalWithoutReference
+from fastrepl.eval.base import BaseEvalNode
 
 from fastrepl.warnings import warn, VerbosityBiasWarning, InvalidPredictionWarning
 from fastrepl.eval.model.utils import (
@@ -28,7 +28,7 @@ class LLMEvaluationHeadParams(TypedDict):
     references: NotRequired[List[Tuple[str, str]]]
 
 
-class LLMEvaluationHead(BaseEvalWithoutReference):
+class LLMEvaluationHead(BaseEvalNode):
     def __init__(self, **kwargs: Unpack[LLMEvaluationHeadParams]) -> None:
         self.global_context = kwargs["context"]
         self.options = kwargs["options"]
@@ -81,7 +81,11 @@ class LLMEvaluationHead(BaseEvalWithoutReference):
             logit_bias=logit_bias_from(self.model, [str(i) for i in self.options]),
         )["choices"][0]["message"]["content"]
 
-        # NOTE: Some LLM provider does not have logit_bias option
+        # We can get 'A' instead of 'A', which is still a single token.
+        prediction = prediction.strip()
+
+        # NOTE: Some LLM provider does not have logit_bias option.
+        # Also, for Cohere, max logit_bias value(=10) is not enough to force the model.
         if prediction not in self.options:
             warn(
                 InvalidPredictionWarning,

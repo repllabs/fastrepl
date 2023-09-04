@@ -16,7 +16,7 @@ class LLMClassificationHeadCOT(LLMClassificationHead):
             When user give you the text to classify, you do step-by-step thinking within 3 sentences and give a final result.
 
             When doing step-by-step thinking, you must consider the following:
-            {{context}}
+            {{ context }}
 
             Your response must strictly follow this format:
             ### Thoughts
@@ -68,7 +68,7 @@ class LLMGradingHeadCOT(LLMGradingHead):
             When user give you the text to grade, you do step-by-step thinking within 5 sentences and give a final result.
 
             When doing step-by-step thinking, you must consider the following:
-            {{context}}
+            {{ context }}
 
             Your response must strictly follow this format:
             ### Thoughts
