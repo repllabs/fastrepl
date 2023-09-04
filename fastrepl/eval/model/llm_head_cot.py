@@ -38,7 +38,7 @@ class LLMClassificationHeadCOT(LLMClassificationHead):
 
         return {"role": "user", "content": p(sample, local_context)}
 
-    def compute(self, sample: str, context: Optional[str] = None) -> str | None:
+    def compute(self, sample: str, context: Optional[str] = None) -> Optional[str]:
         # fmt: off
         result = completion(
             model=self.model,
@@ -46,7 +46,16 @@ class LLMClassificationHeadCOT(LLMClassificationHead):
         )["choices"][0]["message"]["content"]
         # fmt: on
 
-        return result if result in self.options else None
+        prediction = result[-1]
+
+        if prediction not in self.options:
+            warn(
+                InvalidPredictionWarning,
+                context=f"{prediction!r} not in {self.options}. full: {result}",
+            )
+            return None
+
+        return prediction
 
 
 class LLMGradingHeadCOT(LLMGradingHead):
@@ -81,7 +90,7 @@ class LLMGradingHeadCOT(LLMGradingHead):
 
         return {"role": "user", "content": p(sample, local_context)}
 
-    def compute(self, sample: str, context: Optional[str] = None) -> str | None:
+    def compute(self, sample: str, context: Optional[str] = None) -> Optional[str]:
         # fmt: off
         result = completion(
             model=self.model,
