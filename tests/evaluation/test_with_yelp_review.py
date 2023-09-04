@@ -76,8 +76,8 @@ def test_llm_classification_head(dataset, model):
     result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()
     result = result.map(label2number)
 
-    for i, (p, r) in enumerate(zip(result["prediction"], result["reference"])):
-        baserun.evals.match(f"{i}th", str(p), str(r))
+    for p, r in zip(result["prediction"], result["reference"]):
+        baserun.evals.match(eval_name("LLMClassificationHead", model), str(p), str(r))
 
     accuracy, mse, mae = (
         fastrepl.load_metric(name).compute(
@@ -87,10 +87,7 @@ def test_llm_classification_head(dataset, model):
         for name in ("accuracy", "mse", "mae")
     )
 
-    baserun.log(
-        eval_name("LLMClassificationHead", model),
-        {"accuracy": accuracy, "mse": mse, "mae": mae},
-    )
+    baserun.log("metrics", {"accuracy": accuracy, "mse": mse, "mae": mae})
 
     assert accuracy > 0.1
     assert mse < 5
@@ -118,8 +115,10 @@ def test_llm_classification_head_cot(dataset, model):
     result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()
     result = result.map(label2number)
 
-    for i, (p, r) in enumerate(zip(result["prediction"], result["reference"])):
-        baserun.evals.match(f"{i}th", str(p), str(r))
+    for p, r in zip(result["prediction"], result["reference"]):
+        baserun.evals.match(
+            eval_name("LLMClassificationHeadCOT", model), str(p), str(r)
+        )
 
     accuracy, mse, mae = (
         fastrepl.load_metric(name).compute(
@@ -129,10 +128,7 @@ def test_llm_classification_head_cot(dataset, model):
         for name in ("accuracy", "mse", "mae")
     )
 
-    baserun.log(
-        eval_name("LLMClassificationHeadCOT", model),
-        {"accuracy": accuracy, "mse": mse, "mae": mae},
-    )
+    baserun.log("metrics", {"accuracy": accuracy, "mse": mse, "mae": mae})
 
     assert accuracy > 0.1
     assert mse < 5
@@ -161,8 +157,8 @@ def test_llm_grading_head(dataset, model):
     result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()
     result = result.map(grade2number)
 
-    for i, (p, r) in enumerate(zip(result["prediction"], result["reference"])):
-        baserun.evals.match(f"{i}th", str(p), str(r))
+    for p, r in zip(result["prediction"], result["reference"]):
+        baserun.evals.match(eval_name("LLMGradingHead", model), str(p), str(r))
 
     accuracy, mse, mae = (
         fastrepl.load_metric(name).compute(
@@ -172,10 +168,7 @@ def test_llm_grading_head(dataset, model):
         for name in ("accuracy", "mse", "mae")
     )
 
-    baserun.log(
-        eval_name("LLMGradingHead", model),
-        {"accuracy": accuracy, "mse": mse, "mae": mae},
-    )
+    baserun.log("metrics", {"accuracy": accuracy, "mse": mse, "mae": mae})
 
     assert accuracy > 0.1
     assert mse < 5
@@ -204,8 +197,8 @@ def test_grading_head_cot(dataset, model):
     result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()
     result = result.map(grade2number)
 
-    for i, (p, r) in enumerate(zip(result["prediction"], result["reference"])):
-        baserun.evals.match(f"{i}th", str(p), str(r))
+    for p, r in zip(result["prediction"], result["reference"]):
+        baserun.evals.match(eval_name("LLMGradingHeadCOT", model), str(p), str(r))
 
     accuracy, mse, mae = (
         fastrepl.load_metric(name).compute(
@@ -215,10 +208,7 @@ def test_grading_head_cot(dataset, model):
         for name in ("accuracy", "mse", "mae")
     )
 
-    baserun.log(
-        eval_name("LLMGradingHeadCOT", model),
-        {"accuracy": accuracy, "mse": mse, "mae": mae},
-    )
+    baserun.log("metrics", {"accuracy": accuracy, "mse": mse, "mae": mae})
 
     assert accuracy > 0.1
     assert mse < 5
