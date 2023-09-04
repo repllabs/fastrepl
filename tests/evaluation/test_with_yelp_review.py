@@ -56,19 +56,20 @@ def dataset() -> Dataset:
 
 
 @pytest.mark.parametrize(
-    "model",
+    "model, position_debias_strategy",
     [
-        ("gpt-3.5-turbo"),
+        ("gpt-3.5-turbo", "shuffle"),
     ],
 )
 @pytest.mark.fastrepl
-def test_llm_classification_head(dataset, model):
+def test_llm_classification_head(dataset, model, position_debias_strategy):
     eval = fastrepl.Evaluator(
         pipeline=[
             fastrepl.LLMClassificationHead(
                 model=model,
                 context="You will get a input text from Yelp review. Classify it using the labels.",
                 labels=labels,
+                position_debias_strategy=position_debias_strategy,
             )
         ]
     )
@@ -95,19 +96,20 @@ def test_llm_classification_head(dataset, model):
 
 
 @pytest.mark.parametrize(
-    "model",
+    "model, position_debias_strategy",
     [
-        ("gpt-3.5-turbo"),
+        ("gpt-3.5-turbo", "shuffle"),
     ],
 )
 @pytest.mark.fastrepl
-def test_llm_classification_head_cot(dataset, model):
+def test_llm_classification_head_cot(dataset, model, position_debias_strategy):
     eval = fastrepl.Evaluator(
         pipeline=[
             fastrepl.LLMClassificationHeadCOT(
                 model=model,
                 context="You will get a input text from Yelp review. Classify it using the labels.",
                 labels=labels,
+                position_debias_strategy=position_debias_strategy,
             )
         ]
     )
