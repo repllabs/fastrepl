@@ -208,6 +208,7 @@ class LLMGradingHead(LLMEvaluationHead):
         number_to: int,
         **kwargs: Unpack[LLMEvaluationHeadParams],
     ) -> None:
+        self.number_from, self.number_to = number_from, number_to
         kwargs.update({"options": [str(i) for i in range(number_from, number_to + 1)]})
         super().__init__(**kwargs)
 
@@ -234,8 +235,15 @@ class LLMGradingHead(LLMEvaluationHead):
         return {"role": "user", "content": p(sample, local_context)}
 
     def compute(self, sample: str, context: Optional[str] = None) -> Optional[str]:
-        result = number(super().compute(sample, context))
+        result = number(self.completion(sample, context))
         if result is None:
+            return None
+
+        if result < self.number_from or result > self.number_to:
+            warn(
+                InvalidPredictionWarning,
+                context=f"{result!r} is not in range [{self.number_from}, {self.number_to}].",
+            )
             return None
 
         if type(result) is float:

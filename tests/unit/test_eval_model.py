@@ -121,9 +121,30 @@ class TestLLMGradingHead:
     @pytest.mark.parametrize(
         "return_value, number_from, number_to",
         [
+            ("1.1", 1, 3),
+            ("2.2", 1, 3),
+        ],
+    )
+    def test_return_result_with_warnings(
+        self, mock_completion, return_value, number_from, number_to
+    ):
+        eval = fastrepl.LLMGradingHead(
+            context="test",
+            number_from=number_from,
+            number_to=number_to,
+        )
+
+        mock_completion([return_value])
+
+        with pytest.warns():
+            assert eval.compute("") == return_value
+
+    @pytest.mark.parametrize(
+        "return_value, number_from, number_to",
+        [
+            ("-1", 1, 3),
             ("0", 1, 3),
             ("6", 1, 5),
-            ("1.1", 1, 3),
             ("4.1", 1, 3),
         ],
     )
