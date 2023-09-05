@@ -53,6 +53,7 @@ def mappings_from_labels(
 PositionDebiasStrategy: TypeAlias = Literal["shuffle", "consensus"]
 
 
+# TODO: we can not be sure that every LLM has bias toward the first
 def next_mappings_for_consensus(
     mappings: List[LabelMapping], result: Union[LabelMapping, str]
 ) -> Optional[List[LabelMapping]]:
