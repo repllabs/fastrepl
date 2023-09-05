@@ -189,7 +189,7 @@ def test_grading_head_cot(dataset, model):
         pipeline=[
             fastrepl.LLMGradingHeadCOT(
                 model=model,
-                context="You will get a input text from Yelp review. Grade user's satisfaction from 1 to 5.",
+                context="You will get a input text from Yelp review. Grade user's satisfaction in integer from 1 to 5.",
                 number_from=1,
                 number_to=5,
             )

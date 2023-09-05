@@ -273,6 +273,7 @@ def test_truncate():
         ("61", 61),
         ("61a ", None),
         ("one", None),
+        (None, None),
     ],
 )
 def test_number(input, expected):
