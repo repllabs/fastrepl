@@ -267,6 +267,8 @@ def test_truncate():
 @pytest.mark.parametrize(
     "input, expected",
     [
+        (1, 1),
+        (1.1, 1.1),
         ("1", 1),
         ("1 ", 1),
         ("1.1", 1.1),

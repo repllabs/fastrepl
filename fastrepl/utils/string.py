@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 
 def truncate(text: str, max: int) -> str:
@@ -11,8 +11,15 @@ def truncate(text: str, max: int) -> str:
     return text[: max - 3] + "..."
 
 
-def number(s: str) -> Optional[Union[int, float]]:
+def number(s: Any) -> Optional[Union[int, float]]:
+    if isinstance(s, int) or isinstance(s, float):
+        return s
+
+    if not isinstance(s, str):
+        return None
+
     s = s.strip()
+
     try:
         return int(s)
     except ValueError:
