@@ -18,6 +18,8 @@
 
 ### EmptyPipeline
 
+### EmptyPredictions
+
 ### NoneReference
 
 ### TokenizeNotImplemented
