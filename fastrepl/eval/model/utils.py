@@ -61,7 +61,7 @@ def next_mappings_for_consensus(
     index = next(i for i, v in enumerate(mappings) if v.token == token)
 
     mid = len(mappings) // 2
-    if index >= mid:
+    if index == mid:
         return None
 
     ret = mappings[:]
