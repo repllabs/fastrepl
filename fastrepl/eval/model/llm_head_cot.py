@@ -55,8 +55,9 @@ class LLMClassificationHeadCOT(LLMClassificationHead):
 
         # TODO
         for m in self.mapping:
-            if prediction.startswith(f"{m.token}:"):
-                return m.token
+            for delimiter in [":", "\n"]:
+                if prediction.startswith(f"{m.token}{delimiter}"):
+                    return m.token
 
         return prediction
 
