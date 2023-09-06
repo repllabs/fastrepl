@@ -1,7 +1,7 @@
 from typing import Literal, List, Dict, Any
 import os
 import functools
-import warnings
+import traceback
 
 import backoff
 import openai.error
@@ -81,7 +81,9 @@ def handle_llm_exception(e: Exception):
     ):
         raise e
     else:
-        warn(UnknownLLMExceptionWarning, context=str(type(e)))
+        name = type(e).__name__
+        trace = traceback.format_exc()
+        warn(UnknownLLMExceptionWarning, context=f"{name}: {trace}")
         raise e
 
 
