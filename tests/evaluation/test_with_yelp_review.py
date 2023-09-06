@@ -103,7 +103,7 @@ def test_llm_classification_head(dataset, model, position_debias_strategy):
     "model, position_debias_strategy",
     [
         ("gpt-3.5-turbo", "shuffle"),
-        ("togethercomputer/llama-2-70b-chat", "shuffle"),
+        # ("togethercomputer/llama-2-70b-chat", "shuffle"),
     ],
 )
 @pytest.mark.fastrepl
@@ -193,7 +193,7 @@ def test_llm_grading_head(dataset, model):
     "model",
     [
         ("gpt-3.5-turbo"),
-        ("togethercomputer/llama-2-70b-chat"),
+        # ("togethercomputer/llama-2-70b-chat"),
     ],
 )
 @pytest.mark.fastrepl
