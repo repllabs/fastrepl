@@ -21,7 +21,7 @@ No. **FastREPL** is only for evaluation and testing.
    :caption: Getting Started
    :hidden:
 
-   getting_started/quickstart.md
+   getting_started/quickstart.ipynb
    getting_started/design_goals.md
    getting_started/concepts.md
    getting_started/model_graded_eval.md
