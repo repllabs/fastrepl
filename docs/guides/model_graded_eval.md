@@ -8,6 +8,8 @@ There are some metric like [`rouge`](https://huggingface.co/spaces/evaluate-metr
 
 See `Figure 2: Human Evaluation Scores` in [Large language models on wikipedia-style survey generation](https://arxiv.org/pdf/2308.10410.pdf).
 
+https://openai.com/blog/using-gpt-4-for-content-moderation
+
 ## TODO
 [Style Over Substance: Evaluation Biases for Large Language Models](https://arxiv.org/abs/2307.03025)
 
