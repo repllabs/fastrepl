@@ -23,8 +23,8 @@ No. **FastREPL** is only for evaluation and testing.
 
    getting_started/quickstart.ipynb
    getting_started/design_goals.md
-   getting_started/concepts.md
    getting_started/env.md
+   .. getting_started/concepts.md
 
 .. toctree::
    :maxdepth: 1
@@ -33,7 +33,7 @@ No. **FastREPL** is only for evaluation and testing.
 
    guides/model_graded_eval.md
    guides/meta_eval.md
-   guides/human_eval.md
+   guides/human_eval.ipynb
    guides/dealing_with_bias.md
    guides/argilla.md
    
