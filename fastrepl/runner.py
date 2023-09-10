@@ -6,7 +6,8 @@ from datasets import Dataset
 from rich.progress import Progress
 
 import fastrepl
-from fastrepl.utils import getenv
+from fastrepl.utils import getenv, kappa
+from fastrepl.warnings import warn, InconsistentPredictionWarning
 
 NUM_THREADS = getenv("NUM_THREADS", 8)
 
@@ -58,8 +59,16 @@ class LocalRunner(BaseRunner):
     def run(self, num=1) -> Union[Dataset, List[Dataset]]:
         if num == 1:
             return self._run(self._output_feature)
+        elif num == 2:
+            ret = [self._run(f"{self._output_feature}_{i}") for i in [0, 1]]
+
+            value = kappa(ret[0], ret[1])
+            if value < 0.4:
+                warn(InconsistentPredictionWarning, context=value)
+
+            return ret
         else:
-            return [f"{self._output_feature}_{i}" for i in range(num)]
+            raise NotImplementedError
 
 
 class LocalRunnerREPL(LocalRunner):

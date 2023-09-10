@@ -37,6 +37,22 @@ class TestFleissKappa:
         ([[1, 2, 3], [3, 2, 3]], 0.499),
         ([[1, 2, 3], [3, 2, 1]], 0),
         ([[1, 2, 3, 4], [4, 3, 2, 1]], -0.333),
+        ([["POSITIVE", "NEGATIVE"], ["NEGATIVE", "POSITIVE"]], -1.0),
+        ([["POSITIVE", "NEGATIVE"], ["POSITIVE", "NEGATIVE"]], 1.0),
+        (
+            [
+                ["POSITIVE", "NEGATIVE", "NEGATIVE"],
+                ["POSITIVE", "POSITIVE", "NEGATIVE"],
+            ],
+            0.399,
+        ),
+        (
+            [
+                ["A", "B", "C"],
+                ["A", "B", "B"],
+            ],
+            0.499,
+        ),
     ],
 )
 def test_kappa(predictions, result):
