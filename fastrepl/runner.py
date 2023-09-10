@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Union, List, overload
 
 from multiprocessing.pool import ThreadPool
 from datasets import Dataset
@@ -33,7 +33,7 @@ class LocalRunner(BaseRunner):
     def _run_eval(self, sample: str) -> Optional[str]:
         return self._evaluator.run(sample)
 
-    def run(self) -> Dataset:
+    def _run(self, output_feature) -> Dataset:
         results = []
         with Progress() as progress:
             task = progress.add_task("[cyan]Processing...", total=len(self._dataset))
@@ -45,7 +45,21 @@ class LocalRunner(BaseRunner):
                     results.append(result)
                     progress.update(task, advance=1, refresh=True)
 
-        return self._dataset.add_column(self._output_feature, results)
+        return self._dataset.add_column(output_feature, results)
+
+    @overload
+    def run(self, num: int) -> List[Dataset]:
+        pass
+
+    @overload
+    def run(self) -> Dataset:
+        pass
+
+    def run(self, num=1) -> Union[Dataset, List[Dataset]]:
+        if num == 1:
+            return self._run(self._output_feature)
+        else:
+            return [f"{self._output_feature}_{i}" for i in range(num)]
 
 
 class LocalRunnerREPL(LocalRunner):
