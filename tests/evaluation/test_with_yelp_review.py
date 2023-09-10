@@ -80,8 +80,8 @@ def test_llm_classification_head(
 
     # fmt: off
     accuracy = fastrepl.load_metric("accuracy").compute(predictions, references)["accuracy"]
-    mse = fastrepl.load_metric("accuracy").compute(predictions, references)["mse"]
-    mae = fastrepl.load_metric("accuracy").compute(predictions, references)["mae"]
+    mse = fastrepl.load_metric("mse").compute(predictions, references)["mse"]
+    mae = fastrepl.load_metric("mae").compute(predictions, references)["mae"]
     # fmt: on
 
     report.add(
@@ -127,8 +127,8 @@ def test_llm_classification_head_cot(
 
     # fmt: off
     accuracy = fastrepl.load_metric("accuracy").compute(predictions, references)["accuracy"]
-    mse = fastrepl.load_metric("accuracy").compute(predictions, references)["mse"]
-    mae = fastrepl.load_metric("accuracy").compute(predictions, references)["mae"]
+    mse = fastrepl.load_metric("mse").compute(predictions, references)["mse"]
+    mae = fastrepl.load_metric("mae").compute(predictions, references)["mae"]
     # fmt: on
 
     report.add(
@@ -183,8 +183,8 @@ def test_llm_grading_head(dataset, model, references, report: fastrepl.TestRepor
 
     # fmt: off
     accuracy = fastrepl.load_metric("accuracy").compute(predictions, references)["accuracy"]
-    mse = fastrepl.load_metric("accuracy").compute(predictions, references)["mse"]
-    mae = fastrepl.load_metric("accuracy").compute(predictions, references)["mae"]
+    mse = fastrepl.load_metric("mse").compute(predictions, references)["mse"]
+    mae = fastrepl.load_metric("mae").compute(predictions, references)["mae"]
     # fmt: on
 
     report.add(
@@ -228,8 +228,8 @@ def test_grading_head_cot(dataset, model, report: fastrepl.TestReport):
 
     # fmt: off
     accuracy = fastrepl.load_metric("accuracy").compute(predictions, references)["accuracy"]
-    mse = fastrepl.load_metric("accuracy").compute(predictions, references)["mse"]
-    mae = fastrepl.load_metric("accuracy").compute(predictions, references)["mae"]
+    mse = fastrepl.load_metric("mse").compute(predictions, references)["mse"]
+    mae = fastrepl.load_metric("mae").compute(predictions, references)["mae"]
     # fmt: on
 
     report.add(
