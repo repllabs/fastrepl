@@ -134,6 +134,9 @@ def completion(
     def _completion(fallback=None):
         try:
             maybe_fallback = fallback if fallback is not None else model
+            custom_llm_provider = (
+                "openai" if getenv("LITELLM_PROXY_API_BASE", "") != "" else None
+            )
 
             result = litellm.gpt_cache.completion(  # pragma: no cover
                 model=maybe_fallback,
@@ -142,7 +145,7 @@ def completion(
                 logit_bias=logit_bias,
                 max_tokens=max_tokens,
                 force_timeout=20,
-                custom_llm_provider="openai",
+                custom_llm_provider=custom_llm_provider,
             )
 
             content = result["choices"][0]["message"]["content"]
