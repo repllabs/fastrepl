@@ -33,6 +33,8 @@ class TestFleissKappa:
 @pytest.mark.parametrize(
     "predictions, result",
     [
+        ([[1, None], [1, 2]], 0.333),
+        ([[1, None], [1, None]], 1),
         ([[1, 2], [1, 2]], 1.0),
         ([[1, 2, 3], [3, 2, 3]], 0.499),
         ([[1, 2, 3], [3, 2, 1]], 0),
