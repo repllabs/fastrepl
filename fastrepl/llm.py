@@ -123,7 +123,7 @@ def completion(
         try:
             maybe_fallback = fallback if fallback is not None else model
 
-            result = litellm.gpt_cache.completion(  # pragma: no cover
+            result = litellm.completion(  # pragma: no cover
                 model=maybe_fallback,
                 messages=messages,
                 temperature=temperature,

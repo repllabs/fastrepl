@@ -1,6 +1,3 @@
-import fastrepl.cache as cache
-from fastrepl.cache import LLMCache
-
 from fastrepl.eval import (
     load_metric,
     LLMChainOfThought,

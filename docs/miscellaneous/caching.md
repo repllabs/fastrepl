@@ -1,11 +1,3 @@
 # Caching
 
-- We have disk-based, exact matching caching enabled through `litellm`'s `GPTCache` integration.
-```python
-import fastrepl
-
-fastrepl.LLMCache.enable()
-# fastrepl.LLMCache.disable()
-```
-
-- We will add more caching options including remote caching in the future.
+We have in-memory caching. `model`, `messages`, `temperature` and `logit_bias` are used as a key.

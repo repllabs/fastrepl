@@ -1,6 +1,6 @@
 import pytest
 import warnings
-import litellm.gpt_cache
+import litellm
 
 import fastrepl
 
@@ -17,7 +17,7 @@ def mock_completion(monkeypatch):
                 ]
             }
 
-        monkeypatch.setattr(litellm.gpt_cache, "completion", mock)
+        monkeypatch.setattr(litellm, "completion", mock)
 
     return ret
 
