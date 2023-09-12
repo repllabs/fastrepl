@@ -40,7 +40,7 @@ def pytest_sessionstart(session: pytest.Session):
 
         # NOTE: This will be provided in Github App
         api_base = getenv("LITELLM_PROXY_API_BASE", "")
-        if api_base != "":
+        if api_base != "":  # pragma: no cover
             litellm.api_base = api_base
             litellm.headers = {"Authorization": getenv("LITELLM_PROXY_API_KEY", "")}
 
