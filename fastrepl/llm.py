@@ -1,12 +1,10 @@
 from typing import Literal, List, Dict, Any
-import os
 import functools
 import traceback
 
 import backoff
 import openai.error
 
-import fastrepl
 from fastrepl.warnings import (
     warn,
     CompletionTruncatedWarning,
@@ -15,36 +13,26 @@ from fastrepl.warnings import (
 from fastrepl.errors import TokenizeNotImplementedError
 from fastrepl.utils import getenv, debug
 
-from gptcache import cache
-from gptcache.processor.pre import last_content_without_prompt
-from gptcache.manager import get_data_manager
-
-
-def cache_enable_func(*args, **kwargs):
-    return fastrepl.LLMCache.enabled()
-
-
-def pre_cache_func(data: Dict[str, Any], **params: Dict[str, Any]) -> Any:
-    last_content_without_prompt_val = last_content_without_prompt(data, **params)
-    cache_key = last_content_without_prompt_val + data["model"]
-    return cache_key
-
-
-dir_name, _ = os.path.split(os.path.abspath(__file__))
-cache.init(
-    cache_enable_func=cache_enable_func,
-    pre_func=pre_cache_func,
-    data_manager=get_data_manager(
-        data_path=f"{dir_name}/.fastrepl.cache", max_size=1000
-    ),
-)
 
 import litellm
 import litellm.exceptions
-import litellm.gpt_cache
 from litellm import ModelResponse
+from litellm.caching import Cache
+
+
+def custom_get_cache_key(*args, **kwargs):  # pragma: no cover
+    model = str(kwargs.get("model", ""))
+    messages = str(kwargs.get("messages", ""))
+    temperature = str(kwargs.get("temperature", ""))
+    logit_bias = str(kwargs.get("logit_bias", ""))
+
+    key = f"{model}/{messages}/{temperature}/{logit_bias}"
+    return key
+
 
 litellm.telemetry = False  # pragma: no cover
+litellm.cache = Cache()  # pragma: no cover
+litellm.cache.get_cache_key = custom_get_cache_key  # pragma: no cover
 
 
 class RetryConstantException(Exception):
