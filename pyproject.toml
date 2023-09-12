@@ -4,6 +4,7 @@ version = "0.0.4"
 description = "Fast Run-Eval-Polish Loop for LLM App"
 authors = ["yujonglee <yujonglee.dev@gmail.com>"]
 readme = "README.md"
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
