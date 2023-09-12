@@ -1,7 +1,6 @@
 import pytest
 import openai.error
 import litellm
-import litellm.gpt_cache
 
 
 from fastrepl.llm import (
@@ -64,7 +63,7 @@ class TestContextFallback:
             else:
                 raise NotImplementedError
 
-        monkeypatch.setattr(litellm.gpt_cache, "completion", mock)
+        monkeypatch.setattr(litellm, "completion", mock)
 
         completion(
             model="gpt-3.5-turbo",
@@ -80,7 +79,7 @@ class TestContextFallback:
             else:
                 raise NotImplementedError
 
-        monkeypatch.setattr(litellm.gpt_cache, "completion", mock)
+        monkeypatch.setattr(litellm, "completion", mock)
 
         with pytest.raises(litellm.exceptions.ContextWindowExceededError):
             completion(
