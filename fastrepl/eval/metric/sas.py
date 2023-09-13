@@ -1,9 +1,12 @@
 from typing import Tuple, Literal, TypedDict, List
 
-import numpy as np
+import lazy_import
+
+transformers = lazy_import.lazy_module("transformers")
+sbert = lazy_import.lazy_module("sentence_transformers")
+np = lazy_import.lazy_module("numpy")
+
 from sklearn.metrics.pairwise import cosine_similarity
-from sentence_transformers import CrossEncoder, SentenceTransformer
-from transformers import AutoConfig
 
 from fastrepl.eval.base import BaseMetaEvalNode
 
@@ -22,7 +25,7 @@ class SemanticAnswerSimilarityMetric(BaseMetaEvalNode):
     __slot__ = ("model", "is_cross_encoder")
 
     def __init__(self, model_name_or_path: str, use_gpu=False):
-        config = AutoConfig.from_pretrained(model_name_or_path)
+        config = transformers.AutoConfig.from_pretrained(model_name_or_path)
         if config.architectures is not None:
             self.is_cross_encoder = any(
                 arch.endswith("ForSequenceClassification")
@@ -34,9 +37,9 @@ class SemanticAnswerSimilarityMetric(BaseMetaEvalNode):
 
     def _load_model(self, model_name_or_path: str, device):
         if self.is_cross_encoder:
-            return CrossEncoder(model_name_or_path, device=device)
+            return sbert.CrossEncoder(model_name_or_path, device=device)
         else:
-            return SentenceTransformer(model_name_or_path, device=device)
+            return sbert.SentenceTransformer(model_name_or_path, device=device)
 
     def compute(
         self, predictions: List[List[str]], references: List[List[str]], **kwargs
