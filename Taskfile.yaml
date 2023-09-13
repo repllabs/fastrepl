@@ -19,6 +19,7 @@ tasks:
   todo:ci: grep -r 'TODO!' ./fastrepl && exit 1 || exit 0
 
   fmt: poetry run black fastrepl tests
+  fmt:ci: poetry run black fastrepl tests --check
   lint: poetry run mypy fastrepl tests
   clean: rm -f .local/*.gv .local/*.png
 
