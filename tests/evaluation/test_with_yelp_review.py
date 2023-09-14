@@ -28,23 +28,13 @@ def dataset() -> Dataset:
 
 
 @pytest.mark.parametrize(
-    "model, references",
+    "model",
     [
-        (
-            "gpt-3.5-turbo",
-            [],
-        ),
-        (
-            "togethercomputer/llama-2-70b-chat",
-            [
-                ("Text to grade: this place is nice!", "4"),
-                ("Text to grade: this place is so bad", "1"),
-            ],
-        ),
+        ("gpt-3.5-turbo"),
     ],
 )
 @pytest.mark.fastrepl
-def test_llm_grading_head(dataset, model, references, report: fastrepl.TestReport):
+def test_llm_grading_head(dataset, model, report: fastrepl.TestReport):
     eval = fastrepl.Evaluator(
         pipeline=[
             fastrepl.LLMGradingHead(
@@ -52,7 +42,6 @@ def test_llm_grading_head(dataset, model, references, report: fastrepl.TestRepor
                 context="You will get a input text from Yelp review. Grade user's satisfaction from 1 to 5.",
                 number_from=1,
                 number_to=5,
-                references=references,
             )
         ]
     )

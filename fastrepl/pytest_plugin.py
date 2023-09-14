@@ -31,7 +31,7 @@ def pytest_addoption(parser: pytest.Parser):
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_configure(config: pytest.Config):
-    config.addinivalue_line("markers", "fastrepl: exepeiemental fastrepl testing")
+    config.addinivalue_line("markers", "fastrepl: experiemental fastrepl testing")
 
 
 def pytest_sessionstart(session: pytest.Session):
@@ -41,8 +41,16 @@ def pytest_sessionstart(session: pytest.Session):
         # NOTE: This will be provided in Github App
         api_base = getenv("LITELLM_PROXY_API_BASE", "")
         if api_base != "":  # pragma: no cover
+            api_key = getenv("LITELLM_PROXY_API_KEY", "")
+
+            print("LITELLM_PROXY_API_BASE is set")
+            if api_key != "":
+                print("LITELLM_PROXY_API_KEY is set")
+
             litellm.api_base = api_base
-            litellm.headers = {"Authorization": getenv("LITELLM_PROXY_API_KEY", "")}
+            litellm.headers = {"Authorization": api_key}
+        else:
+            print("LITELLM_PROXY_API_BASE is not set")
 
 
 @pytest.hookimpl(trylast=True)
