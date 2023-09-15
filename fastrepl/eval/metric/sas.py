@@ -1,10 +1,11 @@
 from typing import Tuple, Literal, TypedDict, List
 
-import lazy_import
+from lazy_imports import try_import
 
-transformers = lazy_import.lazy_module("transformers")
-sbert = lazy_import.lazy_module("sentence_transformers")
-np = lazy_import.lazy_module("numpy")
+with try_import() as optional_package_import:
+    import transformers  # optional package that might not be installed
+    import sentence_transformers as sbert
+    import numpy as np
 
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -25,6 +26,8 @@ class SemanticAnswerSimilarityMetric(BaseMetaEvalNode):
     __slot__ = ("model", "is_cross_encoder")
 
     def __init__(self, model_name_or_path: str, use_gpu=False):
+        optional_package_import.check()
+
         config = transformers.AutoConfig.from_pretrained(model_name_or_path)
         if config.architectures is not None:
             self.is_cross_encoder = any(
