@@ -1,17 +1,8 @@
 from typing import List, Any
-
-import json
 import pytest
 
 from fastrepl.utils import getenv
-
-
-class TestReport:
-    @staticmethod
-    def add(data: Any) -> None:
-        s = json.dumps(data)
-        # NOTE: This will be later parsed by fastrepl
-        print(f"__FASTREPL_START_{s}_FASTREPL_END__")
+from fastrepl.test_utils import TestReport
 
 
 @pytest.fixture(scope="session")
