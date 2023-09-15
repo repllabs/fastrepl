@@ -4524,9 +4524,9 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [extras]
 rag = ["ragas"]
-sas = []
+sas = ["sentence-transformers", "torch", "transformers"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "725e5c25bfb41684357df879371e16c6f3508fc83fad35c8c78e6d956596f093"
+content-hash = "1fc09f8a9f4110ae39a79cf75a1cb4d2b4480d1bb1ae9ce530af62d50ccc18dc"
