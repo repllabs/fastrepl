@@ -2,13 +2,19 @@ import pytest
 import openai.error
 import litellm
 
-
+import fastrepl.llm as llm
 from fastrepl.llm import (
     handle_llm_exception,
     RetryConstantException,
     RetryExpoException,
     completion,
 )
+
+
+class TestCompletion:
+    def test_kwargs(self):
+        with pytest.raises(TypeError):
+            completion("gpt-3.5-turbo", messages=[{"role": "user", "content": "hi"}])
 
 
 class TestHandleLLMException:

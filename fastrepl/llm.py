@@ -104,14 +104,8 @@ SUPPORTED_MODELS = Literal[  # pragma: no cover
     max_value=100,
     factor=1.5,
 )
-def completion(
-    model: SUPPORTED_MODELS,
-    messages: List[Dict[str, str]],
-    temperature: float = 0,
-    logit_bias: Dict[int, int] = {},
-    max_tokens: int = 200,
-) -> ModelResponse:
-    LONGER_CONTEXT_MAPPING = {  # pragma: no cover
+def _direct_completion(**kwargs) -> Dict[str, Any]:  # pragma: no cover
+    LONGER_CONTEXT_MAPPING = {
         "gpt-3.5-turbo": "gpt-3.5-turbo-16k",
         "gpt-3.5-turbo-0613": "gpt-3.5-turbo-16k-0613",
         "gpt-4": "gpt-4-32k",
@@ -119,23 +113,15 @@ def completion(
         "gpt-4-0613": "gpt-4-32k-0613",
     }
 
+    model = kwargs.get("model", "")
+    messages = kwargs.get("messages", [])
+
     def _completion(fallback=None):
         try:
-            maybe_fallback = fallback if fallback is not None else model
-            custom_llm_provider = (
-                "openai" if getenv("LITELLM_PROXY_API_BASE", "") != "" else None
-            )
+            if fallback is not None:
+                kwargs["model"] = fallback
 
-            result = litellm.completion(  # pragma: no cover
-                model=maybe_fallback,
-                messages=messages,
-                temperature=temperature,
-                logit_bias=logit_bias,
-                max_tokens=max_tokens,
-                force_timeout=20,
-                custom_llm_provider=custom_llm_provider,
-            )
-
+            result = litellm.completion(**kwargs)
             content = result["choices"][0]["message"]["content"]
 
             if result["choices"][0]["finish_reason"] == "length":
@@ -154,6 +140,48 @@ def completion(
         if LONGER_CONTEXT_MAPPING.get(model) is None:
             raise e
         return _completion(fallback=LONGER_CONTEXT_MAPPING[model])
+
+
+def _proxy_completion(**kwargs) -> Dict[str, Any]:  # pragma: no cover
+    import requests
+
+    api_base = getenv("PROXY_API_BASE", "")
+    api_key = getenv("PROXY_API_KEY", "")
+
+    resp = requests.post(
+        f"{api_base}/chat/completions",
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}",
+        },
+        json=kwargs,
+    )
+    return resp.json()
+
+
+def completion(  # pragma: no cover
+    *,
+    model: SUPPORTED_MODELS,
+    messages: List[Dict[str, str]],
+    temperature: float = 0,
+    logit_bias: Dict[int, int] = {},
+    max_tokens: int = 200,
+) -> Dict[str, Any]:
+    api_base = getenv("PROXY_API_BASE", "")
+    api_key = getenv("PROXY_API_KEY", "")
+
+    proxy = api_base != "" and api_key != ""
+    fn = _proxy_completion if proxy else _direct_completion
+
+    result = fn(
+        model=model,
+        messages=messages,
+        temperature=temperature,
+        logit_bias=logit_bias,
+        max_tokens=max_tokens,
+    )
+    result["proxy"] = proxy
+    return result
 
 
 @functools.lru_cache(maxsize=None)
