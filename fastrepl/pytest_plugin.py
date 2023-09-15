@@ -34,14 +34,21 @@ def pytest_configure(config: pytest.Config):
     config.addinivalue_line("markers", "fastrepl: exepeiemental fastrepl testing")
 
 
+# NOTE: env variables provided by fastrepl github app
 def pytest_sessionstart(session: pytest.Session):
     if session.config.getoption("--fastrepl"):
         import litellm
 
-        # NOTE: This will be provided in Github App
         api_base = getenv("LITELLM_PROXY_API_BASE", "")
-        litellm.api_base = api_base if api_base != "" else None
-        litellm.headers = {"Authorization": getenv("LITELLM_PROXY_API_KEY", "")}
+        api_key = getenv("LITELLM_PROXY_API_KEY", "")
+        if api_base != "" and api_key != "":
+            litellm.api_base = api_base
+            litellm.api_key = api_key
+        else:
+            if api_base == "":
+                print("ENV variable 'LITELLM_PROXY_API_BASE' is not set")
+            if api_key == "":
+                print("ENV variable 'LITELLM_PROXY_API_KEY' is not set")
 
 
 @pytest.hookimpl(trylast=True)
