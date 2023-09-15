@@ -115,5 +115,5 @@ class RagasEvaluation(BaseEvalNode):
                     }
                 )
 
-        result = evaluate(ds, metrics=[self.metric])
+        result = evaluate(dataset=ds, metrics=[self.metric])
         return result
