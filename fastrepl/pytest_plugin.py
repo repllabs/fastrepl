@@ -35,7 +35,7 @@ def pytest_configure(config: pytest.Config):
 
 
 # NOTE: env variables provided by fastrepl github app
-def pytest_sessionstart(session: pytest.Session):
+def pytest_sessionstart(session: pytest.Session):  # pragma: no cover
     if session.config.getoption("--fastrepl"):
         api_base = getenv("LITELLM_PROXY_API_BASE", "")
         api_key = getenv("LITELLM_PROXY_API_KEY", "")

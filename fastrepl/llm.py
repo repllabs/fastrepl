@@ -170,14 +170,18 @@ def completion(  # pragma: no cover
     api_base = getenv("PROXY_API_BASE", "")
     api_key = getenv("PROXY_API_KEY", "")
 
-    fn = _proxy_completion if api_base != "" and api_key != "" else _direct_completion
-    return fn(
+    proxy = api_base != "" and api_key != ""
+    fn = _proxy_completion if proxy else _direct_completion
+
+    result = fn(
         model=model,
         messages=messages,
         temperature=temperature,
         logit_bias=logit_bias,
         max_tokens=max_tokens,
     )
+    result["proxy"] = proxy
+    return result
 
 
 @functools.lru_cache(maxsize=None)
