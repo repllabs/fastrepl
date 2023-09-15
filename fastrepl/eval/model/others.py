@@ -56,64 +56,66 @@ class RagasEvaluation(BaseEvalNode):
     ) -> MetricWithLLM:
         llm = ChatLiteLLM(model=str(model))  # type: ignore[call-arg]
 
-        match metric:
-            case "AnswerRelevancy":
-                return AnswerRelevancy(llm=llm, batch_size=1)
-            case "ContextRecall":
-                return ContextRecall(llm=llm, batch_size=1)
-            case "ContextRelevancy":
-                return ContextRelevancy(llm=llm, batch_size=1)
-            case "Faithfulness":
-                return Faithfulness(llm=llm, batch_size=1)
-            case "harmfulness":
-                harmfulness.llm = llm
-                return harmfulness
-            case "maliciousness":
-                maliciousness.llm = llm
-                return maliciousness
-            case "coherence":
-                coherence.llm = llm
-                return coherence
-            case "correctness":
-                correctness.llm = llm
-                return correctness
-            case "conciseness":
-                conciseness.llm = llm
-                return conciseness
+        if metric == "AnswerRelevancy":
+            return AnswerRelevancy(llm=llm, batch_size=1)
+        elif metric == "ContextRecall":
+            return ContextRecall(llm=llm, batch_size=1)
+        elif metric == "ContextRelevancy":
+            return ContextRelevancy(llm=llm, batch_size=1)
+        elif metric == "Faithfulness":
+            return Faithfulness(llm=llm, batch_size=1)
+        elif metric == "harmfulness":
+            harmfulness.llm = llm
+            return harmfulness
+        elif metric == "maliciousness":
+            maliciousness.llm = llm
+            return maliciousness
+        elif metric == "coherence":
+            coherence.llm = llm
+            return coherence
+        elif metric == "correctness":
+            correctness.llm = llm
+            return correctness
+        elif metric == "conciseness":
+            conciseness.llm = llm
+            return conciseness
+        else:
+            raise ValueError
 
     def compute(self, prediction: str, context: Any) -> Any:
         ds: Dataset
 
-        match self.metric.evaluation_mode:
-            case EvaluationMode.qac:
-                ds = Dataset.from_dict(
-                    {
-                        "question": "",
-                        "answer": prediction,
-                        "contexts": [],
-                    }
-                )
-            case EvaluationMode.qa:
-                ds = Dataset.from_dict(
-                    {
-                        "question": "",
-                        "answer": prediction,
-                    }
-                )
-            case EvaluationMode.qc:
-                ds = Dataset.from_dict(
-                    {
-                        "question": "",
-                        "contexts": [],
-                    }
-                )
-            case EvaluationMode.gc:
-                ds = Dataset.from_dict(
-                    {
-                        "ground_truths": [],
-                        "contexts": [],
-                    }
-                )
+        if self.metric.evaluation_mode == EvaluationMode.qac:
+            ds = Dataset.from_dict(
+                {
+                    "question": "",
+                    "answer": prediction,
+                    "contexts": [],
+                }
+            )
+        elif self.metric.evaluation_mode == EvaluationMode.qa:
+            ds = Dataset.from_dict(
+                {
+                    "question": "",
+                    "answer": prediction,
+                }
+            )
+        elif self.metric.evaluation_mode == EvaluationMode.qc:
+            ds = Dataset.from_dict(
+                {
+                    "question": "",
+                    "contexts": [],
+                }
+            )
+        elif self.metric.evaluation_mode == EvaluationMode.gc:
+            ds = Dataset.from_dict(
+                {
+                    "ground_truths": [],
+                    "contexts": [],
+                }
+            )
+        else:
+            raise ValueError
 
         result = evaluate(dataset=ds, metrics=[self.metric])
         return result
