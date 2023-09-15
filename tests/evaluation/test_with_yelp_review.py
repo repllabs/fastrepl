@@ -61,15 +61,13 @@ def dataset() -> Dataset:
 def test_llm_classification_head(
     dataset, model, position_debias_strategy, report: fastrepl.TestReport
 ):
-    eval = fastrepl.Evaluator(
-        pipeline=[
-            fastrepl.LLMClassificationHead(
-                model=model,
-                context="You will get a input text from Yelp review. Classify it using the labels.",
-                labels=labels,
-                position_debias_strategy=position_debias_strategy,
-            )
-        ]
+    eval = fastrepl.Evaluator.from_node(
+        fastrepl.LLMClassificationHead(
+            model=model,
+            context="You will get a input text from Yelp review. Classify it using the labels.",
+            labels=labels,
+            position_debias_strategy=position_debias_strategy,
+        )
     )
 
     result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()
@@ -108,15 +106,13 @@ def test_llm_classification_head(
 def test_llm_classification_head_cot(
     dataset, model, position_debias_strategy, report: fastrepl.TestReport
 ):
-    eval = fastrepl.Evaluator(
-        pipeline=[
-            fastrepl.LLMClassificationHeadCOT(
-                model=model,
-                context="You will get a input text from Yelp review. Classify it using the labels.",
-                labels=labels,
-                position_debias_strategy=position_debias_strategy,
-            )
-        ]
+    eval = fastrepl.Evaluator.from_node(
+        fastrepl.LLMClassificationHeadCOT(
+            model=model,
+            context="You will get a input text from Yelp review. Classify it using the labels.",
+            labels=labels,
+            position_debias_strategy=position_debias_strategy,
+        )
     )
 
     result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()
@@ -163,16 +159,14 @@ def test_llm_classification_head_cot(
 )
 @pytest.mark.fastrepl
 def test_llm_grading_head(dataset, model, references, report: fastrepl.TestReport):
-    eval = fastrepl.Evaluator(
-        pipeline=[
-            fastrepl.LLMGradingHead(
-                model=model,
-                context="You will get a input text from Yelp review. Grade user's satisfaction from 1 to 5.",
-                number_from=1,
-                number_to=5,
-                references=references,
-            )
-        ]
+    eval = fastrepl.Evaluator.from_node(
+        fastrepl.LLMGradingHead(
+            model=model,
+            context="You will get a input text from Yelp review. Grade user's satisfaction from 1 to 5.",
+            number_from=1,
+            number_to=5,
+            references=references,
+        )
     )
 
     result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()
@@ -209,15 +203,13 @@ def test_llm_grading_head(dataset, model, references, report: fastrepl.TestRepor
 )
 @pytest.mark.fastrepl
 def test_grading_head_cot(dataset, model, report: fastrepl.TestReport):
-    eval = fastrepl.Evaluator(
-        pipeline=[
-            fastrepl.LLMGradingHeadCOT(
-                model=model,
-                context="You will get a input text from Yelp review. Grade user's satisfaction in integer from 1 to 5.",
-                number_from=1,
-                number_to=5,
-            )
-        ]
+    eval = fastrepl.Evaluator.from_node(
+        fastrepl.LLMGradingHeadCOT(
+            model=model,
+            context="You will get a input text from Yelp review. Grade user's satisfaction in integer from 1 to 5.",
+            number_from=1,
+            number_to=5,
+        )
     )
 
     result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()

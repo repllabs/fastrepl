@@ -11,6 +11,14 @@ class Evaluator:
             raise EmptyPipelineError
         self.pipeline = pipeline
 
+    @classmethod
+    def from_node(cls, node: BaseEvalNode) -> "Evaluator":
+        return Evaluator([node])
+
+    @classmethod
+    def from_nodes(cls, nodes: List[BaseEvalNode]) -> "Evaluator":
+        return Evaluator(nodes)
+
     def run(self, sample: str, context: Optional[str] = None) -> Optional[str]:
         initial_context = context
 
