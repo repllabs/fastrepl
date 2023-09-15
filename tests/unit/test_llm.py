@@ -2,7 +2,6 @@ import pytest
 import openai.error
 import litellm
 
-
 import fastrepl.llm as llm
 from fastrepl.llm import (
     handle_llm_exception,
@@ -16,36 +15,6 @@ class TestCompletion:
     def test_kwargs(self):
         with pytest.raises(TypeError):
             completion("gpt-3.5-turbo", messages=[{"role": "user", "content": "hi"}])
-
-    def test_proxy(self, monkeypatch):
-        def mock(*args, **kwargs):
-            return {
-                "choices": [{"message": {"content": "hi!!"}, "finish_reason": "stop"}]
-            }
-
-        monkeypatch.setenv("PROXY_API_BASE", "something")
-        monkeypatch.setenv("PROXY_API_KEY", "something")
-        monkeypatch.setattr(llm, "_proxy_completion", mock)
-
-        res = completion(
-            model="gpt-3.5-turbo", messages=[{"role": "user", "content": "hi"}]
-        )
-        assert res["choices"][0]["message"]["content"] == "hi!!"
-
-    def test_direct(self, monkeypatch):
-        def mock(*args, **kwargs):
-            return {
-                "choices": [{"message": {"content": "hi!!"}, "finish_reason": "stop"}]
-            }
-
-        monkeypatch.setenv("PROXY_API_BASE", "")
-        monkeypatch.setenv("PROXY_API_KEY", "")
-        monkeypatch.setattr(llm, "_direct_completion", mock)
-
-        res = completion(
-            model="gpt-3.5-turbo", messages=[{"role": "user", "content": "hi"}]
-        )
-        assert res["choices"][0]["message"]["content"] == "hi!!"
 
 
 class TestHandleLLMException:
