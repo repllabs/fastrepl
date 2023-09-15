@@ -3,6 +3,8 @@
 ## FastREPL Specific
 - `FASTREPL_INTERACTIVE`
 - `NUM_THREADS`
+- `PROXY_API_BASE`
+- `PROXY_API_KEY`
 
 ## LLM Providers
 - `OPENAI_API_KEY`
