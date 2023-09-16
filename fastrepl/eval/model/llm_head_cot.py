@@ -3,13 +3,10 @@ from typing import Optional, Dict
 import fastrepl.llm as llm
 from fastrepl.utils import prompt
 from fastrepl.eval.model import LLMClassificationHead, LLMGradingHead
-from fastrepl.warnings import warn, InvalidPredictionWarning
 
 
 class LLMClassificationHeadCOT(LLMClassificationHead):
-    def system_message(
-        self, sample: str, global_context: str, local_context: Optional[str]
-    ) -> Dict[str, str]:
+    def system_message(self, sample: str, context: str) -> Dict[str, str]:
         @prompt
         def p(context, labels):
             """You are master of classification who can classify any text according to the user's instructions.
@@ -30,26 +27,14 @@ class LLMClassificationHeadCOT(LLMClassificationHead):
         return {
             "role": "system",
             "content": p(
-                context=global_context,
+                context=context,
                 labels="\n".join(f"{m.token}: {m.description}" for m in self.mapping),
             ),
         }
 
-    def final_message(
-        self, sample: str, global_context: str, local_context: Optional[str]
-    ) -> Dict[str, str]:
-        @prompt
-        def p(sample, context):
-            """{% if context is not none %}
-            Info about the text: {{ context }}
-            {% endif %}
-            Text to think and clasify: {{ sample }}"""
-
-        return {"role": "user", "content": p(sample, local_context)}
-
-    def completion(self, sample: str, context: Optional[str] = None) -> Optional[str]:
+    def completion(self, sample: str) -> Optional[str]:
         prediction: str = llm.completion(
-            model=self.model, messages=self.messages(sample, context)
+            model=self.model, messages=self.messages(sample)
         )["choices"][0]["message"]["content"]
         prediction = prediction.split("### Result")[-1].strip()
 
@@ -63,9 +48,7 @@ class LLMClassificationHeadCOT(LLMClassificationHead):
 
 
 class LLMGradingHeadCOT(LLMGradingHead):
-    def system_message(
-        self, sample: str, global_context: str, local_context: Optional[str]
-    ) -> Dict[str, str]:
+    def system_message(self, sample: str, context: str) -> Dict[str, str]:
         @prompt
         def p(context):
             """You are master of grading who can grade any text according to the user's instructions.
@@ -80,23 +63,11 @@ class LLMGradingHeadCOT(LLMGradingHead):
             ### Result
             <NUMBER>"""
 
-        return {"role": "system", "content": p(global_context)}
+        return {"role": "system", "content": p(context)}
 
-    def final_message(
-        self, sample: str, global_context: str, local_context: Optional[str]
-    ) -> Dict[str, str]:
-        @prompt
-        def p(sample, context):
-            """{% if context is not none %}
-            Info about the text: {{ context }}
-            {% endif %}
-            Text to think and grade: {{ sample }}"""
-
-        return {"role": "user", "content": p(sample, local_context)}
-
-    def completion(self, sample: str, context: Optional[str] = None) -> Optional[str]:
-        result = llm.completion(
-            model=self.model, messages=self.messages(sample, context)
-        )["choices"][0]["message"]["content"]
+    def completion(self, sample: str) -> Optional[str]:
+        result = llm.completion(model=self.model, messages=self.messages(sample))[
+            "choices"
+        ][0]["message"]["content"]
 
         return result.split("### Result")[-1].strip()

@@ -12,5 +12,24 @@ class BaseMetaEvalNode(ABC):
 
 class BaseEvalNode(ABC):
     @abstractmethod
-    def compute(self, prediction: str, context: Optional[str]) -> Optional[str]:
+    def compute(self, *args, **kwargs) -> Optional[str]:
+        ...
+
+
+class BaseSimpleEvalNode(BaseEvalNode):
+    @abstractmethod
+    def compute(self, *, sample: str) -> Optional[str]:
+        ...
+
+
+class RAGEvalNode(BaseEvalNode):
+    @abstractmethod
+    def compute(
+        self,
+        *,
+        question: str,
+        answer: str,
+        contexts: List[str],
+        ground_truths: List[str],
+    ) -> Optional[str]:
         ...
