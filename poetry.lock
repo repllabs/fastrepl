@@ -3065,13 +3065,13 @@ cffi = {version = "*", markers = "implementation_name == \"pypy\""}
 
 [[package]]
 name = "ragas"
-version = "0.0.13"
+version = "0.0.14"
 description = ""
 optional = true
 python-versions = "*"
 files = [
-    {file = "ragas-0.0.13-py3-none-any.whl", hash = "sha256:84a361dc20b54ad6484f20dc1c040f8770427e89e7dc8d03b3936f619d9903b6"},
-    {file = "ragas-0.0.13.tar.gz", hash = "sha256:14f159bf98cbc2e8b3bd2e0b09eb8659972e5f36d46bdc53e9b27255207f80ed"},
+    {file = "ragas-0.0.14-py3-none-any.whl", hash = "sha256:35dc59adf25a67a284171d9cadabff85000bc17bfe971d0d22b26f0ba98fe59c"},
+    {file = "ragas-0.0.14.tar.gz", hash = "sha256:f43c5698259d9c6a2ba925be19b39389938a916da750c4c743b87f19f0d11371"},
 ]
 
 [package.dependencies]
@@ -4529,4 +4529,4 @@ sas = ["sentence-transformers", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "1fc09f8a9f4110ae39a79cf75a1cb4d2b4480d1bb1ae9ce530af62d50ccc18dc"
+content-hash = "558c63a0316de34a142a9d2554c7c4d9c860b83f4a43dca738d4980f18914351"

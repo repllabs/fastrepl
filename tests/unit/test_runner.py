@@ -28,39 +28,21 @@ def test_runner_num_1(mock_runs):
 
     result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=1)
 
-    assert result.column_names == ["input", "prediction"]
+    assert result.column_names == ["input", "result"]
 
 
-def test_runner_num_2_without_warning(mock_runs):
+def test_runner_num_2(mock_runs):
     mock_runs([[1, 2, 3, 4], [1, 2, 3, 5]])
 
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
+    ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
+    eval = fastrepl.SimpleEvaluator.from_node(
+        fastrepl.LLMClassificationHead(context="", labels={})
+    )
 
-        ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
-        eval = fastrepl.SimpleEvaluator.from_node(
-            fastrepl.LLMClassificationHead(context="", labels={})
-        )
+    result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
 
-        result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
-
-    assert result.column_names == ["input", "prediction"]
-    assert result["prediction"] == [[1, 1], [2, 2], [3, 3], [4, 5]]
-
-
-def test_runner_num_2_with_warning(mock_runs):
-    mock_runs([[4, 3, 2, 1], [2, 1, 3, 5]])
-
-    with pytest.warns():
-        ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
-        eval = fastrepl.SimpleEvaluator.from_node(
-            fastrepl.LLMClassificationHead(context="", labels={})
-        )
-
-        result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
-
-    assert result.column_names == ["input", "prediction"]
-    assert result["prediction"] == [[4, 2], [3, 1], [2, 3], [1, 5]]
+    assert result.column_names == ["input", "results"]
+    assert result["results"] == [[1, 1], [2, 2], [3, 3], [4, 5]]
 
 
 def test_runner_num_2_handle_none(mock_runs):
@@ -73,5 +55,5 @@ def test_runner_num_2_handle_none(mock_runs):
 
     result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
 
-    assert result.column_names == ["input", "prediction"]
-    assert result["prediction"] == [[1, 1], [2, 2], [3, 3], [4, None]]
+    assert result.column_names == ["input", "results"]
+    assert result["results"] == [[1, 1], [2, 2], [3, 3], [4, None]]
