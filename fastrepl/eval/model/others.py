@@ -1,7 +1,7 @@
 from typing import Literal, Optional, List, Any
 
 from datasets import Dataset
-from langchain.chat_models import ChatLiteLLM
+from langchain.chat_models import ChatOpenAI
 
 from lazy_imports import try_import
 
@@ -43,7 +43,8 @@ class RagasEvaluation(BaseEvalNode):
     def __init__(
         self,
         metric: RAGAS_METRICS,
-        model: SUPPORTED_MODELS = "gpt-3.5-turbo",
+        # TODO
+        model: Literal["gpt-3.5-turbo", "gpt-4"] = "gpt-3.5-turbo",
     ):
         optional_package_import.check()
 
@@ -55,7 +56,7 @@ class RagasEvaluation(BaseEvalNode):
         metric_name: RAGAS_METRICS,
     ) -> MetricWithLLM:
         # TODO
-        llm = ChatLiteLLM(model=str(model_name))  # type: ignore[call-arg]
+        llm = ChatOpenAI(model=str(model_name))  # type: ignore[call-arg]
 
         metric: MetricWithLLM
         if metric_name == "AnswerRelevancy":
@@ -94,7 +95,7 @@ class RagasEvaluation(BaseEvalNode):
         answer: Optional[str] = None,
         contexts: List[str] = [],
         ground_truths: List[str] = [],
-    ) -> Any:
+    ) -> Optional[float]:
         ds: Dataset
 
         if self.metric.evaluation_mode == EvaluationMode.qac:
@@ -146,4 +147,8 @@ class RagasEvaluation(BaseEvalNode):
             raise ValueError
 
         result = evaluate(dataset=ds, metrics=[self.metric])
-        return result
+
+        try:
+            return list(result.scores[0].values())[0]
+        except Exception:
+            return None

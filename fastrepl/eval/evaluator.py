@@ -42,7 +42,7 @@ class RAGEvaluator(Evaluator):
         answer: str,
         contexts: List[str],
         ground_truths: List[str],
-    ) -> Optional[str]:
+    ) -> Optional[float]:
         return self.node.compute(
             question=question,
             answer=answer,

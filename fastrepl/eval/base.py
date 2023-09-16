@@ -12,7 +12,7 @@ class BaseMetaEvalNode(ABC):
 
 class BaseEvalNode(ABC):
     @abstractmethod
-    def compute(self, *args, **kwargs) -> Optional[str]:
+    def compute(self, *args, **kwargs) -> Optional[Any]:
         ...
 
 
@@ -31,5 +31,5 @@ class RAGEvalNode(BaseEvalNode):
         answer: str,
         contexts: List[str],
         ground_truths: List[str],
-    ) -> Optional[str]:
+    ) -> Optional[float]:
         ...
