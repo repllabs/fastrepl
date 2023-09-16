@@ -18,42 +18,41 @@ def mock_runs(monkeypatch):
     return ret
 
 
-def test_runner_num_1(mock_runs):
-    mock_runs([[1]])
+class TestLocalRunner:
+    def test_runner_num_1(self, mock_runs):
+        mock_runs([[1]])
 
-    ds = Dataset.from_dict({"input": [1]})
-    eval = fastrepl.SimpleEvaluator.from_node(
-        fastrepl.LLMClassificationHead(context="", labels={})
-    )
+        ds = Dataset.from_dict({"input": [1]})
+        eval = fastrepl.SimpleEvaluator.from_node(
+            fastrepl.LLMClassificationHead(context="", labels={})
+        )
 
-    result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=1)
+        result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=1)
 
-    assert result.column_names == ["input", "result"]
+        assert result.column_names == ["input", "result"]
 
+    def test_runner_num_2(self, mock_runs):
+        mock_runs([[1, 2, 3, 4], [1, 2, 3, 5]])
 
-def test_runner_num_2(mock_runs):
-    mock_runs([[1, 2, 3, 4], [1, 2, 3, 5]])
+        ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
+        eval = fastrepl.SimpleEvaluator.from_node(
+            fastrepl.LLMClassificationHead(context="", labels={})
+        )
 
-    ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
-    eval = fastrepl.SimpleEvaluator.from_node(
-        fastrepl.LLMClassificationHead(context="", labels={})
-    )
+        result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
 
-    result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
+        assert result.column_names == ["input", "results"]
+        assert result["results"] == [[1, 1], [2, 2], [3, 3], [4, 5]]
 
-    assert result.column_names == ["input", "results"]
-    assert result["results"] == [[1, 1], [2, 2], [3, 3], [4, 5]]
+    def test_runner_num_2_handle_none(self, mock_runs):
+        mock_runs([[1, 2, 3, 4], [1, 2, 3, None]])
 
+        ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
+        eval = fastrepl.SimpleEvaluator.from_node(
+            fastrepl.LLMClassificationHead(context="", labels={})
+        )
 
-def test_runner_num_2_handle_none(mock_runs):
-    mock_runs([[1, 2, 3, 4], [1, 2, 3, None]])
+        result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
 
-    ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
-    eval = fastrepl.SimpleEvaluator.from_node(
-        fastrepl.LLMClassificationHead(context="", labels={})
-    )
-
-    result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
-
-    assert result.column_names == ["input", "results"]
-    assert result["results"] == [[1, 1], [2, 2], [3, 3], [4, None]]
+        assert result.column_names == ["input", "results"]
+        assert result["results"] == [[1, 1], [2, 2], [3, 3], [4, None]]
