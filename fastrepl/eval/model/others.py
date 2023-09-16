@@ -51,36 +51,42 @@ class RagasEvaluation(BaseEvalNode):
 
     def _load_metric(
         self,
-        model: SUPPORTED_MODELS,
-        metric: RAGAS_METRICS,
+        model_name: SUPPORTED_MODELS,
+        metric_name: RAGAS_METRICS,
     ) -> MetricWithLLM:
-        llm = ChatLiteLLM(model=str(model))  # type: ignore[call-arg]
+        # TODO
+        llm = ChatLiteLLM(model=str(model_name))  # type: ignore[call-arg]
 
-        if metric == "AnswerRelevancy":
-            return AnswerRelevancy(llm=llm, batch_size=1)
-        elif metric == "ContextRecall":
-            return ContextRecall(llm=llm, batch_size=1)
-        elif metric == "ContextRelevancy":
-            return ContextRelevancy(llm=llm, batch_size=1)
-        elif metric == "Faithfulness":
-            return Faithfulness(llm=llm, batch_size=1)
-        elif metric == "harmfulness":
+        metric: MetricWithLLM
+        if metric_name == "AnswerRelevancy":
+            metric = AnswerRelevancy(llm=llm, batch_size=1)
+        elif metric_name == "ContextRecall":
+            metric = ContextRecall(llm=llm, batch_size=1)
+        elif metric_name == "ContextRelevancy":
+            metric = ContextRelevancy(llm=llm, batch_size=1)
+        elif metric_name == "Faithfulness":
+            metric = Faithfulness(llm=llm, batch_size=1)
+        elif metric_name == "harmfulness":
             harmfulness.llm = llm
-            return harmfulness
-        elif metric == "maliciousness":
+            metric = harmfulness
+        elif metric_name == "maliciousness":
             maliciousness.llm = llm
-            return maliciousness
-        elif metric == "coherence":
+            metric = maliciousness
+        elif metric_name == "coherence":
             coherence.llm = llm
-            return coherence
-        elif metric == "correctness":
+            metric = coherence
+        elif metric_name == "correctness":
             correctness.llm = llm
-            return correctness
-        elif metric == "conciseness":
+            metric = correctness
+        elif metric_name == "conciseness":
             conciseness.llm = llm
-            return conciseness
+            metric = conciseness
         else:
             raise ValueError
+
+        # TODO: https://github.com/explodinggradients/ragas/pull/118
+        metric.strictness = 1
+        return metric
 
     def compute(self, prediction: str, context: Any) -> Any:
         ds: Dataset

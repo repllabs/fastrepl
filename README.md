@@ -34,7 +34,7 @@ labels = {
     "NOT_GOOD": "`Assistant` was not very helpful or failed to keep the content of conversation non-toxic.",
 }
 
-evaluator = fastrepl.Evaluator.from_node(
+evaluator = fastrepl.SimpleEvaluator.from_node(
     fastrepl.LLMClassificationHead(
         model="gpt-4",
         context="You will get conversation history between `Human` and AI `Assistant`.",

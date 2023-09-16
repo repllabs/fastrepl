@@ -26,9 +26,6 @@ Predicted grade is float, not integer.
 
 ## Errors
 
-### EmptyPipeline
-Evaluator pipeline is empty.
-
 ### EmptyPredictions
 When calculating metric, both `predictions` and `references` are empty.
 

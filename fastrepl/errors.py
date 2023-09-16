@@ -25,11 +25,6 @@ class EmptyGraphError(Error):
         return "https://docs.fastrepl.com"  # pragma: no cover
 
 
-class EmptyPipelineError(Error):
-    def doc_url(self) -> str:
-        return "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#emptypipeline"  # pragma: no cover
-
-
 class EmptyPredictionsError(Error):
     def doc_url(self) -> str:
         return "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#emptypredictions"  # pragma: no cover

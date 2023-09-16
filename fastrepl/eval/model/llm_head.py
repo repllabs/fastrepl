@@ -8,7 +8,7 @@ from typing_extensions import Unpack, NotRequired
 
 import fastrepl.llm as llm
 from fastrepl.utils import prompt, number
-from fastrepl.eval.base import BaseEvalNode
+from fastrepl.eval.base import BaseSimpleEvalNode
 
 from fastrepl.warnings import (
     warn,
@@ -33,24 +33,20 @@ class LLMEvaluationHeadParams(TypedDict):
     references: NotRequired[List[Tuple[str, str]]]
 
 
-class LLMEvaluationHead(BaseEvalNode):
+class LLMEvaluationHead(BaseSimpleEvalNode):
     def __init__(self, **kwargs: Unpack[LLMEvaluationHeadParams]) -> None:
-        self.global_context = kwargs["context"]
+        self.context = kwargs["context"]
         self.options = kwargs["options"]
         self.model = kwargs.get("model", "gpt-3.5-turbo")
         self.rg = kwargs.get("rg", random.Random(42))
         self.references = kwargs.get("references", [])
 
     @abstractmethod
-    def system_message(
-        self, sample: str, global_context: str, local_context: Optional[str]
-    ) -> Dict[str, str]:
+    def system_message(self, sample: str, context: str) -> Dict[str, str]:
         ...
 
     @abstractmethod
-    def final_message(
-        self, sample: str, global_context: str, local_context: Optional[str]
-    ) -> Dict[str, str]:
+    def final_message(self, sample: str, context: str) -> Dict[str, str]:
         ...
 
     def reference_messages(
@@ -67,21 +63,19 @@ class LLMEvaluationHead(BaseEvalNode):
             )
         )
 
-    def messages(
-        self, sample: str, context: Optional[str] = None
-    ) -> List[Dict[str, str]]:
-        system_message = self.system_message(sample, self.global_context, context)
+    def messages(self, sample: str) -> List[Dict[str, str]]:
+        system_message = self.system_message(sample, self.context)
         reference_messages = self.reference_messages(
             self.rg.sample(self.references, len(self.references))
         )
-        final_message = self.final_message(sample, self.global_context, context)
+        final_message = self.final_message(sample, self.context)
 
         return [system_message, *reference_messages, final_message]
 
-    def completion(self, sample: str, context: Optional[str] = None) -> Optional[str]:
+    def completion(self, sample: str) -> Optional[str]:
         return llm.completion(
             model=self.model,
-            messages=self.messages(sample, context),
+            messages=self.messages(sample),
             # NOTE: when using logit_bias for classification, max_tokens should be 1
             # max_tokens=2 is workaround. TODO
             max_tokens=2 if "together" in self.model else 1,
@@ -89,8 +83,8 @@ class LLMEvaluationHead(BaseEvalNode):
         )["choices"][0]["message"]["content"]
 
     # NOTE: It is safe to return NONE, since metric will skip prediction-reference pair if prediction is NONE
-    def compute(self, sample: str, context: Optional[str] = None) -> Optional[str]:
-        result = self.completion(sample, context)
+    def compute(self, *, sample: str) -> Optional[str]:
+        result = self.completion(sample)
         if result is None:
             return None
 
@@ -124,9 +118,7 @@ class LLMClassificationHead(LLMEvaluationHead):
         kwargs.update({"options": [m.token for m in self.mapping]})
         super().__init__(**kwargs)
 
-    def system_message(
-        self, sample: str, global_context: str, local_context: Optional[str]
-    ) -> Dict[str, str]:
+    def system_message(self, sample: str, context: str) -> Dict[str, str]:
         @prompt
         def p(context, labels, label_keys):
             """You are master of classification who can classify any text according to the user's instructions.
@@ -141,7 +133,7 @@ class LLMClassificationHead(LLMEvaluationHead):
         return {
             "role": "system",
             "content": p(
-                context=global_context,
+                context=context,
                 labels="\n".join(f"{m.token}: {m.description}" for m in self.mapping),
                 label_keys=", ".join(m.token for m in self.mapping),
             ),
@@ -159,28 +151,16 @@ class LLMClassificationHead(LLMEvaluationHead):
             [(input, label2token(output)) for input, output in references]
         )
 
-    def final_message(
-        self, sample: str, global_context: str, local_context: Optional[str]
-    ) -> Dict[str, str]:
-        @prompt
-        def p(sample, context):
-            """{% if context is not none %}
-            Info about the text: {{ context }}
-            {% endif %}
-            Text to classify: {{ sample }}"""
+    def final_message(self, sample: str, context: str) -> Dict[str, str]:
+        return {"role": "user", "content": sample}
 
-        return {
-            "role": "user",
-            "content": p(sample, local_context),
-        }
-
-    def _compute(self, sample: str, context: Optional[str]) -> Optional[str]:
+    def _compute(self, sample: str) -> Optional[str]:
         if self.position_debias_strategy == "shuffle":
             self.mapping = mappings_from_labels(self.labels, rg=self.rg)
-            return super().compute(sample, context)
+            return super().compute(sample=sample)
 
         if self.position_debias_strategy == "consensus":
-            initial_result = super().compute(sample, context)
+            initial_result = super().compute(sample=sample)
             if initial_result is None:
                 return None
 
@@ -189,14 +169,14 @@ class LLMClassificationHead(LLMEvaluationHead):
                 return initial_result
 
             self.mapping = next_mapping
-            next_result = super().compute(sample, context)
+            next_result = super().compute(sample=sample)
             if next_result is None:
                 return None
 
             return initial_result if initial_result == next_result else None
 
-    def compute(self, sample: str, context: Optional[str] = None) -> Optional[str]:
-        token = self._compute(sample, context)
+    def compute(self, *, sample: str) -> Optional[str]:
+        token = self._compute(sample)
         if token is None:
             return None
 
@@ -214,30 +194,19 @@ class LLMGradingHead(LLMEvaluationHead):
         kwargs.update({"options": [str(i) for i in range(number_from, number_to + 1)]})
         super().__init__(**kwargs)
 
-    def system_message(
-        self, sample: str, global_context: str, local_context: Optional[str]
-    ) -> Dict[str, str]:
+    def system_message(self, sample: str, context: str) -> Dict[str, str]:
         @prompt
         def p(context):
             """You are master of grading who can grade any text according to the user's instructions. Only output a single integer.
             {{context}}"""
 
-        return {"role": "system", "content": p(global_context)}
+        return {"role": "system", "content": p(context)}
 
-    def final_message(
-        self, sample: str, global_context: str, local_context: Optional[str]
-    ) -> Dict[str, str]:
-        @prompt
-        def p(sample, context):
-            """{% if context is not none %}
-            Info about the text: {{ context }}
-            {% endif %}
-            Text to grade: {{ sample }}"""
+    def final_message(self, sample: str, context: str) -> Dict[str, str]:
+        return {"role": "user", "content": sample}
 
-        return {"role": "user", "content": p(sample, local_context)}
-
-    def compute(self, sample: str, context: Optional[str] = None) -> Optional[str]:
-        result = number(self.completion(sample, context))
+    def compute(self, *, sample: str) -> Optional[str]:
+        result = number(self.completion(sample))
         if result is None:
             return None
 

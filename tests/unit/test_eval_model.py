@@ -33,7 +33,7 @@ class TestLLMClassificationHeadBasic:
         )
 
         mock_completion([eval.mapping[0].token])
-        assert eval.compute("") == eval.mapping[0].label
+        assert eval.compute(sample="") == eval.mapping[0].label
 
     def test_return_none(self, mock_completion):
         eval = fastrepl.LLMClassificationHead(
@@ -47,7 +47,7 @@ class TestLLMClassificationHeadBasic:
         mock_completion(["D"])
 
         with pytest.warns():
-            assert eval.compute("") is None
+            assert eval.compute(sample="") is None
 
 
 class TestClassificationHeadShuffle:
@@ -64,7 +64,7 @@ class TestClassificationHeadConsensus:
         )
 
         mock_completion([eval.mapping[3 // 2].token])
-        assert eval.compute("") is not None
+        assert eval.compute(sample="") is not None
 
     @pytest.mark.parametrize("i", [(3 // 2) - 1, (3 // 2) + 1])
     def test_need_for_consensus(self, mock_completion, i):
@@ -78,7 +78,7 @@ class TestClassificationHeadConsensus:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             with pytest.raises(StopIteration):
-                eval.compute("")
+                eval.compute(sample="")
 
     def test_consensus_success(self, mock_completion):
         eval = fastrepl.LLMClassificationHead(
@@ -88,7 +88,7 @@ class TestClassificationHeadConsensus:
         )
 
         mock_completion([eval.mapping[0].token, eval.mapping[0].token])
-        assert eval.compute("") is not None
+        assert eval.compute(sample="") is not None
 
     def test_consensus_failed(self, mock_completion):
         eval = fastrepl.LLMClassificationHead(
@@ -98,7 +98,7 @@ class TestClassificationHeadConsensus:
         )
 
         mock_completion([eval.mapping[0].token, eval.mapping[1].token])
-        assert eval.compute("") is None
+        assert eval.compute(sample="") is None
 
 
 class TestLLMGradingHead:
@@ -117,7 +117,7 @@ class TestLLMGradingHead:
         )
 
         mock_completion([return_value])
-        assert eval.compute("") == return_value
+        assert eval.compute(sample="") == return_value
 
     @pytest.mark.parametrize(
         "return_value, number_from, number_to",
@@ -138,7 +138,7 @@ class TestLLMGradingHead:
         mock_completion([return_value])
 
         with pytest.warns():
-            assert eval.compute("") == return_value
+            assert eval.compute(sample="") == return_value
 
     @pytest.mark.parametrize(
         "return_value, number_from, number_to",
@@ -159,4 +159,4 @@ class TestLLMGradingHead:
         mock_completion([return_value])
 
         with pytest.warns():
-            assert eval.compute("") is None
+            assert eval.compute(sample="") is None
