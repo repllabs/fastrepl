@@ -1,4 +1,4 @@
-from typing import Literal, Any
+from typing import Literal, Optional, List, Any
 
 from datasets import Dataset
 from langchain.chat_models import ChatLiteLLM
@@ -88,36 +88,58 @@ class RagasEvaluation(BaseEvalNode):
         metric.strictness = 1
         return metric
 
-    def compute(self, prediction: str, context: Any) -> Any:
+    def compute(
+        self,
+        question: Optional[str] = None,
+        answer: Optional[str] = None,
+        contexts: List[str] = [],
+        ground_truths: List[str] = [],
+    ) -> Any:
         ds: Dataset
 
         if self.metric.evaluation_mode == EvaluationMode.qac:
+            if question is None or answer is None:
+                raise ValueError
+
             ds = Dataset.from_dict(
                 {
-                    "question": "",
-                    "answer": prediction,
-                    "contexts": [],
+                    "question": [question],
+                    "answer": [answer],
+                    "contexts": [contexts],
                 }
             )
         elif self.metric.evaluation_mode == EvaluationMode.qa:
+            if question is None or answer is None:
+                raise ValueError
+
             ds = Dataset.from_dict(
                 {
-                    "question": "",
-                    "answer": prediction,
+                    "question": [question],
+                    "answer": [answer],
                 }
             )
         elif self.metric.evaluation_mode == EvaluationMode.qc:
+            if len(contexts) == 0 or len(ground_truths) == 0:
+                raise ValueError
+            if len(contexts) != len(ground_truths):
+                raise ValueError
+
             ds = Dataset.from_dict(
                 {
-                    "question": "",
-                    "contexts": [],
+                    "question": [question],
+                    "contexts": [contexts],
                 }
             )
         elif self.metric.evaluation_mode == EvaluationMode.gc:
+            if len(contexts) == 0 or len(ground_truths) == 0:
+                raise ValueError
+            if len(contexts) != len(ground_truths):
+                raise ValueError
+
             ds = Dataset.from_dict(
                 {
-                    "ground_truths": [],
-                    "contexts": [],
+                    "ground_truths": [ground_truths],
+                    "contexts": [contexts],
                 }
             )
         else:

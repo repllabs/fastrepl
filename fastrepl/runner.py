@@ -24,8 +24,6 @@ class LocalRunner(BaseRunner):
         self,
         evaluator: fastrepl.Evaluator,
         dataset: Dataset,
-        input_features: List[str] = ["input"],  # TODO: remove
-        output_feature: str = "prediction",  # TODO
     ) -> None:
         self._evaluator = evaluator
         self._dataset = dataset
@@ -33,7 +31,6 @@ class LocalRunner(BaseRunner):
         self._input_features = [
             param for param in inspect.signature(evaluator.run).parameters.keys()
         ]
-        self._output_feature = output_feature
 
     def _run_eval(self, **kwargs) -> Optional[str]:
         return self._evaluator.run(**kwargs)  # TODO
@@ -60,30 +57,14 @@ class LocalRunner(BaseRunner):
                 progress.update(task_id, advance=1, refresh=True)
         return results
 
-    def run(self, num=1) -> Dataset:
+    def run(self) -> Dataset:
         with Progress() as progress:
             task_id = progress.add_task(
                 "[cyan]Processing...",
-                total=len(self._dataset) * num,
+                total=len(self._dataset),
             )
 
-            if num == 1:
-                return self._dataset.add_column(
-                    self._output_feature,
-                    self._run(progress, task_id),
-                )
-            elif num == 2:
-                predictions = [self._run(progress, task_id) for _ in range(num)]
-
-                value = kappa(*predictions)
-                if value < 0.4:
-                    warn(InconsistentPredictionWarning, context=str(value))
-
-                return self._dataset.add_column(
-                    self._output_feature, list(zip(*predictions))
-                )
-            else:
-                raise NotImplementedError
+            self._run(progress, task_id)
 
 
 class LocalRunnerREPL(LocalRunner):
