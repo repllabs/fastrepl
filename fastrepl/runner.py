@@ -67,14 +67,18 @@ class LocalRunner(BaseRunner):
             task_id = progress.add_task(msg, total=len(self._dataset) * num)
 
             if num == 1:
+                result = self._run(progress, task_id)
+
                 return self._dataset.add_column(
                     self._output_feature,
-                    self._run(progress, task_id),
+                    result,
                 )
             else:
                 results = [self._run(progress, task_id) for _ in range(num)]
+
                 return self._dataset.add_column(
-                    self._output_feature_multiple, list(zip(*results))
+                    self._output_feature_multiple,
+                    list(zip(*results)),
                 )
 
 
