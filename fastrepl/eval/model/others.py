@@ -37,6 +37,7 @@ RAGAS_METRICS = Literal[  # pragma: no cover
 
 from fastrepl.eval.base import BaseEvalNode
 from fastrepl.llm import SUPPORTED_MODELS
+from fastrepl.utils import no_stdout, no_stderr
 
 
 class RagasEvaluation(BaseEvalNode):
@@ -146,7 +147,12 @@ class RagasEvaluation(BaseEvalNode):
         else:
             raise ValueError
 
-        result = evaluate(dataset=ds, metrics=[self.metric])
+        return self._evaluate(ds, self.metric)
+
+    @no_stderr
+    @no_stdout
+    def _evaluate(self, ds: Dataset, metric: MetricWithLLM) -> Optional[float]:
+        result = evaluate(dataset=ds, metrics=[metric])
 
         try:
             return list(result.scores[0].values())[0]
