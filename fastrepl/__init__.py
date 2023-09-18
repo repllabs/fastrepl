@@ -5,7 +5,6 @@ from fastrepl.eval import (
     LLMClassificationHead,
     LLMGradingHeadCOT,
     LLMClassificationHeadCOT,
-    RagasEvaluation,
     Evaluator,
     SimpleEvaluator,
     RAGEvaluator,
