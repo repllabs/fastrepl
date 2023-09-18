@@ -1,12 +1,13 @@
 from fastrepl.eval import (
     load_metric,
-    LLMChainOfThought,
     HumanClassifierRich,
     LLMGradingHead,
     LLMClassificationHead,
     LLMGradingHeadCOT,
     LLMClassificationHeadCOT,
     Evaluator,
+    SimpleEvaluator,
+    RAGEvaluator,
 )
 
 from fastrepl.utils import DEBUG

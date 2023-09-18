@@ -1,8 +1,8 @@
 import pytest
 import warnings
+from datasets import Dataset
 
 import fastrepl
-from datasets import Dataset
 
 
 @pytest.fixture
@@ -18,52 +18,41 @@ def mock_runs(monkeypatch):
     return ret
 
 
-def test_runner_num_1(mock_runs):
-    mock_runs([[1]])
+class TestLocalRunner:
+    def test_runner_num_1(self, mock_runs):
+        mock_runs([[1]])
 
-    ds = fastrepl.LocalRunner(
-        evaluator=[fastrepl.LLMClassificationHead(context="", labels={})],
-        dataset=Dataset.from_dict({"input": [1]}),
-    ).run(num=1)
+        ds = Dataset.from_dict({"input": [1]})
+        eval = fastrepl.SimpleEvaluator(
+            node=fastrepl.LLMClassificationHead(context="", labels={})
+        )
 
-    assert ds.column_names == ["input", "prediction"]
+        result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=1)
 
+        assert result.column_names == ["input", "result"]
 
-def test_runner_num_2_without_warning(mock_runs):
-    mock_runs([[1, 2, 3, 4], [1, 2, 3, 5]])
+    def test_runner_num_2(self, mock_runs):
+        mock_runs([[1, 2, 3, 4], [1, 2, 3, 5]])
 
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
+        ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
+        eval = fastrepl.SimpleEvaluator(
+            node=fastrepl.LLMClassificationHead(context="", labels={})
+        )
 
-        ds = fastrepl.LocalRunner(
-            evaluator=[fastrepl.LLMClassificationHead(context="", labels={})],
-            dataset=Dataset.from_dict({"input": [1, 2, 3, 4]}),
-        ).run(num=2)
+        result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
 
-    assert ds.column_names == ["input", "prediction"]
-    assert ds["prediction"] == [[1, 1], [2, 2], [3, 3], [4, 5]]
+        assert result.column_names == ["input", "results"]
+        assert result["results"] == [[1, 1], [2, 2], [3, 3], [4, 5]]
 
+    def test_runner_num_2_handle_none(self, mock_runs):
+        mock_runs([[1, 2, 3, 4], [1, 2, 3, None]])
 
-def test_runner_num_2_with_warning(mock_runs):
-    mock_runs([[4, 3, 2, 1], [2, 1, 3, 5]])
+        ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
+        eval = fastrepl.SimpleEvaluator(
+            node=fastrepl.LLMClassificationHead(context="", labels={})
+        )
 
-    with pytest.warns():
-        ds = fastrepl.LocalRunner(
-            evaluator=[fastrepl.LLMClassificationHead(context="", labels={})],
-            dataset=Dataset.from_dict({"input": [1, 2, 3, 4]}),
-        ).run(num=2)
+        result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
 
-    assert ds.column_names == ["input", "prediction"]
-    assert ds["prediction"] == [[4, 2], [3, 1], [2, 3], [1, 5]]
-
-
-def test_runner_num_2_handle_none(mock_runs):
-    mock_runs([[1, 2, 3, 4], [1, 2, 3, None]])
-
-    ds = fastrepl.LocalRunner(
-        evaluator=[fastrepl.LLMClassificationHead(context="", labels={})],
-        dataset=Dataset.from_dict({"input": [1, 2, 3, 4]}),
-    ).run(num=2)
-
-    assert ds.column_names == ["input", "prediction"]
-    assert ds["prediction"] == [[1, 1], [2, 2], [3, 3], [4, None]]
+        assert result.column_names == ["input", "results"]
+        assert result["results"] == [[1, 1], [2, 2], [3, 3], [4, None]]
