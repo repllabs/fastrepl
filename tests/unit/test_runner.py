@@ -23,8 +23,8 @@ class TestLocalRunner:
         mock_runs([[1]])
 
         ds = Dataset.from_dict({"input": [1]})
-        eval = fastrepl.SimpleEvaluator.from_node(
-            fastrepl.LLMClassificationHead(context="", labels={})
+        eval = fastrepl.SimpleEvaluator(
+            node=fastrepl.LLMClassificationHead(context="", labels={})
         )
 
         result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=1)
@@ -35,8 +35,8 @@ class TestLocalRunner:
         mock_runs([[1, 2, 3, 4], [1, 2, 3, 5]])
 
         ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
-        eval = fastrepl.SimpleEvaluator.from_node(
-            fastrepl.LLMClassificationHead(context="", labels={})
+        eval = fastrepl.SimpleEvaluator(
+            node=fastrepl.LLMClassificationHead(context="", labels={})
         )
 
         result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
@@ -48,8 +48,8 @@ class TestLocalRunner:
         mock_runs([[1, 2, 3, 4], [1, 2, 3, None]])
 
         ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
-        eval = fastrepl.SimpleEvaluator.from_node(
-            fastrepl.LLMClassificationHead(context="", labels={})
+        eval = fastrepl.SimpleEvaluator(
+            node=fastrepl.LLMClassificationHead(context="", labels={})
         )
 
         result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)

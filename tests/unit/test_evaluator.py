@@ -17,4 +17,4 @@ class MockEval(BaseEvalNode):
     ],
 )
 def test_simple_evaluator(node, sample, result):
-    assert fastrepl.SimpleEvaluator.from_node(node).run(sample=sample) == result
+    assert fastrepl.SimpleEvaluator(node).run(sample=sample) == result
