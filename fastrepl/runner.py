@@ -24,17 +24,26 @@ class LocalRunner(BaseRunner):
         evaluator: fastrepl.Evaluator,
         dataset: Dataset,
         output_feature="result",
-        output_feature_multiple="results",
     ) -> None:
         self._evaluator = evaluator
         self._dataset = dataset
 
-        self._output_feature = output_feature
-        self._output_feature_multiple = output_feature_multiple
-
         self._input_features = [
             param for param in inspect.signature(evaluator.run).parameters.keys()
         ]
+        self._output_feature = output_feature
+
+    def _validate(
+        self,
+        evaluator: fastrepl.Evaluator,
+        dataset: Dataset,
+    ) -> None:
+        if any(feature not in dataset.column_names for feature in self._input_features):
+            eval_name = type(evaluator).__name__
+
+            raise ValueError(  # TODO: custom error
+                f"{eval_name} requires {self._input_features}, but the provided dataset has {dataset.column_names}"
+            )
 
     def _run_eval(self, **kwargs) -> Optional[Any]:
         return self._evaluator.run(**kwargs)
@@ -62,24 +71,19 @@ class LocalRunner(BaseRunner):
         return results
 
     def run(self, num=1) -> Dataset:
+        self._validate(self._evaluator, self._dataset)
+
         with Progress() as progress:
             msg = "[cyan]Processing..."
             task_id = progress.add_task(msg, total=len(self._dataset) * num)
 
-            if num == 1:
-                result = self._run(progress, task_id)
-
-                return self._dataset.add_column(
-                    self._output_feature,
-                    result,
-                )
-            else:
+            if num > 1:
                 results = [self._run(progress, task_id) for _ in range(num)]
+                column = list(zip(*results))
+                return self._dataset.add_column(self._output_feature, column)
 
-                return self._dataset.add_column(
-                    self._output_feature_multiple,
-                    list(zip(*results)),
-                )
+            column = self._run(progress, task_id)
+            return self._dataset.add_column(self._output_feature, column)
 
 
 class LocalRunnerREPL(LocalRunner):
