@@ -25,19 +25,11 @@ class LocalRunner(BaseRunner):
         dataset: Dataset,
         output_feature="result",
     ) -> None:
-        self._evaluator = evaluator
-        self._dataset = dataset
-
+        self._output_feature = output_feature
         self._input_features = [
             param for param in inspect.signature(evaluator.run).parameters.keys()
         ]
-        self._output_feature = output_feature
 
-    def _validate(
-        self,
-        evaluator: fastrepl.Evaluator,
-        dataset: Dataset,
-    ) -> None:
         if any(feature not in dataset.column_names for feature in self._input_features):
             eval_name = type(evaluator).__name__
 
@@ -45,8 +37,8 @@ class LocalRunner(BaseRunner):
                 f"{eval_name} requires {self._input_features}, but the provided dataset has {dataset.column_names}"
             )
 
-    def _run_eval(self, **kwargs) -> Optional[Any]:
-        return self._evaluator.run(**kwargs)
+        self._evaluator = evaluator
+        self._dataset = dataset
 
     def _run(self, progress: Progress, task_id: TaskID) -> List[Optional[Any]]:
         results = []
@@ -54,7 +46,7 @@ class LocalRunner(BaseRunner):
         with ThreadPool(NUM_THREADS) as pool:
             futures = [
                 pool.apply_async(
-                    self._run_eval,
+                    self._evaluator.run,
                     kwds={
                         feature: value
                         for feature, value in zip(self._input_features, values)
@@ -71,8 +63,6 @@ class LocalRunner(BaseRunner):
         return results
 
     def run(self, num=1) -> Dataset:
-        self._validate(self._evaluator, self._dataset)
-
         with Progress() as progress:
             msg = "[cyan]Processing..."
             task_id = progress.add_task(msg, total=len(self._dataset) * num)
