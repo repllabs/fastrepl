@@ -24,14 +24,11 @@ class LocalRunner(BaseRunner):
         evaluator: fastrepl.Evaluator,
         dataset: Dataset,
         output_feature="result",
-        output_feature_multiple="results",
     ) -> None:
         self._evaluator = evaluator
         self._dataset = dataset
 
         self._output_feature = output_feature
-        self._output_feature_multiple = output_feature_multiple
-
         self._input_features = [
             param for param in inspect.signature(evaluator.run).parameters.keys()
         ]
@@ -66,20 +63,13 @@ class LocalRunner(BaseRunner):
             msg = "[cyan]Processing..."
             task_id = progress.add_task(msg, total=len(self._dataset) * num)
 
-            if num == 1:
-                result = self._run(progress, task_id)
-
-                return self._dataset.add_column(
-                    self._output_feature,
-                    result,
-                )
-            else:
+            if num > 1:
                 results = [self._run(progress, task_id) for _ in range(num)]
+                column = list(zip(*results))
+                return self._dataset.add_column(self._output_feature, column)
 
-                return self._dataset.add_column(
-                    self._output_feature_multiple,
-                    list(zip(*results)),
-                )
+            column = self._run(progress, task_id)
+            return self._dataset.add_column(self._output_feature, column)
 
 
 class LocalRunnerREPL(LocalRunner):

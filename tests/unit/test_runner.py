@@ -41,8 +41,8 @@ class TestLocalRunner:
 
         result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
 
-        assert result.column_names == ["input", "results"]
-        assert result["results"] == [[1, 1], [2, 2], [3, 3], [4, 5]]
+        assert result.column_names == ["input", "result"]
+        assert result["result"] == [[1, 1], [2, 2], [3, 3], [4, 5]]
 
     def test_runner_num_2_handle_none(self, mock_runs):
         mock_runs([[1, 2, 3, 4], [1, 2, 3, None]])
@@ -54,5 +54,5 @@ class TestLocalRunner:
 
         result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
 
-        assert result.column_names == ["input", "results"]
-        assert result["results"] == [[1, 1], [2, 2], [3, 3], [4, None]]
+        assert result.column_names == ["input", "result"]
+        assert result["result"] == [[1, 1], [2, 2], [3, 3], [4, None]]
