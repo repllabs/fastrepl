@@ -29,9 +29,23 @@ class LocalRunner(BaseRunner):
         self._dataset = dataset
 
         self._output_feature = output_feature
-        self._input_features = [
-            param for param in inspect.signature(evaluator.run).parameters.keys()
-        ]
+
+    def _validate(
+        self,
+        evaluator: fastrepl.Evaluator,
+        dataset: Dataset,
+    ) -> None:
+        params = [param for param in inspect.signature(evaluator.run).parameters.keys()]
+
+        for param in params:
+            if param in dataset.column_names:
+                continue
+
+            eval_name = type(evaluator).__name__
+
+            raise ValueError(  # TODO: custom error
+                f"{eval_name} requires {params}, but the provided dataset has {dataset.column_names}"
+            )
 
     def _run_eval(self, **kwargs) -> Optional[Any]:
         return self._evaluator.run(**kwargs)
@@ -59,6 +73,8 @@ class LocalRunner(BaseRunner):
         return results
 
     def run(self, num=1) -> Dataset:
+        self._validate(self._evaluator, self._dataset)
+
         with Progress() as progress:
             msg = "[cyan]Processing..."
             task_id = progress.add_task(msg, total=len(self._dataset) * num)

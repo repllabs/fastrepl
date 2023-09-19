@@ -1,5 +1,4 @@
 import pytest
-import warnings
 from datasets import Dataset
 
 import fastrepl
@@ -19,40 +18,49 @@ def mock_runs(monkeypatch):
 
 
 class TestLocalRunner:
-    def test_runner_num_1(self, mock_runs):
+    def test_num_1(self, mock_runs):
         mock_runs([[1]])
 
-        ds = Dataset.from_dict({"input": [1]})
+        ds = Dataset.from_dict({"sample": [1]})
         eval = fastrepl.SimpleEvaluator(
             node=fastrepl.LLMClassificationHead(context="", labels={})
         )
 
         result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=1)
 
-        assert result.column_names == ["input", "result"]
+        assert result.column_names == ["sample", "result"]
 
-    def test_runner_num_2(self, mock_runs):
+    def test_num_2(self, mock_runs):
         mock_runs([[1, 2, 3, 4], [1, 2, 3, 5]])
 
-        ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
+        ds = Dataset.from_dict({"sample": [1, 2, 3, 4]})
         eval = fastrepl.SimpleEvaluator(
             node=fastrepl.LLMClassificationHead(context="", labels={})
         )
 
         result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
 
-        assert result.column_names == ["input", "result"]
+        assert result.column_names == ["sample", "result"]
         assert result["result"] == [[1, 1], [2, 2], [3, 3], [4, 5]]
 
-    def test_runner_num_2_handle_none(self, mock_runs):
+    def test_num_2_handle_none(self, mock_runs):
         mock_runs([[1, 2, 3, 4], [1, 2, 3, None]])
 
-        ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
+        ds = Dataset.from_dict({"sample": [1, 2, 3, 4]})
         eval = fastrepl.SimpleEvaluator(
             node=fastrepl.LLMClassificationHead(context="", labels={})
         )
 
         result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
 
-        assert result.column_names == ["input", "result"]
+        assert result.column_names == ["sample", "result"]
         assert result["result"] == [[1, 1], [2, 2], [3, 3], [4, None]]
+
+    def test_validation(self):
+        ds = Dataset.from_dict({"input": [1, 2, 3, 4]})
+        eval = fastrepl.SimpleEvaluator(
+            node=fastrepl.LLMClassificationHead(context="", labels={})
+        )
+
+        with pytest.raises(ValueError):
+            fastrepl.LocalRunner(evaluator=eval, dataset=ds).run()
