@@ -28,6 +28,9 @@ class LocalRunner(BaseRunner):
         self._evaluator = evaluator
         self._dataset = dataset
 
+        self._input_features = [
+            param for param in inspect.signature(evaluator.run).parameters.keys()
+        ]
         self._output_feature = output_feature
 
     def _validate(
@@ -35,16 +38,11 @@ class LocalRunner(BaseRunner):
         evaluator: fastrepl.Evaluator,
         dataset: Dataset,
     ) -> None:
-        params = [param for param in inspect.signature(evaluator.run).parameters.keys()]
-
-        for param in params:
-            if param in dataset.column_names:
-                continue
-
+        if any(feature not in dataset.column_names for feature in self._input_features):
             eval_name = type(evaluator).__name__
 
             raise ValueError(  # TODO: custom error
-                f"{eval_name} requires {params}, but the provided dataset has {dataset.column_names}"
+                f"{eval_name} requires {self._input_features}, but the provided dataset has {dataset.column_names}"
             )
 
     def _run_eval(self, **kwargs) -> Optional[Any]:
