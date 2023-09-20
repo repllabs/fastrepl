@@ -63,4 +63,4 @@ class TestLocalRunner:
         )
 
         with pytest.raises(ValueError):
-            fastrepl.LocalRunner(evaluator=eval, dataset=ds).run()
+            fastrepl.LocalRunner(evaluator=eval, dataset=ds)

@@ -1,6 +1,5 @@
 import pytest
 
-from sklearn.metrics import confusion_matrix
 from statsmodels.stats.inter_rater import cohens_kappa, fleiss_kappa, aggregate_raters
 
 from fastrepl.utils import kappa
@@ -21,13 +20,36 @@ class TestCohensKappa:
 
 
 class TestFleissKappa:
-    def test_aggregate_raters(self):
+    def test_aggregate_raters_1(self):
+        table, categories = aggregate_raters([[0, 1, 2], [1, 0, 1]])
+
+        assert (table == [[1, 1, 1], [1, 2, 0]]).all()
+        assert (categories == [0, 1, 2]).all()
+
+    def test_aggregate_raters_2(self):
         table, categories = aggregate_raters(
             [[0, 1, 2], [1, 0, 1], [2, 2, 0], [1, 0, 2]]
         )
 
         assert (table == [[1, 1, 1], [1, 2, 0], [1, 0, 2], [1, 1, 1]]).all()
         assert (categories == [0, 1, 2]).all()
+
+    def test_basic(self):
+        table, _ = aggregate_raters(
+            [  # Note that this is result of 3 raters
+                [1, 1, 1],
+                [1, 1, 1],
+                [1, 1, 1],
+                [1, 1, 1],
+                [3, 3, 2],
+                [0, 0, 0],
+                [0, 0, 0],
+                [1, 1, 1],
+            ]
+        )
+        result = fleiss_kappa(table)
+
+        assert result == pytest.approx(0.84516, abs=1e-5)
 
 
 @pytest.mark.parametrize(
@@ -55,7 +77,34 @@ class TestFleissKappa:
             ],
             0.499,
         ),
+    ]
+    + [
+        ([[1, None], [1, 2], [None, 2]], 0),
+        ([[1, 2, 3], [1, 2, 3], [1, 2, 3]], 1.0),
+        ([[1, 2, 3], [1, 1, 3], [1, 3, 3]], 0.437),
+        (
+            [
+                [1, 1, 1, 1, 3, 0, 0, 1],
+                [1, 1, 1, 1, 3, 0, 0, 1],
+                [1, 1, 1, 1, 2, 0, 0, 1],
+            ],
+            0.845,
+        ),
+        (
+            [
+                ["POSITIVE", "NEGATIVE", "POSITIVE"],
+                ["NEGATIVE", "POSITIVE", "NEGATIVE"],
+            ],
+            -0.799,
+        ),
+        (
+            [
+                ["POSITIVE", "NEGATIVE", "POSITIVE"],
+                ["POSITIVE", "NEGATIVE", "POSITIVE"],
+            ],
+            1.0,
+        ),
     ],
 )
 def test_kappa(predictions, result):
-    assert kappa(*predictions) == pytest.approx(result, abs=1e-3)
+    assert kappa(predictions) == pytest.approx(result, abs=1e-3)
