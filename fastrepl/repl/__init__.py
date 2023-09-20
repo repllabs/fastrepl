@@ -14,6 +14,7 @@ from fastrepl.eval import (
     SimpleEvaluator,
     RAGEvaluator,
 )
+from fastrepl.analyze import Analyzer
 
 from fastrepl.utils import DEBUG
 
