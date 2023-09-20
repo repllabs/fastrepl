@@ -1403,18 +1403,18 @@ files = [
 
 [[package]]
 name = "litellm"
-version = "0.1.601"
+version = "0.1.693"
 description = "Library to easily interface with LLM API providers"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "litellm-0.1.601-py3-none-any.whl", hash = "sha256:bdb8773c7981e88d7479a21dc43ed5478a3f5b0c7dc52de367e22b1062212761"},
-    {file = "litellm-0.1.601.tar.gz", hash = "sha256:a542f887d3665517a56ab8a2c3e9a4ad6fe00aeed47adcd67a79504223ce6bf1"},
+    {file = "litellm-0.1.693-py3-none-any.whl", hash = "sha256:5e40f9044c2a4e72c3d1101c5399312f6be5f14fc3e4b76d40e6b711a007c8d2"},
+    {file = "litellm-0.1.693.tar.gz", hash = "sha256:3389f384b8cbc47a2fce99e25163831e46352cd07d35b86a765cfdbce840746f"},
 ]
 
 [package.dependencies]
 importlib-metadata = ">=6.8.0,<7.0.0"
-openai = ">=0.27.8,<0.28.0"
+openai = ">=0.27.0,<0.29.0"
 python-dotenv = ">=0.2.0"
 tiktoken = ">=0.4.0,<0.5.0"
 
