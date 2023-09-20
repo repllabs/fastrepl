@@ -79,6 +79,7 @@ class TestFleissKappa:
         ),
     ]
     + [
+        ([[1, None], [1, 2], [None, 2]], 0),
         ([[1, 2, 3], [1, 2, 3], [1, 2, 3]], 1.0),
         ([[1, 2, 3], [1, 1, 3], [1, 3, 3]], 0.437),
         (
@@ -89,7 +90,21 @@ class TestFleissKappa:
             ],
             0.845,
         ),
+        (
+            [
+                ["POSITIVE", "NEGATIVE", "POSITIVE"],
+                ["NEGATIVE", "POSITIVE", "NEGATIVE"],
+            ],
+            -0.799,
+        ),
+        (
+            [
+                ["POSITIVE", "NEGATIVE", "POSITIVE"],
+                ["POSITIVE", "NEGATIVE", "POSITIVE"],
+            ],
+            1.0,
+        ),
     ],
 )
 def test_kappa(predictions, result):
-    assert kappa(*predictions) == pytest.approx(result, abs=1e-3)
+    assert kappa(predictions) == pytest.approx(result, abs=1e-3)

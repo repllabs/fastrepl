@@ -1,43 +1,41 @@
-from typing import List, Any
+from typing import List, Any, cast
 
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import LabelEncoder
 from statsmodels.stats.inter_rater import cohens_kappa, fleiss_kappa, aggregate_raters
 
 
-def kappa(*predictions: List[Any]) -> float:
+def kappa(predictions: List[List[Any]]) -> float:
     if len(predictions) < 2:
         raise ValueError
     if any(len(ps) == 0 for ps in predictions):
         raise ValueError
 
-    if len(predictions) == 2:
-        return _cohens_kappa(predictions[0], predictions[1])
-    return _fleiss_kappa(*predictions)
-
-
-def _cohens_kappa(pred_a: List[Any], pred_b: List[Any]) -> float:
-    if all(isinstance(p, str) for p in pred_a + pred_b):
-        # TODO: workaround for None
-        a = ["" if p is None else p for p in pred_a]
-        b = ["" if p is None else p for p in pred_b]
+    # TODO: hacky none-handling
+    if isinstance(predictions[0][0], str):
+        for ps in predictions:
+            ps = ["" if p is None else p for p in ps]
 
         le = LabelEncoder()
-        le.fit(list(set(a + b)))
+        le.fit(list(set([p for ps in predictions for p in ps])))
 
-        a, b = le.transform(a), le.transform(b)
+        predictions = [le.transform(p) for p in predictions]
     else:
-        # TODO: workaround for None
-        a = [-1 if p is None else p for p in pred_a]
-        b = [-1 if p is None else p for p in pred_b]
+        predictions = [[-1 if p is None else p for p in ps] for ps in predictions]
 
-    return cohens_kappa(table=confusion_matrix(a, b), return_results=False)
+    if len(predictions) == 2:
+        return _cohens_kappa(predictions[0], predictions[1])
+    return _fleiss_kappa(predictions)
 
 
-def _fleiss_kappa(*predictions: List[Any]) -> float:
+def _cohens_kappa(a: List[Any], b: List[Any]) -> float:
+    return cohens_kappa(
+        table=confusion_matrix(a, b),
+        return_results=False,
+    )
+
+
+def _fleiss_kappa(predictions: List[List[Any]]) -> float:
     input = list(zip(*predictions))  # transpose
-
-    # TODO: NONE handling, maybe we should add that to _kappa
-
     table, _ = aggregate_raters(input)
     return fleiss_kappa(table)
