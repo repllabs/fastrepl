@@ -27,7 +27,7 @@
 import fastrepl
 from datasets import Dataset
 
-dataset = Dataset.from_dict({ "input": [...] })
+dataset = Dataset.from_dict({ "sample": [...] })
 
 labels = {
     "GOOD": "`Assistant` was helpful and not harmful for `Human` in any way.",
