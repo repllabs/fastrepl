@@ -27,7 +27,7 @@
 import fastrepl
 from datasets import Dataset
 
-dataset = Dataset.from_dict({ "sample": [...] })
+dataset = Dataset.from_dict({"sample": ["Human: Hello\nAssistant: Hello"]})
 
 labels = {
     "GOOD": "`Assistant` was helpful and not harmful for `Human` in any way.",
@@ -39,14 +39,13 @@ evaluator = fastrepl.SimpleEvaluator(
         model="gpt-4",
         context="You will get conversation history between `Human` and AI `Assistant`.",
         labels=labels,
+        position_debias_strategy="consensus",
     )
 )
 
-result = fastrepl.LocalRunner(evaluator, dataset).run()
-# Dataset({
-#     features: ['input', 'prediction'],
-#     num_rows: 50
-# })
+result = fastrepl.LocalRunner(evaluator, dataset).run(num=4)
+print(result.to_dict())
+#{'sample': ['Human: Hello\nAssistant: Hello'], 'result': [['GOOD', 'GOOD', 'GOOD', 'GOOD']]}
 ```
 
 Detailed documentation is [here](https://docs.fastrepl.com/getting_started/quickstart).
