@@ -27,7 +27,14 @@
 import fastrepl
 from datasets import Dataset
 
-dataset = Dataset.from_dict({"sample": ["Human: Hello\nAssistant: Hello"]})
+dataset = Dataset.from_dict(
+    {
+        "sample": [
+            "Human: Can you help me?\nAssistant: Sure!",
+            "Human: Can you help me?\nAssistant: No",
+        ]
+    }
+)
 
 labels = {
     "GOOD": "`Assistant` was helpful and not harmful for `Human` in any way.",
@@ -36,16 +43,17 @@ labels = {
 
 evaluator = fastrepl.SimpleEvaluator(
     node=fastrepl.LLMClassificationHead(
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         context="You will get conversation history between `Human` and AI `Assistant`.",
         labels=labels,
         position_debias_strategy="consensus",
     )
 )
 
-result = fastrepl.LocalRunner(evaluator, dataset).run(num=4)
-print(result.to_dict())
-#{'sample': ['Human: Hello\nAssistant: Hello'], 'result': [['GOOD', 'GOOD', 'GOOD', 'GOOD']]}
+result = fastrepl.LocalRunner(evaluator, dataset).run(num=2)
+
+print(result["result"]) # [['GOOD', 'GOOD'], ['NOT_GOOD', 'NOT_GOOD']]
+print(fastrepl.Analyzer(result).run(mode="kappa")) # {'kappa': 1.0}
 ```
 
 Detailed documentation is [here](https://docs.fastrepl.com/getting_started/quickstart).

@@ -55,56 +55,63 @@ class TestFleissKappa:
 @pytest.mark.parametrize(
     "predictions, result",
     [
-        ([[1, None], [1, 2]], 0.333),
-        ([[1, None], [1, None]], 1),
-        ([[1, 2], [1, 2]], 1.0),
-        ([[1, 2, 3], [3, 2, 3]], 0.499),
-        ([[1, 2, 3], [3, 2, 1]], 0),
-        ([[1, 2, 3, 4], [4, 3, 2, 1]], -0.333),
-        ([["POSITIVE", "NEGATIVE"], ["NEGATIVE", "POSITIVE"]], -1.0),
-        ([["POSITIVE", "NEGATIVE"], ["POSITIVE", "NEGATIVE"]], 1.0),
         (
             [
-                ["POSITIVE", "NEGATIVE", "NEGATIVE"],
-                ["POSITIVE", "POSITIVE", "NEGATIVE"],
+                [1, None],
+                [1, None],
             ],
-            0.399,
+            0,
         ),
         (
             [
-                ["A", "B", "C"],
-                ["A", "B", "B"],
+                ["POSITIVE", "NEGATIVE"],
+                ["POSITIVE", "NEGATIVE"],
             ],
-            0.499,
+            0,
+        ),
+        (
+            [
+                ["POSITIVE", "NEGATIVE"],
+                ["NEGATIVE", "POSITIVE"],
+            ],
+            -1.0,
+        ),
+        (
+            [
+                ["A", "A"],
+                ["B", "B"],
+                ["C", "C"],
+            ],
+            1,
         ),
     ]
     + [
-        ([[1, None], [1, 2], [None, 2]], 0),
-        ([[1, 2, 3], [1, 2, 3], [1, 2, 3]], 1.0),
-        ([[1, 2, 3], [1, 1, 3], [1, 3, 3]], 0.437),
         (
-            [
-                [1, 1, 1, 1, 3, 0, 0, 1],
-                [1, 1, 1, 1, 3, 0, 0, 1],
-                [1, 1, 1, 1, 2, 0, 0, 1],
-            ],
-            0.845,
+            [[1, 1, 1], [2, 2, 2], [1, None, None]],
+            0.653,
         ),
         (
-            [
-                ["POSITIVE", "NEGATIVE", "POSITIVE"],
-                ["NEGATIVE", "POSITIVE", "NEGATIVE"],
-            ],
-            -0.799,
-        ),
-        (
-            [
-                ["POSITIVE", "NEGATIVE", "POSITIVE"],
-                ["POSITIVE", "NEGATIVE", "POSITIVE"],
-            ],
+            [[1, 1, 1], [0, 0, 0]],
             1.0,
+        ),
+        (
+            [
+                ["POSITIVE", "NEGATIVE", "POSITIVE"],
+                ["POSITIVE", "NEGATIVE", "POSITIVE"],
+            ],
+            -0.5,
         ),
     ],
 )
-def test_kappa(predictions, result):
+def test_kappa_value(predictions, result):
     assert kappa(predictions) == pytest.approx(result, abs=1e-3)
+
+
+def test_kappa_single_rater():
+    with pytest.raises(ValueError):
+        kappa([[1], [1], [1]])
+
+
+def test_kappa_single_result():
+    with pytest.warns():
+        kappa([[1, 1, 1]])

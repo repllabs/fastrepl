@@ -6,9 +6,10 @@ from statsmodels.stats.inter_rater import cohens_kappa, fleiss_kappa, aggregate_
 
 
 def kappa(predictions: List[List[Any]]) -> float:
-    if len(predictions) < 2:
-        raise ValueError
-    if any(len(ps) == 0 for ps in predictions):
+    assert isinstance(predictions[0], list)
+
+    num_raters = len(predictions[0])
+    if num_raters < 2:
         raise ValueError
 
     # TODO: hacky none-handling
@@ -23,19 +24,20 @@ def kappa(predictions: List[List[Any]]) -> float:
     else:
         predictions = [[-1 if p is None else p for p in ps] for ps in predictions]
 
-    if len(predictions) == 2:
-        return _cohens_kappa(predictions[0], predictions[1])
-    return _fleiss_kappa(predictions)
+    kappa_fn = _cohens_kappa if num_raters == 2 else _fleiss_kappa
+
+    return kappa_fn(predictions)
 
 
-def _cohens_kappa(a: List[Any], b: List[Any]) -> float:
+def _cohens_kappa(predictions: List[List[Any]]) -> float:
+    predictions = list(zip(*predictions))  # transpose
+
     return cohens_kappa(
-        table=confusion_matrix(a, b),
+        table=confusion_matrix(*predictions),
         return_results=False,
     )
 
 
 def _fleiss_kappa(predictions: List[List[Any]]) -> float:
-    input = list(zip(*predictions))  # transpose
-    table, _ = aggregate_raters(input)
+    table, _ = aggregate_raters(predictions)
     return fleiss_kappa(table)
