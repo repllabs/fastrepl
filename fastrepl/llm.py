@@ -34,6 +34,44 @@ litellm.telemetry = False  # pragma: no cover
 litellm.cache = Cache()  # pragma: no cover
 litellm.cache.get_cache_key = custom_get_cache_key  # pragma: no cover
 
+config = {
+    "function": "completion",
+    "default_fallback_models": ["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "j2-ultra"],
+    "available_models": litellm.utils.get_valid_models(),  # gets models from keys user has set
+    "adapt_to_prompt_size": True,
+    "model": {
+        "claude-instant-1": {"needs_moderation": True},
+        "claude-2": {"needs_moderation": True},
+        "gpt-3.5-turbo": {
+            "error_handling": {
+                "ContextWindowExceededError": {"fallback_model": "gpt-3.5-turbo-16k"}
+            }
+        },
+        "gpt-3.5-turbo-0613": {
+            "error_handling": {
+                "ContextWindowExceededError": {
+                    "fallback_model": "gpt-3.5-turbo-16k-0613"
+                }
+            }
+        },
+        "gpt-4": {
+            "error_handling": {
+                "ContextWindowExceededError": {"fallback_model": "gpt-4-32k"}
+            }
+        },
+        "gpt-4-0314": {
+            "error_handling": {
+                "ContextWindowExceededError": {"fallback_model": "gpt-4-32k-0314"}
+            }
+        },
+        "gpt-4-0613": {
+            "error_handling": {
+                "ContextWindowExceededError": {"fallback_model": "gpt-4-32k-0613"}
+            }
+        },
+    },
+}
+
 
 class RetryConstantException(Exception):
     pass
@@ -105,14 +143,6 @@ SUPPORTED_MODELS = Literal[  # pragma: no cover
     factor=1.5,
 )
 def _direct_completion(**kwargs) -> Dict[str, Any]:  # pragma: no cover
-    LONGER_CONTEXT_MAPPING = {
-        "gpt-3.5-turbo": "gpt-3.5-turbo-16k",
-        "gpt-3.5-turbo-0613": "gpt-3.5-turbo-16k-0613",
-        "gpt-4": "gpt-4-32k",
-        "gpt-4-0314": "gpt-4-32k-0314",
-        "gpt-4-0613": "gpt-4-32k-0613",
-    }
-
     model = kwargs.get("model", "")
     messages = kwargs.get("messages", [])
 
@@ -121,7 +151,8 @@ def _direct_completion(**kwargs) -> Dict[str, Any]:  # pragma: no cover
             if fallback is not None:
                 kwargs["model"] = fallback
 
-            result = litellm.completion(**kwargs)
+            kwargs["config"] = config
+            result = litellm.completion_with_config(**kwargs)
             content = result["choices"][0]["message"]["content"]
 
             if result["choices"][0]["finish_reason"] == "length":
@@ -134,12 +165,7 @@ def _direct_completion(**kwargs) -> Dict[str, Any]:  # pragma: no cover
         except Exception as e:
             handle_llm_exception(e)
 
-    try:
-        return _completion()
-    except litellm.exceptions.ContextWindowExceededError as e:
-        if LONGER_CONTEXT_MAPPING.get(model) is None:
-            raise e
-        return _completion(fallback=LONGER_CONTEXT_MAPPING[model])
+    return _completion()
 
 
 def _proxy_completion(**kwargs) -> Dict[str, Any]:  # pragma: no cover
