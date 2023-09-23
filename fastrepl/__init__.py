@@ -1,3 +1,8 @@
+from typing import Optional
+
+api_base: Optional[str] = "https://yujonglee--fastrepl-api.modal.run"  # TODO
+api_key: Optional[str] = None
+
 from fastrepl.eval import (
     load_metric,
     HumanClassifierRich,
@@ -10,10 +15,9 @@ from fastrepl.eval import (
     RAGEvaluator,
 )
 from fastrepl.analyze import Analyzer
+from fastrepl.dataset import Dataset
 
 from fastrepl.utils import DEBUG
-
-from fastrepl.repl import Updatable
 
 from fastrepl.runner import (
     LocalRunner,
