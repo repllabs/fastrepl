@@ -19,7 +19,7 @@ class Dataset:
     @overload
     @classmethod
     def generate_from(
-        cls, kind: Literal["question"], *, source: List[str]
+        cls, kind: Literal["question"], *, source: str
     ) -> HuggingfaceDataset:
         ...
 
@@ -28,7 +28,7 @@ class Dataset:
         cls,
         kind: Literal["question"],
         *,
-        source: Optional[List[str]] = None,
+        source: Optional[str] = None,
         job_id: Optional[str] = None,
     ) -> HuggingfaceDataset:
         if fastrepl.api_key is None:
@@ -40,7 +40,7 @@ class Dataset:
         cls,
         kind: Literal["question"],
         *,
-        source: Optional[List[str]] = None,
+        source: Optional[str] = None,
         job_id: Optional[str] = None,
     ) -> HuggingfaceDataset:
         if job_id is None:
@@ -50,7 +50,7 @@ class Dataset:
                     "Content-Type": "application/json",
                     "Authorization": f"Bearer {fastrepl.api_key}",
                 },
-                json={"texts": source},
+                json={"text": source},
             )
 
             if new_res.status_code != 200:
@@ -84,7 +84,7 @@ class Dataset:
         cls,
         kind: Literal["question"],
         *,
-        source: Optional[List[str]] = None,
+        source: Optional[str] = None,
         job_id: Optional[str] = None,
     ) -> HuggingfaceDataset:
         url = "https://github.com/repllabs/fastrepl/blob/521aec43fb01aaf8fadd6b9b20ef0823239ecece/exp/pg_essay_questions.ipynb"
