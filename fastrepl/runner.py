@@ -63,7 +63,7 @@ class LocalRunner(BaseRunner):
         return results
 
     def run(self, num=1) -> Dataset:
-        with Progress() as progress:
+        with Progress(transient=True) as progress:
             msg = "[cyan]Processing..."
             task_id = progress.add_task(msg, total=len(self._dataset) * num)
 
