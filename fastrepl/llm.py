@@ -35,6 +35,7 @@ litellm.cache = Cache()  # pragma: no cover
 litellm.cache.get_cache_key = custom_get_cache_key  # pragma: no cover
 
 config = {
+    "function": "completion",
     "model": {
         "gpt-3.5-turbo": {
             "error_handling": {
