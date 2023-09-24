@@ -36,7 +36,7 @@ No. **FastREPL** is only for evaluation and testing.
    guides/human_eval.ipynb
    guides/dealing_with_bias.md
    guides/argilla.md
-   guides/llama_index_pg_great_work.ipynb
+   guides/dataset_generation.ipynb
    
 .. toctree::
    :maxdepth: 1
