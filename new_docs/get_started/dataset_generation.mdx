@@ -1,0 +1,24 @@
+---
+title: Dataset Generation
+description: LLM powered dataset generation
+---
+
+We only support question generation for now.
+
+## Question Generation
+
+### Local
+If you don't provide correct key, it will run on local machine.
+
+<Warning>This raises a warning to watch out for</Warning>
+
+### Cloud
+<Info>Reach out to `yujonglee at repllabs.ai` to grab a key!</Info>
+
+```python
+import fastrepl
+
+fastrepl.api_key = ""
+
+fastrepl.Dataset.generate_from()
+```

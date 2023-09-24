@@ -1,0 +1,73 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "fastrepl",
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#9563FF",
+    "light": "#AE87FF",
+    "dark": "#0D001D",
+    "background": {
+      "dark": "#090014"
+    },
+    "anchors": {
+      "from": "#FF7F57",
+      "to": "#9563FF"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Email",
+      "url": "mailto:yujonglee@repllabs.ai"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://app.fastrepl.com"
+  },
+  "anchors": [
+    {
+      "name": "Discord",
+      "icon": "discord",
+      "url": "https://discord.gg/nMQ8ZqAegc"
+    },
+    {
+      "name": "Github",
+      "icon": "github",
+      "url": "https://github.com/repllabs/fastrepl"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "get_started/introduction",
+        "get_started/quickstart",
+        "get_started/general_evaluation",
+        "get_started/rag_evaluation",
+        "get_started/agent_evaluation",
+        "get_started/dataset_generation"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/model_graded_eval",
+        "guides/meta_eval",
+        "guides/human_eval",
+        "guides/dealing_with_bias",
+        "guides/argilla"
+      ]
+    },
+    {
+      "group": "Miscellaneous",
+      "pages": [
+        "miscellaneous/observability",
+        "miscellaneous/warnings_and_errors"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/repllabs",
+    "linkedin": "https://www.linkedin.com/company/repllabs"
+  }
+}
