@@ -35,16 +35,17 @@ litellm.cache = Cache()  # pragma: no cover
 litellm.cache.get_cache_key = custom_get_cache_key  # pragma: no cover
 
 config = {
-    "function": "completion",
-    "default_fallback_models": ["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "j2-ultra"],
-    "available_models": litellm.utils.get_valid_models(),  # gets models from keys user has set
-    "adapt_to_prompt_size": True,
     "model": {
-        "claude-instant-1": {"needs_moderation": True},
-        "claude-2": {"needs_moderation": True},
         "gpt-3.5-turbo": {
             "error_handling": {
                 "ContextWindowExceededError": {"fallback_model": "gpt-3.5-turbo-16k"}
+            }
+        },
+        "gpt-3.5-turbo-0301": {
+            "error_handling": {
+                "ContextWindowExceededError": {
+                    "fallback_model": "gpt-3.5-turbo-16k-0301"
+                }
             }
         },
         "gpt-3.5-turbo-0613": {
@@ -98,7 +99,7 @@ def handle_llm_exception(e: Exception):
         e,
         (
             openai.error.APIConnectionError,
-            openai.error.InvalidRequestError,  # NOTE: ContextWindowExceededError will be catched outside
+            openai.error.InvalidRequestError,
             openai.error.AuthenticationError,
             openai.error.PermissionError,
             openai.error.InvalidAPIType,
