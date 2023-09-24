@@ -1403,13 +1403,13 @@ files = [
 
 [[package]]
 name = "litellm"
-version = "0.1.693"
+version = "0.1.729"
 description = "Library to easily interface with LLM API providers"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "litellm-0.1.693-py3-none-any.whl", hash = "sha256:5e40f9044c2a4e72c3d1101c5399312f6be5f14fc3e4b76d40e6b711a007c8d2"},
-    {file = "litellm-0.1.693.tar.gz", hash = "sha256:3389f384b8cbc47a2fce99e25163831e46352cd07d35b86a765cfdbce840746f"},
+    {file = "litellm-0.1.729-py3-none-any.whl", hash = "sha256:8c2a104efe4a8a2665c2dc5875cec032d4528cec9e9843910d86a2e781eec565"},
+    {file = "litellm-0.1.729.tar.gz", hash = "sha256:d6053f7d558840a133dce5ef12ea1f8efc111be0994a10445fb68b33024f61c6"},
 ]
 
 [package.dependencies]
@@ -4135,4 +4135,4 @@ sas = ["sentence-transformers", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "1e7f698fb7526b1e8df3f129125c172618d8b518b533ca644e1dc35cde8ddf29"
+content-hash = "f91fc61fac53010cea170811e269018cbd5b53236c221808e24763b57852dd2f"
