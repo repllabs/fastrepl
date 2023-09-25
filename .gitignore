@@ -12,3 +12,6 @@ cov.xml
 dist
 **/wandb
 *.cache
+*.bin
+*.db
+*.sqlite3

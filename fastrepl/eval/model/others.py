@@ -36,7 +36,7 @@ RAGAS_METRICS = Literal[  # pragma: no cover
 ]
 
 from fastrepl.llm import SUPPORTED_MODELS
-from fastrepl.utils import no_stdout, no_stderr
+from fastrepl.utils import suppress
 from fastrepl.eval.base import RAGEvalNode
 
 
@@ -171,10 +171,8 @@ class RAGAS(RAGEvalNode):
 
         return self._evaluate(ds, self.metric)
 
-    @no_stderr
-    @no_stdout
+    @suppress
     def _evaluate(self, ds: Dataset, metric: MetricWithLLM) -> Optional[float]:
-        print(ds)
         result = evaluate(dataset=ds, metrics=[metric])
 
         try:

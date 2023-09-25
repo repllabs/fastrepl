@@ -1,4 +1,4 @@
-from typing import Optional, List, Any
+from typing import Optional, Callable, List, Any
 import inspect
 
 from multiprocessing.pool import ThreadPool
@@ -6,7 +6,7 @@ from datasets import Dataset
 from rich.progress import Progress, TaskID
 
 import fastrepl
-from fastrepl.utils import getenv
+from fastrepl.utils import getenv, console
 from fastrepl.runner.base import BaseRunner
 
 NUM_THREADS = getenv("NUM_THREADS", 8)
@@ -32,10 +32,10 @@ class LocalEvaluatorRunner(BaseRunner):
         self._evaluator = evaluator
         self._dataset = dataset
 
-    def _run(self, progress: Progress, task_id: TaskID) -> List[Optional[Any]]:
+    def _run(self, cb: Optional[Callable[[], None]]) -> List[Optional[Any]]:
         results = []
 
-        with ThreadPool(NUM_THREADS) as pool:
+        with ThreadPool(min(NUM_THREADS, len(self._dataset))) as pool:
             futures = [
                 pool.apply_async(
                     self._evaluator.run,
@@ -51,21 +51,32 @@ class LocalEvaluatorRunner(BaseRunner):
 
             for future in futures:
                 results.append(future.get())
-                progress.update(task_id, advance=1, refresh=True)
+                if cb is not None:
+                    cb()
+
         return results
 
-    def run(self, num=1) -> Dataset:
-        with Progress(transient=True) as progress:
-            msg = "[cyan]Processing..."
-            task_id = progress.add_task(msg, total=len(self._dataset) * num)
+    def run(self, num=1, show_progress=True) -> Dataset:
+        disable = not show_progress
 
-            if num > 1:
-                results = [self._run(progress, task_id) for _ in range(num)]
-                column = list(zip(*results))
+        try:
+            with Progress(console=console, transient=True, disable=disable) as progress:
+                msg = "[cyan]Processing..."
+                task_id = progress.add_task(msg, total=len(self._dataset) * num)
+                cb = lambda: progress.update(task_id, advance=1, refresh=True)
+
+                if num > 1:
+                    results = [self._run(cb) for _ in range(num)]
+                    column = list(zip(*results))
+                    return self._dataset.add_column(self._output_feature, column)
+
+                column = self._run(cb)
                 return self._dataset.add_column(self._output_feature, column)
-
-            column = self._run(progress, task_id)
-            return self._dataset.add_column(self._output_feature, column)
+        except ValueError as e:
+            if "I/O operation on closed file" in str(e):
+                console.print("[cyan]Please re-run with `show_progress=False`")
+            else:
+                raise e
 
 
 class RemoteEvaluatorRunner(LocalEvaluatorRunner):
