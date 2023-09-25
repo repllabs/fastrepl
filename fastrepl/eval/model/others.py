@@ -122,6 +122,8 @@ class RAGAS(RAGEvalNode):
         if self.metric.evaluation_mode == EvaluationMode.qac:
             if question is None or answer is None or contexts is None:
                 raise ValueError
+            if len(contexts) == 0:
+                raise ValueError
 
             ds = Dataset.from_dict(
                 {
