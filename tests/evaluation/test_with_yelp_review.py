@@ -70,7 +70,7 @@ def test_llm_classification_head(
         )
     )
 
-    result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()
+    result = fastrepl.local_runner(evaluator=eval, dataset=dataset).run()
     result = result.map(label2number)
 
     predictions = result["prediction"]
@@ -115,7 +115,7 @@ def test_llm_classification_head_cot(
         )
     )
 
-    result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()
+    result = fastrepl.local_runner(evaluator=eval, dataset=dataset).run()
     result = result.map(label2number)
 
     predictions = result["prediction"]
@@ -169,7 +169,7 @@ def test_llm_grading_head(dataset, model, references, report: fastrepl.TestRepor
         )
     )
 
-    result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()
+    result = fastrepl.local_runner(evaluator=eval, dataset=dataset).run()
     result = result.map(grade2number)
 
     predictions = result["prediction"]
@@ -212,7 +212,7 @@ def test_grading_head_cot(dataset, model, report: fastrepl.TestReport):
         )
     )
 
-    result = fastrepl.LocalRunner(evaluator=eval, dataset=dataset).run()
+    result = fastrepl.local_runner(evaluator=eval, dataset=dataset).run()
     result = result.map(grade2number)
 
     predictions = result["prediction"]

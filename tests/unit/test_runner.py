@@ -12,7 +12,7 @@ def mock_runs(monkeypatch):
         def mock_run(*args, **kwargs):
             return next(iter_values)
 
-        monkeypatch.setattr(fastrepl.LocalRunner, "_run", mock_run)
+        monkeypatch.setattr(fastrepl.local_runner, "_run", mock_run)
 
     return ret
 
@@ -26,7 +26,7 @@ class TestLocalRunner:
             node=fastrepl.LLMClassificationHead(context="", labels={})
         )
 
-        result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=1)
+        result = fastrepl.local_runner(evaluator=eval, dataset=ds).run(num=1)
 
         assert result.column_names == ["sample", "result"]
 
@@ -38,7 +38,7 @@ class TestLocalRunner:
             node=fastrepl.LLMClassificationHead(context="", labels={})
         )
 
-        result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
+        result = fastrepl.local_runner(evaluator=eval, dataset=ds).run(num=2)
 
         assert result.column_names == ["sample", "result"]
         assert result["result"] == [[1, 1], [2, 2], [3, 3], [4, 5]]
@@ -51,7 +51,7 @@ class TestLocalRunner:
             node=fastrepl.LLMClassificationHead(context="", labels={})
         )
 
-        result = fastrepl.LocalRunner(evaluator=eval, dataset=ds).run(num=2)
+        result = fastrepl.local_runner(evaluator=eval, dataset=ds).run(num=2)
 
         assert result.column_names == ["sample", "result"]
         assert result["result"] == [[1, 1], [2, 2], [3, 3], [4, None]]
@@ -63,4 +63,4 @@ class TestLocalRunner:
         )
 
         with pytest.raises(ValueError):
-            fastrepl.LocalRunner(evaluator=eval, dataset=ds)
+            fastrepl.local_runner(evaluator=eval, dataset=ds)
