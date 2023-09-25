@@ -1,7 +1,7 @@
 import pytest
 from datasets import Dataset
 
-import fastrepl
+import fastrepl.runner
 
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def mock_runs(monkeypatch):
         def mock_run(*args, **kwargs):
             return next(iter_values)
 
-        monkeypatch.setattr(fastrepl.local_runner, "_run", mock_run)
+        monkeypatch.setattr(fastrepl.runner.LocalEvaluatorRunner, "_run", mock_run)
 
     return ret
 
