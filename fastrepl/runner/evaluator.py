@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from typing import Optional, List, Any
 import inspect
 
@@ -8,17 +7,12 @@ from rich.progress import Progress, TaskID
 
 import fastrepl
 from fastrepl.utils import getenv
+from fastrepl.runner.base import BaseRunner
 
 NUM_THREADS = getenv("NUM_THREADS", 8)
 
 
-class BaseRunner(ABC):
-    @abstractmethod
-    def run(self) -> Dataset:
-        pass
-
-
-class LocalRunner(BaseRunner):
+class LocalEvaluatorRunner(BaseRunner):
     def __init__(
         self,
         evaluator: fastrepl.Evaluator,
@@ -34,7 +28,7 @@ class LocalRunner(BaseRunner):
             eval_name = type(evaluator).__name__
 
             raise ValueError(  # TODO: custom error
-                f"{eval_name} requires {self._input_features}, but the provided dataset has {dataset.column_names}"
+                f"{eval_name} requires {self._input_features!r}, but the provided dataset has {dataset.column_names!r}"
             )
 
         self._evaluator = evaluator
@@ -76,10 +70,11 @@ class LocalRunner(BaseRunner):
             return self._dataset.add_column(self._output_feature, column)
 
 
-class LocalRunnerREPL(LocalRunner):
-    pass
-
-
-class RemoteRunner(BaseRunner):
-    def __init__(self) -> None:
+class RemoteEvaluatorRunner(LocalEvaluatorRunner):
+    def __init__(
+        self,
+        evaluator: fastrepl.Evaluator,
+        dataset: Dataset,
+        output_feature="result",
+    ) -> None:
         raise NotImplementedError

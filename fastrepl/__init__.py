@@ -15,13 +15,10 @@ from fastrepl.eval import (
     RAGEvaluator,
 )
 from fastrepl.analyze import Analyzer
-from fastrepl.dataset import Dataset
+from fastrepl.generate import Generator, QuestionGenerator
 
 from fastrepl.utils import DEBUG
 
-from fastrepl.runner import (
-    LocalRunner,
-    RemoteRunner,
-)
+from fastrepl.runner import local_runner, remote_runner
 
 from fastrepl.pytest_plugin import TestReport
