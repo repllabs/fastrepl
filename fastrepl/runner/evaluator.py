@@ -19,10 +19,8 @@ class LocalEvaluatorRunner(BaseRunner):
         dataset: Dataset,
         output_feature="result",
     ) -> None:
+        self._input_features = evaluator.inputs()
         self._output_feature = output_feature
-        self._input_features = [
-            param for param in inspect.signature(evaluator.run).parameters.keys()
-        ]
 
         if any(feature not in dataset.column_names for feature in self._input_features):
             eval_name = type(evaluator).__name__

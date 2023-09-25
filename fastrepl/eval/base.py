@@ -15,11 +15,18 @@ class BaseEvalNode(ABC):
     def compute(self, *args, **kwargs) -> Optional[Any]:
         ...
 
+    @abstractmethod
+    def inputs(self) -> List[str]:
+        ...
+
 
 class BaseSimpleEvalNode(BaseEvalNode):
     @abstractmethod
     def compute(self, *, sample: str) -> Optional[str]:
         ...
+
+    def inputs(self) -> List[str]:
+        return ["sample"]
 
 
 class RAGEvalNode(BaseEvalNode):
@@ -27,9 +34,9 @@ class RAGEvalNode(BaseEvalNode):
     def compute(
         self,
         *,
-        question: str,
-        answer: str,
-        contexts: List[str],
-        ground_truths: List[str],
+        question: Optional[str] = None,
+        answer: Optional[str] = None,
+        contexts: Optional[List[str]] = None,
+        ground_truths: Optional[List[str]] = None,
     ) -> Optional[float]:
         ...
