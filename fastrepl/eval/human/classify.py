@@ -5,10 +5,10 @@ import random
 from rich.prompt import Prompt
 from rich.console import Console
 
-from fastrepl.eval.base import BaseEvalNode
+from fastrepl.eval.base import BaseSimpleEvalNode
 
 
-class HumanClassifierRich(BaseEvalNode):
+class HumanClassifierRich(BaseSimpleEvalNode):
     def __init__(
         self,
         labels: Dict[str, str],
@@ -31,22 +31,13 @@ class HumanClassifierRich(BaseEvalNode):
         choices = self.rg.sample(keys, len(keys))
         return choices
 
-    def compute(self, sample: str, context=None) -> str:
+    def compute(self, *, sample: str) -> str:
         prompt = self.render_prompt(sample=sample)  # TODO: Render descriptions
         choices = self._shuffle()
 
-        if context is None:
-            return Prompt.ask(
-                prompt,
-                choices=choices,
-                console=self.console,
-                stream=self.stream,
-            )
-        else:
-            return Prompt.ask(
-                prompt,
-                choices=choices,
-                default=context,
-                console=self.console,
-                stream=self.stream,
-            )
+        return Prompt.ask(
+            prompt,
+            choices=choices,
+            console=self.console,
+            stream=self.stream,
+        )

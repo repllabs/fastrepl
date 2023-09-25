@@ -1,8 +1,7 @@
+import os, contextlib
 from rich.console import Console
 
 console = Console()
-
-import os, contextlib
 
 
 def no_stdout(fn):  # pragma: no cover
