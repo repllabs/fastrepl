@@ -18,10 +18,14 @@
     {
       "name": "Email",
       "url": "mailto:yujonglee@repllabs.ai"
+    },
+    {
+      "name": "Video Call",
+      "url": "https://calendly.com/yujonglee/fastrepl"
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
+    "name": "WebApp",
     "url": "https://app.fastrepl.com"
   },
   "anchors": [
@@ -49,20 +53,18 @@
       ]
     },
     {
-      "group": "Guides",
+      "group": "Advance",
       "pages": [
-        "guides/model_graded_eval",
-        "guides/meta_eval",
-        "guides/human_eval",
-        "guides/dealing_with_bias",
-        "guides/argilla"
+        "advance/meta_eval",
+        "advance/human_eval"
       ]
     },
     {
       "group": "Miscellaneous",
       "pages": [
         "miscellaneous/observability",
-        "miscellaneous/warnings_and_errors"
+        "miscellaneous/warnings_and_errors",
+        "miscellaneous/dealing_with_bias"
       ]
     }
   ],
