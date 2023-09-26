@@ -1,4 +1,22 @@
 ---
 title: General Evaluation
-description: It is not a simple classification
+description: It is more than a simple classification.
 ---
+
+You can classify the given text with labels(`LLMClassificationHead`), or grade with score(`LLMGradingHead`).
+`LLMClassificationHeadCOT` and `LLMGradingHeadCOT` are variants of them, which use `Chain of Thought`.
+
+<CodeGroup>
+```python classification.py
+
+```
+
+```python grading.py
+
+```
+
+</CodeGroup>
+
+```python
+result = fastrepl.local_runner(evaluator=evaluator, dataset=dataset).run()
+```

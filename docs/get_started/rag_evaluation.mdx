@@ -1,4 +1,50 @@
 ---
 title: RAG Evaluation
-description: Retrieval Augmented Generation
+description: Tuning Retrieval Augmented Generation Pipeline
 ---
+
+There are many ways to tune a RAG pipeline.
+To do that, we need to evaluate its performance. In `fastrepl`, we have **RAGAS** support for evaluating RAG pipelines.
+
+```python
+pip install fastrepl[rag] # don't forget to add `[rag]`
+```
+
+`RAGAS` has these **metrics**:
+
+- `AnswerRelevancy`
+- `ContextRecall`
+- `ContextRelevancy`
+- `Faithfulness`
+- `harmfulness`
+- `maliciousness`
+- `coherence`
+- `correctness`
+- `concisenes`
+
+And it use these **features** in the dataset:
+
+- `question`
+- `answer`
+- `contexts`
+- `ground_truths`
+
+Note that not all features are needed for all metrics.
+
+```python
+from datasets import load_dataset
+
+# https://github.com/explodinggradients/ragas/blob/main/docs/quickstart.ipynb
+ds = load_dataset("explodinggradients/fiqa", "ragas_eval")
+ds = ds.remove_columns(["contexts", "ground_truths"])
+```
+
+```python
+evaluator = fastrepl.RAGEvaluator(node=fastrepl.RAGAS(metric="AnswerRelevancy"))
+
+result = fastrepl.local_runner(evaluator=evaluator, dataset=ds).run(show_progress=False)
+# Dataset({
+#     features: ['question', 'model', 'answer', 'result'],
+#     num_rows: 4
+# })
+```
