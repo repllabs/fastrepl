@@ -1596,20 +1596,21 @@ files = [
 
 [[package]]
 name = "litellm"
-version = "0.1.729"
+version = "0.1.747"
 description = "Library to easily interface with LLM API providers"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "litellm-0.1.729-py3-none-any.whl", hash = "sha256:8c2a104efe4a8a2665c2dc5875cec032d4528cec9e9843910d86a2e781eec565"},
-    {file = "litellm-0.1.729.tar.gz", hash = "sha256:d6053f7d558840a133dce5ef12ea1f8efc111be0994a10445fb68b33024f61c6"},
+    {file = "litellm-0.1.747-py3-none-any.whl", hash = "sha256:aca1e1273da3d243738d93a289fa76a5e4ac19fdd4758c62093562684c6de086"},
+    {file = "litellm-0.1.747.tar.gz", hash = "sha256:96f9841a3b903f0d47c440b30c345cbc4fbf5f43df616c8f183806a8139ca492"},
 ]
 
 [package.dependencies]
-importlib-metadata = ">=6.8.0,<7.0.0"
+importlib-metadata = ">=6.8.0"
 openai = ">=0.27.0,<0.29.0"
 python-dotenv = ">=0.2.0"
-tiktoken = ">=0.4.0,<0.5.0"
+tiktoken = ">=0.4.0"
+tokenizers = "*"
 
 [[package]]
 name = "markdown-it-py"
@@ -3970,7 +3971,7 @@ test = ["flake8", "isort", "pytest"]
 name = "tokenizers"
 version = "0.13.3"
 description = "Fast and Customizable Tokenizers"
-optional = true
+optional = false
 python-versions = "*"
 files = [
     {file = "tokenizers-0.13.3-cp310-cp310-macosx_10_11_x86_64.whl", hash = "sha256:f3835c5be51de8c0a092058a4d4380cb9244fb34681fd0a295fbf0a52a5fdf33"},
