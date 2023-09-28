@@ -4657,10 +4657,10 @@ docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.link
 testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy (>=0.9.1)", "pytest-ruff"]
 
 [extras]
-rag = ["ragas"]
+rag = ["datasets", "ragas"]
 sas = ["sentence-transformers", "torch", "transformers"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "04b658b22c049bc93c1a7cb26966bef4fce0b8d2fc2bd5f850bf4cf28b4fef24"
+content-hash = "43fe93f8affb5c491db2cccef4876d73109e5cd85b3012102758e37dd88d46d5"

@@ -45,11 +45,6 @@ class EmptyDatasetError(Error):
         return ""  # pragma: no cover
 
 
-class EmptyDatasetError(Error):
-    def doc_url(self) -> str:
-        return ""  # pragma: no cover
-
-
 class DatasetPushError(Error):
     def doc_url(self) -> str:
         return ""  # pragma: no cover
