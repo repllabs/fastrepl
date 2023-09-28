@@ -60,8 +60,10 @@ class Dataset:
         return HF_Dataset.from_dict(self.data)
 
     @classmethod
-    def from_cloud(cls, id: str) -> "Dataset":
+    def from_cloud(cls, id: str, version: Optional[str] = None) -> "Dataset":
         url = f"{Dataset._base_url()}/get/{id}"
+        if version is not None:
+            url += f"?version={version}"
 
         with httpx.Client(headers=Dataset._headers()) as client:
             res = client.get(url).json()
