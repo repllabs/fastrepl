@@ -1,9 +1,8 @@
 from typing import Optional, Callable, List, Any
-import inspect
 
 from multiprocessing.pool import ThreadPool
 from datasets import Dataset
-from rich.progress import Progress, TaskID
+from rich.progress import Progress
 
 import fastrepl
 from fastrepl.utils import getenv, console
