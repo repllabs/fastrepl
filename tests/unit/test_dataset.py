@@ -4,34 +4,37 @@ from datasets import Dataset as HF_Dataset
 
 import fastrepl
 
-fastrepl.api_key = "TEST"
-fastrepl.api_base = "http://api.fastrepl.com"
+
+@pytest.fixture
+def mock_api():
+    fastrepl.api_key = "TEST"
+    fastrepl.api_base = "http://api.fastrepl.com"
 
 
-def test_no_api_key():
+def test_no_api_key(mock_api):
     fastrepl.api_key = None
 
     with pytest.raises(Exception):
         fastrepl.Dataset.from_dict({"a": [1]})
 
 
-def test_from_dict():
+def test_from_dict(mock_api):
     ds = fastrepl.Dataset.from_dict({"a": [1]})
     assert ds.to_dict() == {"a": [1]}
 
 
-def test_to_dict():
+def test_to_dict(mock_api):
     ds = fastrepl.Dataset.from_dict({"a": [1]})
     assert ds.to_dict() == {"a": [1]}
 
 
-def test_from_hf():
+def test_from_hf(mock_api):
     hf_ds = HF_Dataset.from_dict({"a": [1]})
     ds = fastrepl.Dataset.from_hf(hf_ds)
     assert ds.to_dict() == {"a": [1]}
 
 
-def test_from_cloud(httpx_mock: HTTPXMock):
+def test_from_cloud(mock_api, httpx_mock: HTTPXMock):
     httpx_mock.add_response(json={"a": ["1"]})
 
     ds = fastrepl.Dataset.from_cloud(id="123")
