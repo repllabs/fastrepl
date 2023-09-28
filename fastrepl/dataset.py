@@ -61,13 +61,21 @@ class Dataset:
 
     @classmethod
     def from_cloud(cls, id: str) -> "Dataset":
-        url = f"{Dataset._base_url()}/{id}"
+        url = f"{Dataset._base_url()}/get/{id}"
 
         with httpx.Client(headers=Dataset._headers()) as client:
             res = client.get(url).json()
             data = res["data"]
 
             return Dataset.from_dict(data)
+
+    @classmethod
+    def list_cloud(cls) -> List[str]:
+        url = f"{Dataset._base_url()}/list"
+
+        with httpx.Client(headers=Dataset._headers()) as client:
+            res = client.get(url)
+            return res.json()["ids"]
 
     def push_to_cloud(self, id: Optional[str]) -> str:
         url = f"{Dataset._base_url()}/new"

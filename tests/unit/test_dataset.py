@@ -41,7 +41,7 @@ def test_to_hf(mock_api):
 
 
 def test_from_cloud(mock_api, httpx_mock: HTTPXMock):
-    httpx_mock.add_response(json={"a": ["1"]})
+    httpx_mock.add_response(json={"data": {"a": ["1"]}})
 
     ds = fastrepl.Dataset.from_cloud(id="123")
     assert ds.data == {"a": ["1"]}
