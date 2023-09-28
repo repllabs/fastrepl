@@ -1,6 +1,6 @@
 from typing import Callable, Optional, Iterable, Mapping, List, Any, cast
 
-from concurrent.futures import ThreadPoolExecutor, Future
+from concurrent.futures import ThreadPoolExecutor, Future, as_completed
 from rich.progress import Progress
 
 from fastrepl.utils import getenv, console
@@ -38,4 +38,4 @@ class LocalCustomRunner:
                     future.add_done_callback(cb)
                     futures.append(future)
 
-                return [future.result() for future in futures]
+                return [future.result() for future in as_completed(futures)]
