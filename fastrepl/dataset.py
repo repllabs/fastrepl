@@ -61,19 +61,21 @@ class Dataset:
 
     @classmethod
     def from_cloud(cls, id: str) -> "Dataset":
+        url = f"{Dataset._base_url()}/{id}"
+
         with httpx.Client(headers=Dataset._headers()) as client:
-            res = client.get(f"{Dataset._base_url()}/{id}")
-            data = res.json()
+            res = client.get(url).json()
+            data = res["data"]
 
             return Dataset.from_dict(data)
 
     def push_to_cloud(self, id: Optional[str]) -> str:
-        url = f"{Dataset._base_url()}/" + (id or "new")
+        url = f"{Dataset._base_url()}/new"
 
         with httpx.Client(headers=Dataset._headers()) as client:
-            res = client.get(url)
+            res = client.post(url, json={"id": id, "data": self.data})
 
             try:
                 return res.json()["id"]
             except Exception as e:
-                raise DatasetPushError(str(e))
+                raise DatasetPushError(res)
