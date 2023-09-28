@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 
 import fastrepl
+from fastrepl.errors import EmptyDatasetError, DatasetPushError
 
 
 class Dataset:
@@ -41,7 +42,7 @@ class Dataset:
 
     def to_dict(self) -> Dict[str, List[Any]]:
         if self.data is None:
-            raise ValueError  # TODO
+            raise EmptyDatasetError
 
         return self.data
 
@@ -74,5 +75,5 @@ class Dataset:
 
             try:
                 return res.json()["id"]
-            except:
-                raise Exception(res)  # TODO
+            except Exception as e:
+                raise DatasetPushError(str(e))
