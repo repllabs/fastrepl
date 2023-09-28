@@ -6,6 +6,7 @@ api_key: Optional[str] = None
 from fastrepl.eval import *
 from fastrepl.analyze import Analyzer
 from fastrepl.generate import Generator, QuestionGenerator
+from fastrepl.dataset import Dataset
 
 from fastrepl.utils import DEBUG
 
