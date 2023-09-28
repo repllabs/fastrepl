@@ -64,3 +64,29 @@ class TestLocalRunner:
 
         with pytest.raises(ValueError):
             fastrepl.local_runner(evaluator=eval, dataset=ds)
+
+
+class TestCustomRunner:
+    def test_args(self):
+        def adder(x, y):
+            return x + y
+
+        r = fastrepl.runner.LocalCustomRunner(adder)
+        result = r.run(args_list=[(1, 2)] * 100)
+        assert result == [3] * 100
+
+    def test_kwds(self):
+        def adder(*, x, y):
+            return x + y
+
+        r = fastrepl.runner.LocalCustomRunner(adder)
+        result = r.run(kwds_list=[{"x": 1, "y": 2}] * 100)
+        assert result == [3] * 100
+
+    def test_args_kwds(self):
+        def adder(x, *, y):
+            return x + y
+
+        r = fastrepl.runner.LocalCustomRunner(adder)
+        result = r.run(args_list=[(1,)] * 100, kwds_list=[{"y": 2}] * 100)
+        assert result == [3] * 100

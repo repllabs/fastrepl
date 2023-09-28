@@ -1,29 +1,47 @@
-from typing import Union, overload
+from typing import Union, Callable, overload
 
 from datasets import Dataset
 
 import fastrepl
 from fastrepl.runner.evaluator import LocalEvaluatorRunner, RemoteEvaluatorRunner
 from fastrepl.runner.generator import LocalGeneratorRunner, RemoteGeneratorRunner
+from fastrepl.runner.others import LocalCustomRunner
+
+
+@overload
+def local_runner(*, fn: Callable) -> LocalCustomRunner:
+    ...
 
 
 @overload
 def local_runner(*, generator: fastrepl.Generator) -> LocalGeneratorRunner:
-    return LocalGeneratorRunner(generator)
+    ...
 
 
 @overload
 def local_runner(
     *, evaluator: fastrepl.Evaluator, dataset: Dataset, output_feature="result"
 ) -> LocalEvaluatorRunner:
-    return LocalEvaluatorRunner(evaluator, dataset, output_feature)
+    ...
 
 
-def local_runner(**kwargs) -> Union[LocalEvaluatorRunner, LocalGeneratorRunner]:
+def local_runner(
+    **kwargs,
+) -> Union[LocalGeneratorRunner, LocalEvaluatorRunner, LocalCustomRunner]:
     if "generator" in kwargs:
         return LocalGeneratorRunner(generator=kwargs["generator"])
 
-    return LocalEvaluatorRunner(**kwargs)
+    if "evaluator" in kwargs:
+        return LocalEvaluatorRunner(
+            evaluator=kwargs["evaluator"],
+            dataset=kwargs["dataset"],
+            output_feature=kwargs.get("output_feature", "result"),
+        )
+
+    if "fn" in kwargs:
+        return LocalCustomRunner(fn=kwargs["fn"])
+
+    raise ValueError
 
 
 @overload
