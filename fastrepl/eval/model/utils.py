@@ -14,9 +14,7 @@ from fastrepl.utils import truncate
 import fastrepl.llm as llm
 
 
-def logit_bias_from(
-    model: llm.SUPPORTED_MODELS, strings: Iterable[str]
-) -> Dict[int, int]:
+def logit_bias_from(model: str, strings: Iterable[str]) -> Dict[int, int]:
     def _get_token_id(s: str) -> int:
         ids = llm.tokenize(model, s)
         if len(ids) != 1:

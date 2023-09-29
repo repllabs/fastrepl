@@ -35,7 +35,6 @@ RAGAS_METRICS = Literal[  # pragma: no cover
     "conciseness",
 ]
 
-from fastrepl.llm import SUPPORTED_MODELS
 from fastrepl.utils import suppress
 from fastrepl.eval.base import RAGEvalNode
 
@@ -59,7 +58,7 @@ class RAGAS(RAGEvalNode):
 
     def _load_metric(
         self,
-        model_name: SUPPORTED_MODELS,
+        model_name: str,
         metric_name: RAGAS_METRICS,
     ) -> MetricWithLLM:
         if not model_name.startswith("gpt"):
