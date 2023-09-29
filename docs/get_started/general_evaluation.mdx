@@ -6,17 +6,79 @@ description: It is more than a simple classification.
 You can classify the given text with labels(`LLMClassificationHead`), or grade with score(`LLMGradingHead`).
 `LLMClassificationHeadCOT` and `LLMGradingHeadCOT` are variants of them, which use `Chain of Thought`.
 
+```python
+from datasets import Dataset
+
+dataset = Dataset.from_dict(
+    {
+        "sample": [
+            "Human: Can you help me?\nAssistant: Sure!",
+            "Human: Can you help me?\nAssistant: No",
+        ]
+    }
+)
+```
+## Grading
 <CodeGroup>
 ```python classification.py
-
+evaluator = fastrepl.SimpleEvaluator(
+    node=fastrepl.LLMGradingHead(
+        model="gpt-3.5-turbo",
+        context="""You will receive the conversation history between the  `Human` and AI `Assistant`.
+Please rate the helpfulness of the Assistant on a scale from 1 to 5."""
+        number_from=1,
+        number_to=5,
+    )
+)
 ```
 
-```python grading.py
-
+```python cot_classification.py
+evaluator = fastrepl.SimpleEvaluator(
+    node=fastrepl.LLMGradingHeadCOT(
+        model="gpt-3.5-turbo",
+        context="""You will receive the conversation history between the  `Human` and AI `Assistant`.
+Please rate the helpfulness of the Assistant on a scale from 1 to 5."""
+        number_from=1,
+        number_to=5,
+    )
+)
 ```
-
 </CodeGroup>
+
+## Classification
+
+```python
+labels = {
+    "GOOD": "`Assistant` was helpful and not harmful for `Human` in any way.",
+    "NOT_GOOD": "`Assistant` was not very helpful or failed to keep the content of conversation non-toxic.",
+}
+```
+<CodeGroup>
+```python classification.py
+evaluator = fastrepl.SimpleEvaluator(
+    node=fastrepl.LLMClassificationHead(
+        model="gpt-3.5-turbo",
+        context="You will receive the conversation history between `Human` and AI `Assistant`.",
+        labels=labels,
+    )
+)
+```
+
+```python cot_classification.py
+evaluator = fastrepl.SimpleEvaluator(
+    node=fastrepl.LLMClassificationHeadCOT(
+        model="gpt-3.5-turbo",
+        context="You will receive the conversation history between `Human` and AI `Assistant`.",
+        labels=labels,
+    )
+)
+```
+</CodeGroup>
+
+## Run
 
 ```python
 result = fastrepl.local_runner(evaluator=evaluator, dataset=dataset).run()
 ```
+
+<Warning>We only support `local_runner` for evaluators at the moment.</Warning>

@@ -50,7 +50,10 @@ evaluator = fastrepl.SimpleEvaluator(
     )
 )
 
-result = fastrepl.local_runner(evaluator, dataset).run(num=2)
+result = fastrepl.local_runner(
+    evaluator=evaluator,
+    dataset=dataset,
+).run(num=2)
 
 print(result["result"]) # [['GOOD', 'GOOD'], ['NOT_GOOD', 'NOT_GOOD']]
 print(fastrepl.Analyzer(result).run(mode="kappa")) # {'kappa': 1.0}

@@ -6,8 +6,6 @@ description: LLM powered dataset generation
 ## Question Generation
 
 ### Local
-If you don't provide `api_key`, it will run on local machine.
-
 <Warning>We don't support `local_runner` for generators at the moment.</Warning>
 
 ### Remote
@@ -15,8 +13,8 @@ If you don't provide `api_key`, it will run on local machine.
 
 1. It use multiple LLMs and chunk sizes to generate **diverse dataset.**
 2. It use **GPU** to run small models like Cross-Encoder, to **filter out the results.**
-3. Model weights and tokenizers are cached for **faster cold start.**
-4. Workload is distributed across auto-scaling containers, so it can **handle huge inputs.**
+3. You can **spawn as many jobs as you want**, rather than staring at the terminal until it finish.
+4. **(Roadmap)** `app.fastrepl.com` will provide visualization and dataset management.
 
 <Note>You can grab a key from [here](https://app.fastrepl.com).</Note>
 
