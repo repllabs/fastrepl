@@ -117,12 +117,14 @@ def handle_llm_exception(e: Exception):
 @backoff.on_exception(
     wait_gen=backoff.constant,
     exception=(RetryConstantException),
+    raise_on_giveup=True,
     max_tries=3,
     interval=3,
 )
 @backoff.on_exception(
     wait_gen=backoff.expo,
     exception=(RetryExpoException),
+    raise_on_giveup=True,
     jitter=backoff.full_jitter,
     max_value=100,
     factor=1.5,
@@ -158,6 +160,8 @@ def completion(  # pragma: no cover
         return result
     except Exception as e:
         handle_llm_exception(e)
+
+    raise Exception  # to make mypy happy
 
 
 @functools.lru_cache(maxsize=None)
