@@ -2,9 +2,8 @@ import pytest
 import openai.error
 import litellm
 
-import fastrepl.llm as llm
 from fastrepl.llm import (
-    handle_llm_exception,
+    raise_openai_exception_for_retry,
     RetryConstantException,
     RetryExpoException,
     completion,
@@ -29,7 +28,7 @@ class TestHandleLLMException:
     )
     def test_constant(self, exception):
         with pytest.raises(RetryConstantException):
-            handle_llm_exception(exception)
+            raise_openai_exception_for_retry(exception)
 
     @pytest.mark.parametrize(
         "exception",
@@ -39,7 +38,7 @@ class TestHandleLLMException:
     )
     def test_expo(self, exception):
         with pytest.raises(RetryExpoException):
-            handle_llm_exception(exception)
+            raise_openai_exception_for_retry(exception)
 
     @pytest.mark.parametrize(
         "exception",
@@ -54,7 +53,7 @@ class TestHandleLLMException:
     )
     def test_no_retry(self, exception):
         with pytest.raises(type(exception)):
-            handle_llm_exception(exception)
+            raise_openai_exception_for_retry(exception)
 
 
 class TestContextFallback:

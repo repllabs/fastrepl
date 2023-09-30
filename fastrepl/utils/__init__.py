@@ -10,3 +10,8 @@ from fastrepl.utils.print import console, suppress
 from fastrepl.utils.debug import debug, DEBUG
 from fastrepl.utils.string import truncate, number
 from fastrepl.utils.kappa import kappa
+from fastrepl.utils.llm import (
+    raise_openai_exception_for_retry,
+    RetryConstantException,
+    RetryExpoException,
+)

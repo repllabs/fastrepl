@@ -1,18 +1,22 @@
 from typing import List, Dict, Any
 import functools
-import traceback
 
 import backoff
 import openai.error
+from wrapt_timeout_decorator import timeout
 
 from fastrepl.warnings import (
     warn,
     CompletionTruncatedWarning,
-    UnknownLLMExceptionWarning,
 )
 from fastrepl.errors import TokenizeNotImplementedError
-from fastrepl.utils import getenv, debug
-
+from fastrepl.utils import (
+    getenv,
+    debug,
+    RetryExpoException,
+    RetryConstantException,
+    raise_openai_exception_for_retry,
+)
 
 import litellm
 import litellm.exceptions
@@ -33,85 +37,54 @@ litellm.telemetry = False  # pragma: no cover
 litellm.cache = Cache()  # pragma: no cover
 litellm.cache.get_cache_key = custom_get_cache_key  # pragma: no cover
 
-litellm_config = {
-    "function": "completion",
-    "model": {
-        "gpt-3.5-turbo": {
-            "error_handling": {
-                "ContextWindowExceededError": {"fallback_model": "gpt-3.5-turbo-16k"}
-            }
-        },
-        "gpt-3.5-turbo-0301": {
-            "error_handling": {
-                "ContextWindowExceededError": {
-                    "fallback_model": "gpt-3.5-turbo-16k-0301"
+
+@timeout(15, timeout_exception=openai.error.Timeout)
+def litellm_completion(**kwargs) -> litellm.ModelResponse:  # pragma: no cover
+    litellm_config = {
+        "function": "completion",
+        "model": {
+            "gpt-3.5-turbo": {
+                "error_handling": {
+                    "ContextWindowExceededError": {
+                        "fallback_model": "gpt-3.5-turbo-16k"
+                    }
                 }
-            }
-        },
-        "gpt-3.5-turbo-0613": {
-            "error_handling": {
-                "ContextWindowExceededError": {
-                    "fallback_model": "gpt-3.5-turbo-16k-0613"
+            },
+            "gpt-3.5-turbo-0301": {
+                "error_handling": {
+                    "ContextWindowExceededError": {
+                        "fallback_model": "gpt-3.5-turbo-16k-0301"
+                    }
                 }
-            }
+            },
+            "gpt-3.5-turbo-0613": {
+                "error_handling": {
+                    "ContextWindowExceededError": {
+                        "fallback_model": "gpt-3.5-turbo-16k-0613"
+                    }
+                }
+            },
+            "gpt-4": {
+                "error_handling": {
+                    "ContextWindowExceededError": {"fallback_model": "gpt-4-32k"}
+                }
+            },
+            "gpt-4-0314": {
+                "error_handling": {
+                    "ContextWindowExceededError": {"fallback_model": "gpt-4-32k-0314"}
+                }
+            },
+            "gpt-4-0613": {
+                "error_handling": {
+                    "ContextWindowExceededError": {"fallback_model": "gpt-4-32k-0613"}
+                }
+            },
         },
-        "gpt-4": {
-            "error_handling": {
-                "ContextWindowExceededError": {"fallback_model": "gpt-4-32k"}
-            }
-        },
-        "gpt-4-0314": {
-            "error_handling": {
-                "ContextWindowExceededError": {"fallback_model": "gpt-4-32k-0314"}
-            }
-        },
-        "gpt-4-0613": {
-            "error_handling": {
-                "ContextWindowExceededError": {"fallback_model": "gpt-4-32k-0613"}
-            }
-        },
-    },
-}
-
-
-class RetryConstantException(Exception):
-    pass
-
-
-class RetryExpoException(Exception):
-    pass
-
-
-def handle_llm_exception(e: Exception):
-    if isinstance(
-        e,
-        (
-            openai.error.APIError,
-            openai.error.TryAgain,
-            openai.error.Timeout,
-            openai.error.ServiceUnavailableError,
-        ),
-    ):
-        raise RetryConstantException from e
-    elif isinstance(e, openai.error.RateLimitError):
-        raise RetryExpoException from e
-    elif isinstance(
-        e,
-        (
-            openai.error.APIConnectionError,
-            openai.error.InvalidRequestError,
-            openai.error.AuthenticationError,
-            openai.error.PermissionError,
-            openai.error.InvalidAPIType,
-            openai.error.SignatureVerificationError,
-        ),
-    ):
-        raise e
-    else:
-        name = type(e).__name__
-        trace = traceback.format_exc()
-        warn(UnknownLLMExceptionWarning, context=f"{name}: {trace}")
-        raise e
+    }
+    res = litellm.completion_with_config(litellm_config, **kwargs)
+    if res is None:
+        raise RetryConstantException
+    return res
 
 
 @backoff.on_exception(
@@ -141,8 +114,7 @@ def completion(  # pragma: no cover
     https://docs.litellm.ai/docs/providers
     """
     try:
-        result = litellm.completion_with_config(
-            litellm_config,
+        result = litellm_completion(
             model=model,
             messages=messages,
             temperature=temperature,
@@ -159,7 +131,7 @@ def completion(  # pragma: no cover
 
         return result
     except Exception as e:
-        handle_llm_exception(e)
+        raise_openai_exception_for_retry(e)
 
     raise Exception  # to make mypy happy
 

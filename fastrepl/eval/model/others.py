@@ -1,11 +1,20 @@
 from typing import Literal, Optional, List
 
-from langchain.chat_models import ChatOpenAI
+import backoff
+import openai.error
+from wrapt_timeout_decorator import timeout
 
+from fastrepl.utils import (
+    raise_openai_exception_for_retry,
+    RetryConstantException,
+    RetryExpoException,
+)
 from lazy_imports import try_import
 
 with try_import() as optional_package_import:
-    from ragas import evaluate
+    from datasets import Dataset
+    from langchain.chat_models import ChatOpenAI
+
     from ragas.metrics.base import MetricWithLLM, EvaluationMode
     from ragas.metrics import (
         Faithfulness,
@@ -21,7 +30,14 @@ with try_import() as optional_package_import:
         conciseness,
     )
 
-    from datasets import Dataset
+    from ragas import evaluate as _evaluate
+    from fastrepl.utils import suppress
+
+    @timeout(15, timeout_exception=openai.error.Timeout)
+    @suppress
+    def evaluate(dataset: Dataset, metric: MetricWithLLM) -> Optional[float]:
+        result = _evaluate(dataset=dataset, metrics=[metric])
+        return list(result.scores[0].values())[0]
 
 
 RAGAS_METRICS = Literal[  # pragma: no cover
@@ -36,7 +52,6 @@ RAGAS_METRICS = Literal[  # pragma: no cover
     "conciseness",
 ]
 
-from fastrepl.utils import suppress
 from fastrepl.eval.base import RAGEvalNode
 
 
@@ -94,8 +109,6 @@ class RAGAS(RAGEvalNode):
         else:
             raise ValueError
 
-        # TODO: https://github.com/explodinggradients/ragas/pull/118
-        metric.strictness = 1
         return metric
 
     def inputs(self) -> List[str]:
@@ -169,13 +182,29 @@ class RAGAS(RAGEvalNode):
         else:
             raise ValueError
 
-        return self._evaluate(ds, self.metric)
+        return self._evaluate_with_retry(dataset=ds, metric=self.metric)
 
-    @suppress
-    def _evaluate(self, ds: Dataset, metric: MetricWithLLM) -> Optional[float]:
-        result = evaluate(dataset=ds, metrics=[metric])
-
+    @backoff.on_exception(
+        wait_gen=backoff.constant,
+        exception=(RetryConstantException),
+        raise_on_giveup=True,
+        max_tries=3,
+        interval=3,
+    )
+    @backoff.on_exception(
+        wait_gen=backoff.expo,
+        exception=(RetryExpoException),
+        raise_on_giveup=True,
+        jitter=backoff.full_jitter,
+        max_value=100,
+        factor=1.5,
+    )
+    def _evaluate_with_retry(
+        self, dataset: Dataset, metric: MetricWithLLM
+    ) -> Optional[float]:
         try:
-            return list(result.scores[0].values())[0]
-        except Exception:
-            return None
+            return evaluate(dataset=dataset, metric=metric)
+        except Exception as e:
+            raise_openai_exception_for_retry(e)
+
+        raise Exception  # to make mypy happy
