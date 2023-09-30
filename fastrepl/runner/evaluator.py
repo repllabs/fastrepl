@@ -49,7 +49,7 @@ class LocalEvaluatorRunner(BaseRunner):
             ]
 
             for future in futures:
-                results.append((future.get()))
+                results.append(future.get())
                 if cb is not None:
                     cb()
 
