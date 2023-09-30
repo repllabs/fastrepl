@@ -64,9 +64,9 @@ def test_iter():
     ds = fastrepl.Dataset.from_dict({"a": [0, 0, 0], "b": [1, 1, 1]})
 
     count = 0
-    for a, b in ds:
-        assert a == 0
-        assert b == 1
+    for row in ds:
+        assert row["a"] == 0
+        assert row["b"] == 1
         count += 1
     assert count == 3
 
@@ -92,3 +92,14 @@ def test_index():
     ds = fastrepl.Dataset.from_dict({"a": [0, 0, 0], "b": [1, 1, 1]})
     assert ds["a"] == [0, 0, 0]
     assert ds["b"] == [1, 1, 1]
+
+
+def test_map():
+    ds1 = fastrepl.Dataset.from_dict({"a": [0, 0, 0], "b": [1, 1, 1]})
+    ds2 = ds1.map(lambda row: {"a": row["a"] + 1, "b": row["b"] + 1})
+
+    assert ds1["a"] == [0, 0, 0]
+    assert ds1["b"] == [1, 1, 1]
+
+    assert ds2["a"] == [1, 1, 1]
+    assert ds2["b"] == [2, 2, 2]

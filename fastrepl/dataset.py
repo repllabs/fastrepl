@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Dict, List, Any, cast
+from typing import TYPE_CHECKING, Optional, Callable, Dict, List, Any, cast
 
 import httpx
 from lazy_imports import try_import
@@ -41,10 +41,10 @@ class Dataset:
         self._iter = range(len(self._data) + 1).__iter__()
         return self
 
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         try:
             i = next(self._iter)
-            return [v[i] for v in self._data.values()]
+            return {col: self._data[col][i] for col in self.column_names}
         except StopIteration:
             raise StopIteration
 
@@ -62,6 +62,16 @@ class Dataset:
 
         self._data[name] = list(values)
         return self
+
+    def map(self, func: Callable[[Dict[str, Any]], Dict[str, Any]]) -> "Dataset":
+        if self._data is None:
+            raise EmptyDatasetError
+
+        rows = []
+        for row in self:
+            rows.append(func(row))
+        data = {col: [row[col] for row in rows] for col in self.column_names}
+        return Dataset.from_dict(data)
 
     @classmethod
     def _headers(cls):
