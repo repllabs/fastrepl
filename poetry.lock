@@ -3188,23 +3188,24 @@ cffi = {version = "*", markers = "implementation_name == \"pypy\""}
 
 [[package]]
 name = "ragas"
-version = "0.0.15"
+version = "0.0.16"
 description = ""
 optional = true
 python-versions = "*"
 files = [
-    {file = "ragas-0.0.15-py3-none-any.whl", hash = "sha256:0651e5bebe40f43dfbb1c4f8685b99677c6e5e9998372d06b66eb4e14b4ebcd8"},
-    {file = "ragas-0.0.15.tar.gz", hash = "sha256:a1bf9cdd9b85a713d59f2f5f8a6b9f22d5d2d4dcdecfc0f8183d9ac6a5915781"},
+    {file = "ragas-0.0.16-py3-none-any.whl", hash = "sha256:ece80ac8f9b87842b84e272f13942715d86c35417625b20a45e7c1acfb99844a"},
+    {file = "ragas-0.0.16.tar.gz", hash = "sha256:b44f3f025e8e76e7628012f2132274b8765b0014e8af25672731c66e8b95dbba"},
 ]
 
 [package.dependencies]
 datasets = "*"
-langchain = ">=0.0.218"
+langchain = ">=0.0.288"
 numpy = "*"
 openai = "*"
 pydantic = "<2.0"
 pysbd = ">=0.3.4"
 sentence-transformers = "*"
+tiktoken = "*"
 transformers = "*"
 
 [[package]]
@@ -4638,4 +4639,4 @@ sas = ["sentence-transformers", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "1c4748f5a5c8407f6dde90759203982082d052aa3ca35a2c43fdbccedfb3fe88"
+content-hash = "db98b4f5c6407cc772c3b95aa8cfb4e85e1e40454bb56e39f4f7ccd12d8bcb63"

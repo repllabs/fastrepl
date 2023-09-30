@@ -8,10 +8,10 @@ with try_import() as optional_package_import:
     from ragas import evaluate
     from ragas.metrics.base import MetricWithLLM, EvaluationMode
     from ragas.metrics import (
-        AnswerRelevancy,
-        ContextRecall,
-        ContextRelevancy,
         Faithfulness,
+        AnswerRelevancy,
+        ContextPrecision,
+        ContextRecall,
     )
     from ragas.metrics.critique import (
         harmfulness,
@@ -25,10 +25,10 @@ with try_import() as optional_package_import:
 
 
 RAGAS_METRICS = Literal[  # pragma: no cover
-    "AnswerRelevancy",
-    "ContextRecall",
-    "ContextRelevancy",
     "Faithfulness",
+    "AnswerRelevancy",
+    "ContextPrecision",
+    "ContextRecall",
     "harmfulness",
     "maliciousness",
     "coherence",
@@ -72,8 +72,8 @@ class RAGAS(RAGEvalNode):
             metric = AnswerRelevancy(llm=llm, batch_size=1)
         elif metric_name == "ContextRecall":
             metric = ContextRecall(llm=llm, batch_size=1)
-        elif metric_name == "ContextRelevancy":
-            metric = ContextRelevancy(llm=llm, batch_size=1)
+        elif metric_name == "ContextPrecision":
+            metric = ContextPrecision(llm=llm, batch_size=1)
         elif metric_name == "Faithfulness":
             metric = Faithfulness(llm=llm, batch_size=1)
         elif metric_name == "harmfulness":
