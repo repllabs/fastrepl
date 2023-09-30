@@ -11,27 +11,23 @@ if TYPE_CHECKING:
 
 
 import fastrepl
-from fastrepl.errors import EmptyDatasetError, DatasetPushError
+from fastrepl.errors import DatasetPushError
 
 
 class Dataset:
     __slots__ = ("_data", "_iter")
 
     def __init__(self) -> None:
-        self._data = cast(Optional[Dict[str, List[Any]]], None)
+        self._data: Dict[str, List[Any]] = {}
 
     def __repr__(self) -> str:
         return f"fastrepl.Dataset({{\n    features: {self.column_names},\n    num_rows: {self.__len__()}\n}})"
 
     def __len__(self) -> int:
-        if self._data is None:
-            return 0
         v0: List[Any] = next(iter(self._data.values()), [])
         return len(v0)
 
     def __getitem__(self, key: str) -> List[Any]:
-        if self._data is None:
-            raise EmptyDatasetError
         if key in self._data:
             return self._data[key]
         else:
@@ -50,23 +46,16 @@ class Dataset:
 
     @property
     def column_names(self) -> List[str]:
-        if self._data is None:
-            raise EmptyDatasetError
         return list(self._data.keys())
 
     def add_column(self, name: str, values: List[Any]) -> "Dataset":
         if self.__len__() != len(values):
             raise ValueError
-        if self._data is None:
-            raise EmptyDatasetError
 
         self._data[name] = list(values)
         return self
 
     def map(self, func: Callable[[Dict[str, Any]], Dict[str, Any]]) -> "Dataset":
-        if self._data is None:
-            raise EmptyDatasetError
-
         rows = []
         for row in self:
             rows.append(func(row))
@@ -93,9 +82,6 @@ class Dataset:
         return ds
 
     def to_dict(self) -> Dict[str, List[Any]]:
-        if self._data is None:
-            raise EmptyDatasetError
-
         return self._data
 
     @classmethod
