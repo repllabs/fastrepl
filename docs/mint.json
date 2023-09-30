@@ -60,6 +60,12 @@
       ]
     },
     {
+      "group": "Cookbook",
+      "pages": [
+        "cookbook/embedchain"
+      ]
+    },
+    {
       "group": "Miscellaneous",
       "pages": [
         "miscellaneous/observability",
