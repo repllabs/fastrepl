@@ -1,6 +1,6 @@
 from typing import Union, Callable, overload
 
-from datasets import Dataset
+from fastrepl.dataset import Dataset
 
 import fastrepl
 from fastrepl.runner.evaluator import LocalEvaluatorRunner, RemoteEvaluatorRunner

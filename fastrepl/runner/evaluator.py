@@ -1,10 +1,10 @@
 from typing import Optional, Callable, List, Any
 
 from multiprocessing.pool import ThreadPool
-from datasets import Dataset
 from rich.progress import Progress
 
 import fastrepl
+from fastrepl.dataset import Dataset
 from fastrepl.utils import getenv, console
 from fastrepl.runner.base import BaseRunner
 
@@ -59,23 +59,25 @@ class LocalEvaluatorRunner(BaseRunner):
         disable = not show_progress
 
         try:
-            with Progress(console=console, transient=True, disable=disable) as progress:
+            with Progress(console=console, disable=disable) as progress:
                 msg = "[cyan]Processing..."
                 task_id = progress.add_task(msg, total=len(self._dataset) * num)
                 cb = lambda: progress.update(task_id, advance=1, refresh=True)
 
                 if num > 1:
                     results = [self._run(cb) for _ in range(num)]
-                    column = list(zip(*results))
-                    return self._dataset.add_column(self._output_feature, column)
+                    multiple_data = [list(item) for item in zip(*results)]
+                    return self._dataset.add_column(self._output_feature, multiple_data)
 
-                column = self._run(cb)
-                return self._dataset.add_column(self._output_feature, column)
+                single_data = self._run(cb)
+                return self._dataset.add_column(self._output_feature, single_data)
         except ValueError as e:
             if "I/O operation on closed file" in str(e):
                 console.print("[cyan]Please re-run with `show_progress=False`")
             else:
                 raise e
+
+        return Dataset.from_dict({})
 
 
 class RemoteEvaluatorRunner(LocalEvaluatorRunner):

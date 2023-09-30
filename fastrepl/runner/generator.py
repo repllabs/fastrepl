@@ -2,7 +2,7 @@ from typing import Optional
 
 import time
 import httpx
-from datasets import Dataset
+from fastrepl.dataset import Dataset
 
 import fastrepl
 from fastrepl.utils import getenv, console
@@ -67,3 +67,5 @@ class RemoteGeneratorRunner(BaseRunner):
             )
         finally:
             client.close()
+
+        return Dataset.from_dict({})

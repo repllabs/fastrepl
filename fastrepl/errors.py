@@ -40,11 +40,6 @@ class TokenizeNotImplementedError(Error, NotImplementedError):
         return "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#tokenizenotimplemented"  # pragma: no cover
 
 
-class EmptyDatasetError(Error):
-    def doc_url(self) -> str:
-        return ""  # pragma: no cover
-
-
 class DatasetPushError(Error):
     def doc_url(self) -> str:
         return ""  # pragma: no cover

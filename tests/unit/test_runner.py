@@ -1,7 +1,7 @@
 import pytest
-from datasets import Dataset
 
 import fastrepl.runner
+from fastrepl.dataset import Dataset
 
 
 @pytest.fixture

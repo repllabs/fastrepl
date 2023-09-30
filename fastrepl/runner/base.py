@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from datasets import Dataset
+from fastrepl.dataset import Dataset
 
 
 class BaseRunner(ABC):
