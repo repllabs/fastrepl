@@ -4638,4 +4638,4 @@ sas = ["sentence-transformers", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "f2a422f8844e17fc9a5daf06041aa22dd2dd51d74d2589ab8ca847c7c6adc8db"
+content-hash = "cff7ce98fb5740915c9eec94541e611dd5cbcccb408b49e2650f1f22d19d2c0b"

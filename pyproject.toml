@@ -72,7 +72,7 @@ ignore_missing_imports = "True"
 enable_incomplete_feature = "Unpack"
 
 [tool.poetry.extras]
-rag = ["ragas", "datasets"]
+rag = ["ragas"]
 sas = ["sentence-transformers", "transformers", "torch"]
 
 [tool.pytest.ini_options]
