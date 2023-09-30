@@ -26,8 +26,16 @@ class Dataset:
     def __len__(self) -> int:
         if self._data is None:
             return 0
-        first_value = next(iter(self._data.values()), [])
-        return len(first_value)
+        v0: List[Any] = next(iter(self._data.values()), [])
+        return len(v0)
+
+    def __getitem__(self, key: str) -> List[Any]:
+        if self._data is None:
+            raise EmptyDatasetError
+        if key in self._data:
+            return self._data[key]
+        else:
+            raise KeyError
 
     def __iter__(self):
         self._iter = range(len(self._data) + 1).__iter__()
@@ -49,9 +57,9 @@ class Dataset:
     def add_column(self, name: str, values: List[Any]) -> "Dataset":
         if self.__len__() != len(values):
             raise ValueError
-
         if self._data is None:
             raise EmptyDatasetError
+
         self._data[name] = values
         return self
 

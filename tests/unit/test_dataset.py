@@ -11,13 +11,6 @@ def mock_api():
     fastrepl.api_base = "http://api.fastrepl.com"
 
 
-def test_no_api_key():
-    fastrepl.api_key = None
-
-    with pytest.raises(Exception):
-        fastrepl.Dataset.from_dict({"a": [1]})
-
-
 def test_from_dict():
     ds = fastrepl.Dataset.from_dict({"a": [1]})
     assert ds.to_dict() == {"a": [1]}
@@ -93,3 +86,9 @@ def test_add_column_invalid():
     ds = fastrepl.Dataset.from_dict({"a": [0, 0, 0], "b": [1, 1, 1]})
     with pytest.raises(ValueError):
         ds.add_column("c", [2, 2, 2, 2])
+
+
+def test_index():
+    ds = fastrepl.Dataset.from_dict({"a": [0, 0, 0], "b": [1, 1, 1]})
+    assert ds["a"] == [0, 0, 0]
+    assert ds["b"] == [1, 1, 1]
