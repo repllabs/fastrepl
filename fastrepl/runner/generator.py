@@ -1,7 +1,7 @@
 from typing import Optional
 
 import time
-import requests
+import httpx
 from datasets import Dataset
 
 import fastrepl
@@ -28,13 +28,15 @@ class RemoteGeneratorRunner(BaseRunner):
         assert fastrepl.api_base is not None
         assert fastrepl.api_key is not None
 
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {fastrepl.api_key}",
+        }
+
         if job_id is None:
-            new_res = requests.post(
+            new_res = httpx.post(
                 f"{fastrepl.api_base}/question/generate/new",
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {fastrepl.api_key}",
-                },
+                headers=headers,
                 json={"text": self._generator.source},
             )
 
@@ -43,15 +45,12 @@ class RemoteGeneratorRunner(BaseRunner):
 
             job_id = new_res.json()["id"]
 
+        client = httpx.Client(headers=headers)
         try:
             with console.status(f"[cyan3]Waiting for job '{job_id}' to finish..."):
                 while True:
-                    res = requests.get(
+                    res = client.get(
                         f"{fastrepl.api_base}/question/generate/result/{job_id}",
-                        headers={
-                            "Content-Type": "application/json",
-                            "Authorization": f"Bearer {fastrepl.api_key}",
-                        },
                     )
 
                     if res.status_code not in [200, 202]:
@@ -66,3 +65,5 @@ class RemoteGeneratorRunner(BaseRunner):
             console.print(
                 f"[cyan3]Interrupted!\nYou can retrieve the job status with `run(job_id='{job_id}')`"
             )
+        finally:
+            client.close()
