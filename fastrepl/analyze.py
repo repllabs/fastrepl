@@ -1,7 +1,6 @@
 from typing import Literal, Dict
 
-from datasets import Dataset
-
+from fastrepl.dataset import Dataset
 from fastrepl.utils import kappa
 
 

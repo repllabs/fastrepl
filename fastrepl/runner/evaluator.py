@@ -1,10 +1,10 @@
 from typing import Optional, Callable, List, Any
 
 from multiprocessing.pool import ThreadPool
-from datasets import Dataset
 from rich.progress import Progress
 
 import fastrepl
+from fastrepl.dataset import Dataset
 from fastrepl.utils import getenv, console
 from fastrepl.runner.base import BaseRunner
 
@@ -59,7 +59,7 @@ class LocalEvaluatorRunner(BaseRunner):
         disable = not show_progress
 
         try:
-            with Progress(console=console, transient=True, disable=disable) as progress:
+            with Progress(console=console, disable=disable) as progress:
                 msg = "[cyan]Processing..."
                 task_id = progress.add_task(msg, total=len(self._dataset) * num)
                 cb = lambda: progress.update(task_id, advance=1, refresh=True)
@@ -76,6 +76,8 @@ class LocalEvaluatorRunner(BaseRunner):
                 console.print("[cyan]Please re-run with `show_progress=False`")
             else:
                 raise e
+
+        return Dataset.from_dict({})
 
 
 class RemoteEvaluatorRunner(LocalEvaluatorRunner):

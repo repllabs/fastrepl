@@ -26,6 +26,7 @@ sentence-transformers = { version = "^2.2.2", optional = true }
 transformers = { version = "^4.31.0", optional = true }
 torch = { version = ">=2.0.0, !=2.0.1", optional = true }
 ragas = { version = ">=0.0.14,<0.0.16", optional = true }
+datasets = { version = "^2.14.4", optional = true }
 httpx = "^0.25.0"
 
 [tool.poetry.group.dev]
@@ -50,7 +51,6 @@ pytest-xdist = "^3.3.1"
 pytest-benchmark = "^4.0.0"
 pytest-cov = "^4.1.0"
 pytest-httpx = "^0.26.0"
-datasets = "^2.14.4"
 
 [tool.coverage.run]
 omit = ["**/__init__.py"]
@@ -72,7 +72,7 @@ ignore_missing_imports = "True"
 enable_incomplete_feature = "Unpack"
 
 [tool.poetry.extras]
-rag = ["ragas"]
+rag = ["ragas", "datasets"]
 sas = ["sentence-transformers", "transformers", "torch"]
 
 [tool.pytest.ini_options]

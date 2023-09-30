@@ -25,7 +25,7 @@ class LocalCustomRunner:
 
         disable = not show_progress
 
-        with Progress(console=console, transient=True, disable=disable) as progress:
+        with Progress(console=console, disable=disable) as progress:
             msg = "[cyan]Processing..."
             task_id = progress.add_task(msg, total=len(args_list))
             cb = lambda future: progress.update(task_id, advance=1, refresh=True)

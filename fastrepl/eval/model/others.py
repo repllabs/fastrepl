@@ -1,6 +1,5 @@
 from typing import Literal, Optional, List
 
-from datasets import Dataset
 from langchain.chat_models import ChatOpenAI
 
 from lazy_imports import try_import
@@ -21,6 +20,8 @@ with try_import() as optional_package_import:
         correctness,
         conciseness,
     )
+
+    from datasets import Dataset
 
 
 RAGAS_METRICS = Literal[  # pragma: no cover
