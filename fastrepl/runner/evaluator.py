@@ -66,11 +66,11 @@ class LocalEvaluatorRunner(BaseRunner):
 
                 if num > 1:
                     results = [self._run(cb) for _ in range(num)]
-                    column = [list(item) for item in zip(*results)]
-                    return self._dataset.add_column(self._output_feature, column)
+                    multiple_data = [list(item) for item in zip(*results)]
+                    return self._dataset.add_column(self._output_feature, multiple_data)
 
-                column = self._run(cb)
-                return self._dataset.add_column(self._output_feature, column)
+                single_data = self._run(cb)
+                return self._dataset.add_column(self._output_feature, single_data)
         except ValueError as e:
             if "I/O operation on closed file" in str(e):
                 console.print("[cyan]Please re-run with `show_progress=False`")
