@@ -11,7 +11,7 @@
     <a href="https://github.com/fastrepl/fastrepl/actions/workflows/ci.yaml" target="_blank">
         <img src="https://github.com/fastrepl/fastrepl/actions/workflows/ci.yaml/badge.svg" alt="CI Status">
     </a>
-    <a href="https://pypi.org/project/litellm/" target="_blank">
+    <a href="https://pypi.org/project/fastrepl" target="_blank">
         <img src="https://img.shields.io/pypi/v/fastrepl.svg" alt="PyPI Version">
     </a>
     <a href="https://discord.gg/nMQ8ZqAegc" target="_blank">
