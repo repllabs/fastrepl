@@ -49,7 +49,7 @@ class LocalEvaluatorRunner(BaseRunner):
             ]
 
             for future in futures:
-                results.append(future.get())
+                results.append((future.get()))
                 if cb is not None:
                     cb()
 
@@ -66,7 +66,7 @@ class LocalEvaluatorRunner(BaseRunner):
 
                 if num > 1:
                     results = [self._run(cb) for _ in range(num)]
-                    column = list(zip(*results))
+                    column = [list(item) for item in zip(*results)]
                     return self._dataset.add_column(self._output_feature, column)
 
                 column = self._run(cb)

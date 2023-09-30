@@ -60,7 +60,7 @@ class Dataset:
         if self._data is None:
             raise EmptyDatasetError
 
-        self._data[name] = values
+        self._data[name] = list(values)
         return self
 
     @classmethod
