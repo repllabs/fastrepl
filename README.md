@@ -17,9 +17,9 @@
     <a href="https://discord.gg/nMQ8ZqAegc" target="_blank">
         <img src="https://dcbadge.vercel.app/api/server/nMQ8ZqAegc?style=flat">
     </a>
-    <a target="_blank" href="https://colab.research.google.com/github/fastrepl/fastrepl/blob/main/docs/getting_started/quickstart.ipynb">
+<!--     <a target="_blank" href="https://colab.research.google.com/github/fastrepl/fastrepl/blob/main/docs/getting_started/quickstart.ipynb">
       <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-    </a>    
+    </a>     -->
 </h4>
 
 ## Quickstart
