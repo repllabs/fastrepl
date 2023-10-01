@@ -29,7 +29,7 @@ class BaseSimpleEvalNode(BaseEvalNode):
         return ["sample"]
 
 
-class RAGEvalNode(BaseEvalNode):
+class BaseRAGEvalNode(BaseEvalNode):
     @abstractmethod
     def run(
         self,

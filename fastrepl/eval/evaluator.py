@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 
-from fastrepl.eval.base import BaseSimpleEvalNode, RAGEvalNode
+from fastrepl.eval.base import BaseSimpleEvalNode, BaseRAGEvalNode
 
 
 class Evaluator(ABC):
@@ -26,7 +26,7 @@ class SimpleEvaluator(Evaluator):
 
 
 class RAGEvaluator(Evaluator):
-    def __init__(self, node: RAGEvalNode) -> None:
+    def __init__(self, node: BaseRAGEvalNode) -> None:
         self.node = node
 
     def run(

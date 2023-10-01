@@ -52,10 +52,10 @@ RAGAS_METRICS = Literal[  # pragma: no cover
     "conciseness",
 ]
 
-from fastrepl.eval.base import RAGEvalNode
+from fastrepl.eval.base import BaseRAGEvalNode
 
 
-class RAGAS(RAGEvalNode):
+class RAGAS(BaseRAGEvalNode):
     def __init__(
         self,
         metric: RAGAS_METRICS,
@@ -70,7 +70,7 @@ class RAGAS(RAGEvalNode):
     ):
         optional_package_import.check()
 
-        self.metric = self._load_metric(model, metric)
+        self._metric = self._load_metric(model, metric)
 
     def _load_metric(
         self,
@@ -80,7 +80,7 @@ class RAGAS(RAGEvalNode):
         if not model_name.startswith("gpt"):
             raise NotImplementedError
 
-        llm = ChatOpenAI(model=str(model_name))  # type: ignore[call-arg]
+        llm = ChatOpenAI(model=model_name)  # type: ignore[call-arg]
 
         metric: MetricWithLLM
         if metric_name == "AnswerRelevancy":
@@ -112,13 +112,13 @@ class RAGAS(RAGEvalNode):
         return metric
 
     def inputs(self) -> List[str]:
-        if self.metric.evaluation_mode == EvaluationMode.qac:
+        if self._metric.evaluation_mode == EvaluationMode.qac:
             return ["question", "answer", "contexts"]
-        elif self.metric.evaluation_mode == EvaluationMode.qa:
+        elif self._metric.evaluation_mode == EvaluationMode.qa:
             return ["question", "answer"]
-        elif self.metric.evaluation_mode == EvaluationMode.qc:
+        elif self._metric.evaluation_mode == EvaluationMode.qc:
             return ["question", "contexts"]
-        elif self.metric.evaluation_mode == EvaluationMode.gc:
+        elif self._metric.evaluation_mode == EvaluationMode.gc:
             return ["ground_truths", "contexts"]
         else:
             raise ValueError
@@ -132,7 +132,7 @@ class RAGAS(RAGEvalNode):
     ) -> Optional[float]:
         ds: Dataset
 
-        if self.metric.evaluation_mode == EvaluationMode.qac:
+        if self._metric.evaluation_mode == EvaluationMode.qac:
             if question is None or answer is None or contexts is None:
                 raise ValueError
             if len(contexts) == 0:
@@ -145,7 +145,7 @@ class RAGAS(RAGEvalNode):
                     "contexts": [contexts],
                 }
             )
-        elif self.metric.evaluation_mode == EvaluationMode.qa:
+        elif self._metric.evaluation_mode == EvaluationMode.qa:
             if question is None or answer is None:
                 raise ValueError
 
@@ -155,7 +155,7 @@ class RAGAS(RAGEvalNode):
                     "answer": [answer],
                 }
             )
-        elif self.metric.evaluation_mode == EvaluationMode.qc:
+        elif self._metric.evaluation_mode == EvaluationMode.qc:
             if question is None:
                 raise ValueError
             if contexts is None or len(contexts) == 0:
@@ -167,7 +167,7 @@ class RAGAS(RAGEvalNode):
                     "contexts": [contexts],
                 }
             )
-        elif self.metric.evaluation_mode == EvaluationMode.gc:
+        elif self._metric.evaluation_mode == EvaluationMode.gc:
             if contexts is None or ground_truths is None:
                 raise ValueError
             if len(contexts) != len(ground_truths) or len(contexts) == 0:
@@ -182,7 +182,7 @@ class RAGAS(RAGEvalNode):
         else:
             raise ValueError
 
-        return self._evaluate_with_retry(dataset=ds, metric=self.metric)
+        return self._evaluate_with_retry(dataset=ds, metric=self._metric)
 
     @backoff.on_exception(
         wait_gen=backoff.constant,
