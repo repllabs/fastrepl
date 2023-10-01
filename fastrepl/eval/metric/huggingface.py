@@ -96,7 +96,7 @@ class HuggingfaceMetric(BaseMetaEvalNode):
                 )
             self.module = evaluate.load(name)
 
-    def compute(self, predictions: List[Any], references: List[Any], **kwargs):
+    def run(self, predictions: List[Any], references: List[Any], **kwargs):
         if any(v is None for v in references):
             raise NoneReferenceError
 

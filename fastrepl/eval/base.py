@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 class BaseMetaEvalNode(ABC):
     @abstractmethod
-    def compute(
+    def run(
         self, predictions: List[Any], references: List[Any], **kwargs
     ) -> Dict[str, Any]:
         ...
@@ -12,7 +12,7 @@ class BaseMetaEvalNode(ABC):
 
 class BaseEvalNode(ABC):
     @abstractmethod
-    def compute(self, *args, **kwargs) -> Optional[Any]:
+    def run(self, *args, **kwargs) -> Optional[Any]:
         ...
 
     @abstractmethod
@@ -22,7 +22,7 @@ class BaseEvalNode(ABC):
 
 class BaseSimpleEvalNode(BaseEvalNode):
     @abstractmethod
-    def compute(self, *, sample: str) -> Optional[str]:
+    def run(self, *, sample: str) -> Optional[str]:
         ...
 
     def inputs(self) -> List[str]:
@@ -31,7 +31,7 @@ class BaseSimpleEvalNode(BaseEvalNode):
 
 class RAGEvalNode(BaseEvalNode):
     @abstractmethod
-    def compute(
+    def run(
         self,
         *,
         question: Optional[str] = None,

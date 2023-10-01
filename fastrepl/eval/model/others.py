@@ -123,7 +123,7 @@ class RAGAS(RAGEvalNode):
         else:
             raise ValueError
 
-    def compute(
+    def run(
         self,
         question: Optional[str] = None,
         answer: Optional[str] = None,

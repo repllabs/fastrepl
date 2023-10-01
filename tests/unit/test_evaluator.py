@@ -5,7 +5,7 @@ from fastrepl.eval.base import BaseSimpleEvalNode
 
 
 class MockEval(BaseSimpleEvalNode):
-    def compute(self, sample: str) -> str:
+    def run(self, sample: str) -> str:
         return sample + "0"
 
 

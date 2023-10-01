@@ -19,7 +19,7 @@ class SimpleEvaluator(Evaluator):
         self.node = node
 
     def run(self, *, sample: str) -> Optional[str]:
-        return self.node.compute(sample=sample)
+        return self.node.run(sample=sample)
 
     def inputs(self) -> List[str]:
         return self.node.inputs()
@@ -37,7 +37,7 @@ class RAGEvaluator(Evaluator):
         contexts: Optional[List[str]] = None,
         ground_truths: Optional[List[str]] = None,
     ) -> Optional[float]:
-        return self.node.compute(
+        return self.node.run(
             question=question,
             answer=answer,
             contexts=contexts,

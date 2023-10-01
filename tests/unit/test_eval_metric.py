@@ -27,14 +27,14 @@ class TestHuggingfaceMetric:
 
         with warnings.catch_warnings():
             warnings.simplefilter("error")
-            result = m.compute(
+            result = m.run(
                 predictions=[0, 1],
                 references=[1, 1],
             )
             assert result["f1"] == pytest.approx(0.66, abs=1e-2)
 
         with pytest.warns():
-            result = m.compute(
+            result = m.run(
                 predictions=[0, None],
                 references=[1, 1],
             )
@@ -42,13 +42,13 @@ class TestHuggingfaceMetric:
 
     def test_error(self):
         m = fastrepl.load_metric("f1")
-        m.compute(
+        m.run(
             predictions=[0, 1],
             references=[0, 1],
         )
 
         with pytest.raises(NoneReferenceError):
-            m.compute(
+            m.run(
                 predictions=[0, 1],
                 references=[0, None],
             )
@@ -62,14 +62,14 @@ class TestHuggingfaceMetric:
             m = fastrepl.load_metric(name)
             if name == "f1":
                 # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/f1/f1.py#L52
-                result = m.compute(
+                result = m.run(
                     predictions=[0, 0, 1, 1, 0],
                     references=[0, 1, 0, 1, 0],
                 )
                 assert result[name] == pytest.approx(0.5)
             if name == "exact_match":
                 # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/exact_match/exact_match.py#L50
-                result = m.compute(
+                result = m.run(
                     predictions=["the cat", "theater", "YELLING", "agent007"],
                     references=["cat?", "theater", "yelling", "agent"],
                 )
@@ -77,14 +77,14 @@ class TestHuggingfaceMetric:
 
             if name == "recall":
                 # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/recall/recall.py#L56
-                result = m.compute(
+                result = m.run(
                     predictions=[0, 1, 0, 1, 1],
                     references=[0, 0, 1, 1, 1],
                 )
                 assert result[name] == pytest.approx(0.66, abs=1e-2)
             if name == "precision":
                 # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/precision/precision.py#L56
-                result = m.compute(
+                result = m.run(
                     predictions=[0, 1, 0, 1, 1],
                     references=[0, 0, 1, 1, 1],
                 )
@@ -92,7 +92,7 @@ class TestHuggingfaceMetric:
 
             if name == "accuracy":
                 # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/accuracy/accuracy.py#L49
-                result = m.compute(
+                result = m.run(
                     predictions=[0, 1, 1, 2, 1, 0],
                     references=[0, 1, 2, 0, 1, 2],
                 )
@@ -100,7 +100,7 @@ class TestHuggingfaceMetric:
 
             if name == "matthews_correlation":
                 # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/matthews_correlation/matthews_correlation.py#L52
-                result = m.compute(
+                result = m.run(
                     predictions=[1, 2, 2, 0, 3, 3],
                     references=[1, 3, 2, 0, 3, 2],
                 )
@@ -108,7 +108,7 @@ class TestHuggingfaceMetric:
 
             if name == "mse":
                 # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/mse/mse.py#L69
-                result = m.compute(
+                result = m.run(
                     predictions=[2.5, 0.0, 2, 8],
                     references=[3, -0.5, 2, 7],
                 )
@@ -116,14 +116,14 @@ class TestHuggingfaceMetric:
 
             if name == "mae":
                 # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/mae/mae.py#L68
-                result = m.compute(
+                result = m.run(
                     predictions=[2.5, 0.0, 2, 8],
                     references=[3, -0.5, 2, 7],
                 )
                 assert result[name] == pytest.approx(0.5)
             if name == "rouge":
                 # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/rouge/rouge.py#L79
-                result = m.compute(
+                result = m.run(
                     predictions=["hello there", "general kenobi"],
                     references=["hello there", "general kenobi"],
                 )
@@ -134,7 +134,7 @@ class TestHuggingfaceMetric:
                 assert result["rougeLsum"] == pytest.approx(1.0)
             if name == "bleu":
                 # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/bleu/bleu.py#L83
-                result = m.compute(
+                result = m.run(
                     predictions=["hello there general kenobi", "foo bar foobar"],
                     references=[
                         ["hello there general kenobi", "hello there!"],
@@ -150,14 +150,14 @@ class TestHuggingfaceMetric:
 
     def test_kwargs_average(self):
         # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/f1/f1.py#L66
-        result = fastrepl.load_metric("f1").compute(
+        result = fastrepl.load_metric("f1").run(
             predictions=[0, 2, 1, 0, 0, 1],
             references=[0, 1, 2, 0, 1, 2],
             average="macro",
         )
         assert result["f1"] == pytest.approx(0.26, abs=1e-2)
 
-        result = fastrepl.load_metric("f1").compute(
+        result = fastrepl.load_metric("f1").run(
             predictions=[0, 2, 1, 0, 0, 1],
             references=[0, 1, 2, 0, 1, 2],
             average="micro",
@@ -165,14 +165,14 @@ class TestHuggingfaceMetric:
         assert result["f1"] == pytest.approx(0.33, abs=1e-2)
 
         # https://github.com/huggingface/evaluate/blob/af3c30561d840b83e54fc5f7150ea58046d6af69/metrics/precision/precision.py#L72
-        result = fastrepl.load_metric("precision").compute(
+        result = fastrepl.load_metric("precision").run(
             predictions=[0, 2, 1, 0, 0, 1],
             references=[0, 1, 2, 0, 1, 2],
             average="macro",
         )
         assert result["precision"] == pytest.approx(0.22, abs=1e-2)
 
-        result = fastrepl.load_metric("precision").compute(
+        result = fastrepl.load_metric("precision").run(
             predictions=[0, 2, 1, 0, 0, 1],
             references=[0, 1, 2, 0, 1, 2],
             average="micro",
@@ -219,8 +219,8 @@ class TestHuggingfaceMetric:
         assert result["accuracy"] == pytest.approx(0.33, abs=1e-2)
 
         # fmt: off
-        assert result["accuracy"] == pytest.approx(fastrepl.load_metric("accuracy").compute(predictions, references)["accuracy"], abs=1e-2)
-        assert result["macro avg"]["f1-score"] == pytest.approx(fastrepl.load_metric("f1").compute(predictions, references, average="macro")["f1"], abs=1e-2)
+        assert result["accuracy"] == pytest.approx(fastrepl.load_metric("accuracy").run(predictions, references)["accuracy"], abs=1e-2)
+        assert result["macro avg"]["f1-score"] == pytest.approx(fastrepl.load_metric("f1").run(predictions, references, average="macro")["f1"], abs=1e-2)
 
         # TODO: These should pass
         # assert result["macro avg"]["precision"] == pytest.approx(fastrepl.load_metric("precision").compute(predictions, references, average="macro")["precision"], abs=1e-2)
@@ -276,7 +276,7 @@ class TestSemanticAnswerSimilarityMetric:
         m = fastrepl.load_metric(
             "sas", model_name_or_path="cross-encoder/ms-marco-MiniLM-L-12-v2"
         )
-        actual = m.compute(predictions=predictions, references=references)
+        actual = m.run(predictions=predictions, references=references)
         assert np.allclose(actual["top_1_sas"], expected["top_1_sas"])
         assert np.allclose(actual["top_k_sas"], expected["top_k_sas"])
         assert np.allclose(actual["pred_label_matrix"], expected["pred_label_matrix"])
@@ -323,7 +323,7 @@ class TestSemanticAnswerSimilarityMetric:
         m = fastrepl.load_metric(
             "sas", model_name_or_path="sentence-transformers/all-MiniLM-L6-v2"
         )
-        actual = m.compute(predictions=predictions, references=references)
+        actual = m.run(predictions=predictions, references=references)
         assert np.allclose(actual["top_1_sas"], expected["top_1_sas"])
         assert np.allclose(actual["top_k_sas"], expected["top_k_sas"])
         assert np.allclose(actual["pred_label_matrix"], expected["pred_label_matrix"])

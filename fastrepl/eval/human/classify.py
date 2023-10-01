@@ -31,7 +31,7 @@ class HumanClassifierRich(BaseSimpleEvalNode):
         choices = self.rg.sample(keys, len(keys))
         return choices
 
-    def compute(self, *, sample: str) -> str:
+    def run(self, *, sample: str) -> str:
         prompt = self.render_prompt(sample=sample)  # TODO: Render descriptions
         choices = self._shuffle()
 

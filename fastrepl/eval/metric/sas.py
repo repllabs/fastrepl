@@ -44,9 +44,7 @@ class SemanticAnswerSimilarityMetric(BaseMetaEvalNode):
         else:
             return sbert.SentenceTransformer(model_name_or_path, device=device)
 
-    def compute(
-        self, predictions: List[List[str]], references: List[List[str]], **kwargs
-    ):
+    def run(self, predictions: List[List[str]], references: List[List[str]], **kwargs):
         if self.is_cross_encoder:
             return self._compute_cross_encoder(predictions, references, **kwargs)
         else:

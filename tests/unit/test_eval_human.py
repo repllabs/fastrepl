@@ -25,5 +25,5 @@ def test_human_eval_with_rich(input, expected):
         stream=io.StringIO(input),
     )
 
-    actual = eval.compute(sample="some sample")
+    actual = eval.run(sample="some sample")
     assert actual == expected

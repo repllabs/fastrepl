@@ -83,7 +83,7 @@ class LLMEvaluationHead(BaseSimpleEvalNode):
         )["choices"][0]["message"]["content"]
 
     # NOTE: It is safe to return NONE, since metric will skip prediction-reference pair if prediction is NONE
-    def compute(self, *, sample: str) -> Optional[str]:
+    def run(self, *, sample: str) -> Optional[str]:
         result = self.completion(sample)
         if result is None:
             return None
@@ -157,10 +157,10 @@ class LLMClassificationHead(LLMEvaluationHead):
     def _compute(self, sample: str) -> Optional[str]:
         if self.position_debias_strategy == "shuffle":
             self.mapping = mappings_from_labels(self.labels, rg=self.rg)
-            return super().compute(sample=sample)
+            return super().run(sample=sample)
 
         if self.position_debias_strategy == "consensus":
-            initial_result = super().compute(sample=sample)
+            initial_result = super().run(sample=sample)
             if initial_result is None:
                 return None
 
@@ -169,13 +169,13 @@ class LLMClassificationHead(LLMEvaluationHead):
                 return initial_result
 
             self.mapping = next_mapping
-            next_result = super().compute(sample=sample)
+            next_result = super().run(sample=sample)
             if next_result is None:
                 return None
 
             return initial_result if initial_result == next_result else None
 
-    def compute(self, *, sample: str) -> Optional[str]:
+    def run(self, *, sample: str) -> Optional[str]:
         token = self._compute(sample)
         if token is None:
             return None
@@ -205,7 +205,7 @@ class LLMGradingHead(LLMEvaluationHead):
     def final_message(self, sample: str, context: str) -> Dict[str, str]:
         return {"role": "user", "content": sample}
 
-    def compute(self, *, sample: str) -> Optional[str]:
+    def run(self, *, sample: str) -> Optional[str]:
         result = number(self.completion(sample))
         if result is None:
             return None
