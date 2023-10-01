@@ -3,6 +3,7 @@ from typing import Callable, Optional, Iterable, Mapping, List, Any, cast
 from concurrent.futures import ThreadPoolExecutor, Future, as_completed
 from rich.progress import Progress
 
+import fastrepl
 from fastrepl.utils import getenv, console
 
 NUM_THREADS = getenv("NUM_THREADS", 8)
@@ -17,7 +18,7 @@ class LocalCustomRunner:
         args_list: Optional[List[Iterable[Any]]] = None,
         kwds_list: Optional[List[Mapping[str, Any]]] = None,
         show_progress=True,
-    ) -> List[Any]:
+    ) -> fastrepl.Dataset:
         assert args_list is not None or kwds_list is not None
 
         args_list = args_list or [()] * len(cast(List[Iterable[Any]], kwds_list))
@@ -38,4 +39,5 @@ class LocalCustomRunner:
                     future.add_done_callback(cb)
                     futures.append(future)
 
-                return [future.result() for future in as_completed(futures)]
+                samples = [future.result() for future in as_completed(futures)]
+                return fastrepl.Dataset.from_dict({"sample": samples})
