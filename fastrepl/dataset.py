@@ -55,6 +55,11 @@ class Dataset:
         self._data[name] = list(values)
         return self
 
+    def rename_column(self, old_name: str, new_name: str) -> "Dataset":
+        data = {col: self._data[col] for col in self.column_names}
+        data[new_name] = data.pop(old_name)
+        return Dataset.from_dict(data)
+
     def map(self, func: Callable[[Dict[str, Any]], Dict[str, Any]]) -> "Dataset":
         rows = []
         for row in self:

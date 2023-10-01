@@ -103,3 +103,22 @@ def test_map():
 
     assert ds2["a"] == [1, 1, 1]
     assert ds2["b"] == [2, 2, 2]
+
+
+def test_rename():
+    ds1 = fastrepl.Dataset.from_dict({"a": [0, 0, 0], "b": [1, 1, 1]})
+    ds2 = ds1.rename_column("a", "c")
+
+    assert len(ds1) == 3
+    assert len(ds1.column_names) == 2
+
+    assert len(ds2) == 3
+    assert len(ds2.column_names) == 2
+
+    assert "a" in ds1.column_names
+    assert "b" in ds1.column_names
+    assert "c" not in ds1.column_names
+
+    assert "a" not in ds2.column_names
+    assert "b" in ds2.column_names
+    assert "c" in ds2.column_names
