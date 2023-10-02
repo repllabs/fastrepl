@@ -1,6 +1,6 @@
 from typing import Callable, Optional, Iterable, Mapping, List, Any, cast
 
-from concurrent.futures import ThreadPoolExecutor, Future, as_completed
+from concurrent.futures import ThreadPoolExecutor, Future
 from rich.progress import Progress
 
 import fastrepl
@@ -39,5 +39,5 @@ class LocalCustomRunner:
                     future.add_done_callback(cb)
                     futures.append(future)
 
-                samples = [future.result() for future in as_completed(futures)]
+                samples = [future.result() for future in futures]
                 return fastrepl.Dataset.from_dict({"sample": samples})

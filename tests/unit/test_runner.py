@@ -72,21 +72,21 @@ class TestCustomRunner:
             return x + y
 
         r = fastrepl.runner.LocalCustomRunner(adder)
-        result = r.run(args_list=[(1, 2)] * 100)
-        assert result.to_dict() == {"sample": [3] * 100}
+        result = r.run(args_list=[(1, 2), (2, 3), (3, 4)])
+        assert result.to_dict() == {"sample": [3, 5, 7]}
 
     def test_kwds(self):
         def adder(*, x, y):
             return x + y
 
         r = fastrepl.runner.LocalCustomRunner(adder)
-        result = r.run(kwds_list=[{"x": 1, "y": 2}] * 100)
-        assert result.to_dict() == {"sample": [3] * 100}
+        result = r.run(kwds_list=[{"x": 1, "y": 2}, {"x": 2, "y": 3}])
+        assert result.to_dict() == {"sample": [3, 5]}
 
     def test_args_kwds(self):
         def adder(x, *, y):
             return x + y
 
         r = fastrepl.runner.LocalCustomRunner(adder)
-        result = r.run(args_list=[(1,)] * 100, kwds_list=[{"y": 2}] * 100)
-        assert result.to_dict() == {"sample": [3] * 100}
+        result = r.run(args_list=[(1,), (2,)], kwds_list=[{"y": 2}, {"y": 3}])
+        assert result.to_dict() == {"sample": [3, 5]}
