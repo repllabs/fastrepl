@@ -23,41 +23,67 @@
 </h4>
 
 ## Quickstart
+
+Let's say we have this existing system:
+
 ```python
-import fastrepl
-from datasets import Dataset
+import openai
 
-dataset = Dataset.from_dict(
-    {
-        "sample": [
-            "Human: Can you help me?\nAssistant: Sure!",
-            "Human: Can you help me?\nAssistant: No",
-        ]
-    }
-)
+context = """
+The first step is to decide what to work on. The work you choose needs to have three qualities: it has to be something you have a natural aptitude for, that you have a deep interest in, and that offers scope to do great work.
+In practice you don't have to worry much about the third criterion. Ambitious people are if anything already too conservative about it. So all you need to do is find something you have an aptitude for and great interest in.
+"""
 
-labels = {
-    "GOOD": "`Assistant` was helpful and not harmful for `Human` in any way.",
-    "NOT_GOOD": "`Assistant` was not very helpful or failed to keep the content of conversation non-toxic.",
-}
-
-evaluator = fastrepl.SimpleEvaluator(
-    node=fastrepl.LLMClassificationHead(
+def run_qa(question: str) -> str:
+    return openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        context="You will get conversation history between `Human` and AI `Assistant`.",
-        labels=labels,
-        position_debias_strategy="consensus",
-    )
-)
-
-result = fastrepl.local_runner(
-    evaluator=evaluator,
-    dataset=dataset,
-).run(num=2)
-
-print(result["result"]) # [['GOOD', 'GOOD'], ['NOT_GOOD', 'NOT_GOOD']]
-print(fastrepl.Analyzer(result).run(mode="kappa")) # {'kappa': 1.0}
+        messages=[
+            {
+                "role": "system",
+                "content": f"Answer in less than 30 words. Use the following context if needed: {context}",
+            },
+            {"role": "user", "content": question},
+        ],
+    )["choices"][0]["message"]["content"]
 ```
+
+We already have a fixed context. Now, let's ask some questions. `local_runner` is used here to run it locally with threads and progress tracking. We will have `remote_runner` to run the same in the cloud.
+
+```python
+contexts = [[context]] * len(questions)
+
+# https://huggingface.co/datasets/repllabs/questions_how_to_do_great_work
+questions = [
+    "how to do great work?.",
+    "How can curiosity be nurtured and utilized to drive great work?",
+    "How does the author suggest finding something to work on?",
+    "How did Van Dyck's painting differ from Daniel Mytens' version and what message did it convey?",
+]
+
+runner = fastrepl.local_runner(fn=run_qa)
+ds = runner.run(args_list=[(q,) for q in questions], output_feature="answer")
+
+ds = ds.add_column("question", questions)
+ds = ds.add_column("contexts", contexts)
+# fastrepl.Dataset({
+#     features: ['answer', 'question', 'contexts'],
+#     num_rows: 4
+# })
+```
+
+Now, let's use one of our evaluators to assess the system. Please note that we are running it 5 times to ensure we obtain consistent results.
+
+```python
+evaluator = fastrepl.RAGEvaluator(node=fastrepl.RAGAS(metric="Faithfulness"))
+
+ds = fastrepl.local_runner(evaluator=evaluator, dataset=ds).run(num=10)
+# ds["result"]
+# [[0.25, 0.0, 0.25, 0.25, 0.5],
+#  [0.5, 0.5, 0.5, 0.75, 0.875],
+#  [0.66, 0.66, 0.66, 0.66, 0.66],
+#  [1.0, 1.0, 1.0, 1.0, 1.0]]
+```
+Seems like we are getting quite good results. If we increase the number of samples a bit, we can obtain a reliable evaluation of the entire system. **We will keep working on bringing better results.**
 
 Detailed documentation is [here](https://docs.fastrepl.com/getting_started/quickstart).
 
