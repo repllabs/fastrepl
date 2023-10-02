@@ -71,7 +71,7 @@ ds = ds.add_column("contexts", contexts)
 # })
 ```
 
-Now, let's use one of our evaluators to assess the system. Please note that we are running it 5 times to ensure we obtain consistent results.
+Now, let's use one of our evaluators to evaluate the dataset. Note that we are running it 5 times to ensure we obtain consistent results.
 
 ```python
 evaluator = fastrepl.RAGEvaluator(node=fastrepl.RAGAS(metric="Faithfulness"))
