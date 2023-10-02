@@ -71,19 +71,19 @@ ds = ds.add_column("contexts", contexts)
 # })
 ```
 
-Now, let's use one of our evaluators to assess the system. Please note that we are running it 5 times to ensure we obtain consistent results.
+Now, let's use one of our evaluators to evaluate the dataset. Note that we are running it 5 times to ensure we obtain consistent results.
 
 ```python
 evaluator = fastrepl.RAGEvaluator(node=fastrepl.RAGAS(metric="Faithfulness"))
 
-ds = fastrepl.local_runner(evaluator=evaluator, dataset=ds).run(num=10)
+ds = fastrepl.local_runner(evaluator=evaluator, dataset=ds).run(num=5)
 # ds["result"]
 # [[0.25, 0.0, 0.25, 0.25, 0.5],
 #  [0.5, 0.5, 0.5, 0.75, 0.875],
 #  [0.66, 0.66, 0.66, 0.66, 0.66],
 #  [1.0, 1.0, 1.0, 1.0, 1.0]]
 ```
-Seems like we are getting quite good results. If we increase the number of samples a bit, we can obtain a reliable evaluation of the entire system. **We will keep working on bringing better results.**
+Seems like we are getting quite good results. If we increase the number of samples a bit, we can obtain a reliable evaluation of the entire system. **We will keep working on bringing better evaluations.**
 
 Detailed documentation is [here](https://docs.fastrepl.com/getting_started/quickstart).
 
