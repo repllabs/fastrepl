@@ -9,7 +9,7 @@ from fastrepl.runner.others import LocalCustomRunner
 
 
 @overload
-def local_runner(*, fn: Callable) -> LocalCustomRunner:
+def local_runner(*, fn: Callable, output_feature: str) -> LocalCustomRunner:
     ...
 
 
@@ -20,7 +20,7 @@ def local_runner(*, generator: fastrepl.Generator) -> LocalGeneratorRunner:
 
 @overload
 def local_runner(
-    *, evaluator: fastrepl.Evaluator, dataset: Dataset, output_feature="result"
+    *, evaluator: fastrepl.Evaluator, dataset: Dataset, output_feature: str
 ) -> LocalEvaluatorRunner:
     ...
 
@@ -39,7 +39,10 @@ def local_runner(
         )
 
     if "fn" in kwargs:
-        return LocalCustomRunner(fn=kwargs["fn"])
+        return LocalCustomRunner(
+            fn=kwargs["fn"],
+            output_feature=kwargs.get("output_feature", "result"),
+        )
 
     raise ValueError
 

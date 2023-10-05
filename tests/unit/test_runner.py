@@ -12,12 +12,16 @@ def mock_runs(monkeypatch):
         def mock_run(*args, **kwargs):
             return next(iter_values)
 
-        monkeypatch.setattr(fastrepl.runner.LocalEvaluatorRunner, "_run", mock_run)
+        monkeypatch.setattr(
+            fastrepl.runner.LocalEvaluatorRunner,
+            "_run_single",
+            mock_run,
+        )
 
     return ret
 
 
-class TestLocalRunner:
+class TestLocalRunnerEvaluator:
     def test_num_1(self, mock_runs):
         mock_runs([[1]])
 
@@ -66,7 +70,7 @@ class TestLocalRunner:
             fastrepl.local_runner(evaluator=eval, dataset=ds)
 
 
-class TestCustomRunner:
+class TestLocalRunnerCustom:
     def test_args(self):
         def adder(x, y):
             return x + y
