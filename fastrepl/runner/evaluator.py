@@ -31,7 +31,7 @@ class LocalEvaluatorRunner(BaseRunner):
         self._evaluator = evaluator
         self._dataset = dataset
 
-    def _run_single(self, cb: Optional[Callable[[], None]]) -> List[Optional[Any]]:
+    def _run_single(self, cb: Callable[[], None]) -> List[Optional[Any]]:
         results = []
 
         with ThreadPool(min(NUM_THREADS, len(self._dataset))) as pool:
@@ -50,8 +50,7 @@ class LocalEvaluatorRunner(BaseRunner):
 
             for future in futures:
                 results.append(future.get())
-                if cb is not None:
-                    cb()
+                cb()
 
         return results
 

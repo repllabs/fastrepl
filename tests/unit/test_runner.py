@@ -94,3 +94,11 @@ class TestLocalRunnerCustom:
         r = fastrepl.runner.LocalCustomRunner(adder)
         result = r.run(args_list=[(1,), (2,)], kwds_list=[{"y": 2}, {"y": 3}])
         assert result.to_dict() == {"sample": [3, 5]}
+
+    def test_num_2(self, mock_runs):
+        def adder(x, *, y):
+            return x + y
+
+        r = fastrepl.runner.LocalCustomRunner(adder)
+        result = r.run(args_list=[(1,), (2,)], kwds_list=[{"y": 2}, {"y": 3}], num=2)
+        assert result.to_dict() == {"sample": [[3, 3], [5, 5]]}
