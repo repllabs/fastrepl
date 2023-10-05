@@ -31,7 +31,7 @@ class LocalEvaluatorRunner(BaseRunner):
         self._evaluator = evaluator
         self._dataset = dataset
 
-    def _run(self, cb: Optional[Callable[[], None]]) -> List[Optional[Any]]:
+    def _run_single(self, cb: Callable[[], None]) -> List[Optional[Any]]:
         results = []
 
         with ThreadPool(min(NUM_THREADS, len(self._dataset))) as pool:
@@ -50,8 +50,7 @@ class LocalEvaluatorRunner(BaseRunner):
 
             for future in futures:
                 results.append(future.get())
-                if cb is not None:
-                    cb()
+                cb()
 
         return results
 
@@ -65,11 +64,11 @@ class LocalEvaluatorRunner(BaseRunner):
                 cb = lambda: progress.update(task_id, advance=1, refresh=True)
 
                 if num > 1:
-                    results = [self._run(cb) for _ in range(num)]
+                    results = [self._run_single(cb) for _ in range(num)]
                     multiple_data = [list(item) for item in zip(*results)]
                     return self._dataset.add_column(self._output_feature, multiple_data)
 
-                single_data = self._run(cb)
+                single_data = self._run_single(cb)
                 return self._dataset.add_column(self._output_feature, single_data)
         except ValueError as e:
             if "I/O operation on closed file" in str(e):
