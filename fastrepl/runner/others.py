@@ -10,14 +10,18 @@ NUM_THREADS = getenv("NUM_THREADS", 8)
 
 
 class LocalCustomRunner:
-    def __init__(self, fn: Callable) -> None:
+    def __init__(
+        self,
+        fn: Callable,
+        output_feature="sample",
+    ) -> None:
         self._fn = fn
+        self._output_feature = output_feature
 
     def run(
         self,
         args_list: Optional[List[Iterable[Any]]] = None,
         kwds_list: Optional[List[Mapping[str, Any]]] = None,
-        output_feature="sample",
         show_progress=True,
     ) -> fastrepl.Dataset:
         assert args_list is not None or kwds_list is not None
@@ -41,4 +45,4 @@ class LocalCustomRunner:
                     futures.append(future)
 
                 samples = [future.result() for future in futures]
-                return fastrepl.Dataset.from_dict({output_feature: samples})
+                return fastrepl.Dataset.from_dict({self._output_feature: samples})
