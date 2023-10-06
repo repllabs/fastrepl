@@ -2,7 +2,7 @@
 name = "fastrepl"
 version = "0.0.16"
 description = "Fast Run-Eval-Polish Loop for LLM App"
-authors = ["yujonglee <yujonglee.dev@gmail.com>"]
+authors = ["yujonglee <yujonglee@repllabs.ai>"]
 readme = "README.md"
 license = "MIT"
 
