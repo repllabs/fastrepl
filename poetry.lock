@@ -144,6 +144,17 @@ test = ["anyio[trio]", "coverage[toml] (>=4.5)", "hypothesis (>=4.0)", "mock (>=
 trio = ["trio (<0.22)"]
 
 [[package]]
+name = "appdirs"
+version = "1.4.4"
+description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
+optional = false
+python-versions = "*"
+files = [
+    {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
+    {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
+]
+
+[[package]]
 name = "appnope"
 version = "0.1.3"
 description = "Disable App Nap on macOS >= 10.9"
@@ -1679,18 +1690,20 @@ files = [
 
 [[package]]
 name = "litellm"
-version = "0.1.788"
+version = "0.2.5"
 description = "Library to easily interface with LLM API providers"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "litellm-0.1.788-py3-none-any.whl", hash = "sha256:b9f02dc2d85488617c80843efbbde66e005773f49023584f0e615922c238f1df"},
-    {file = "litellm-0.1.788.tar.gz", hash = "sha256:903ad2b4f5d3dd90414d1b6c6496fd511bd15b451b2e67e09bf558adf4c3a693"},
+    {file = "litellm-0.2.5-py3-none-any.whl", hash = "sha256:a4f0b8f2b44f29716fdb70fb84096445bcd8acbc436fd15d24648a08e378cf04"},
+    {file = "litellm-0.2.5.tar.gz", hash = "sha256:2e072dfa9d4ce1b09e3a267e90873ce700ec9fc2f7b6fda3175333a3da805cfb"},
 ]
 
 [package.dependencies]
+appdirs = ">=1.4.4,<2.0.0"
 click = "*"
 importlib-metadata = ">=6.8.0"
+jinja2 = ">=3.1.2,<4.0.0"
 openai = ">=0.27.0,<0.29.0"
 python-dotenv = ">=0.2.0"
 tiktoken = ">=0.4.0"
@@ -4778,4 +4791,4 @@ sas = ["sentence-transformers", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "c0cac2ff9ab09425e6818a1d6ce0bd58886e0cb75a306669e322b7cbd570dad0"
+content-hash = "1ea7532121a8c78ea0ad7c747aca22913248d409151c93299626e96694948cef"
