@@ -206,8 +206,14 @@ class LLMGradingHead(LLMEvaluationHead):
         return {"role": "user", "content": sample}
 
     def run(self, *, sample: str) -> Optional[str]:
-        result = number(self.completion(sample))
+        completion = self.completion(sample)
+
+        result = number(completion)
         if result is None:
+            warn(
+                InvalidPredictionWarning,
+                context=f"Unable to convert {completion!r} to number",
+            )
             return None
 
         if result < self.number_from or result > self.number_to:
