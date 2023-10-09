@@ -14,7 +14,7 @@
     <a href="https://pypi.org/project/fastrepl" target="_blank">
         <img src="https://img.shields.io/pypi/v/fastrepl.svg" alt="PyPI Version">
     </a>
-    <a href="https://discord.gg/nMQ8ZqAegc" target="_blank">
+    <a href="https://discord.gg/4pUM3C4rbA" target="_blank">
         <img src="https://dcbadge.vercel.app/api/server/nMQ8ZqAegc?style=flat">
     </a>
 <!--     <a target="_blank" href="https://colab.research.google.com/github/fastrepl/fastrepl/blob/main/docs/getting_started/quickstart.ipynb">
