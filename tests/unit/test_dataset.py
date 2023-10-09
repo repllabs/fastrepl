@@ -127,3 +127,11 @@ def test_rename():
     assert "a" not in ds2.column_names
     assert "b" in ds2.column_names
     assert "c" in ds2.column_names
+
+
+def test_remove():
+    ds = fastrepl.Dataset.from_dict({"a": [0, 0, 0], "b": [1, 1, 1]})
+    ds = ds.remove_column("a")
+
+    assert ds.column_names == ["b"]
+    assert len(ds) == 3

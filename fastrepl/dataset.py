@@ -3,12 +3,15 @@ from typing import TYPE_CHECKING, Optional, Callable, Dict, List, Any, cast
 import httpx
 from lazy_imports import try_import
 
-with try_import() as optional_package_import:
+with try_import() as optional_hf:
     from datasets import Dataset as HF_Dataset
+
+with try_import() as optional_lf:
+    from langfuse.client import DatasetClient as LF_Dataset
 
 if TYPE_CHECKING:
     from datasets import Dataset as HF_Dataset
-
+    from langfuse.client import DatasetClient as LF_Dataset
 
 import fastrepl
 from fastrepl.errors import DatasetPushError
@@ -61,6 +64,11 @@ class Dataset:
         data[new_name] = data.pop(old_name)
         return Dataset.from_dict(data)
 
+    def remove_column(self, name: str) -> "Dataset":
+        data = {col: self._data[col] for col in self.column_names}
+        del data[name]
+        return Dataset.from_dict(data)
+
     def map(self, func: Callable[[Dict[str, Any]], Dict[str, Any]]) -> "Dataset":
         rows = []
         for row in self:
@@ -92,7 +100,7 @@ class Dataset:
 
     @classmethod
     def from_hf(cls, data: Any) -> "Dataset":
-        optional_package_import.check()
+        optional_hf.check()
         hf_ds = cast(HF_Dataset, data)
 
         ds = Dataset()
@@ -100,7 +108,7 @@ class Dataset:
         return ds
 
     def to_hf(self) -> HF_Dataset:
-        optional_package_import.check()
+        optional_hf.check()
         return HF_Dataset.from_dict(self._data)
 
     @classmethod
@@ -142,3 +150,23 @@ class Dataset:
                 return res.json()["id"]
             except Exception as e:
                 raise DatasetPushError(res)
+
+    @classmethod
+    def from_langfuse(cls, data: Any) -> "Dataset":
+        optional_lf.check()
+        lf_ds = cast(LF_Dataset, data)
+
+        PREFIX = "_lf"
+
+        data = {
+            f"{PREFIX}_item_index": [],
+            "inputs": [],
+            "expected_outputs": [],
+        }
+
+        for i, item in enumerate(lf_ds.items):
+            data[f"{PREFIX}_item_index"].append(i)
+            data["inputs"].append(item.input)
+            data["expected_outputs"].append(item.expected_output)
+
+        return Dataset.from_dict(data)
