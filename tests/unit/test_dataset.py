@@ -61,14 +61,19 @@ def test_len():
 
 
 def test_iter():
-    ds = fastrepl.Dataset.from_dict({"a": [0, 0, 0], "b": [1, 1, 1]})
+    ds = fastrepl.Dataset.from_dict(
+        {
+            "a": [0, 0, 0, 0],
+            "b": [1, 1, 1, 1],
+        }
+    )
 
     count = 0
     for row in ds:
         assert row["a"] == 0
         assert row["b"] == 1
         count += 1
-    assert count == 3
+    assert count == 4
 
 
 def test_column_names():

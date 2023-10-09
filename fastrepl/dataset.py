@@ -34,7 +34,8 @@ class Dataset:
             raise KeyError
 
     def __iter__(self):
-        self._iter = range(len(self._data) + 1).__iter__()
+        key = list(self._data.keys())[0]
+        self._iter = range(len(self._data[key])).__iter__()
         return self
 
     def __next__(self) -> Dict[str, Any]:
