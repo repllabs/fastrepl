@@ -11,7 +11,7 @@ def truncate(text: str, max: int) -> str:
     return text[: max - 3] + "..."
 
 
-def number(s: Any) -> Optional[Union[int, float]]:
+def to_number(s: Any) -> Optional[Union[int, float]]:
     if isinstance(s, int) or isinstance(s, float):
         return s
 

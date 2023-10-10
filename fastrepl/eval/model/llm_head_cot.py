@@ -50,20 +50,19 @@ class LLMClassificationHeadCOT(LLMClassificationHead):
 class LLMGradingHeadCOT(LLMGradingHead):
     def system_message(self, sample: str, context: str) -> Dict[str, str]:
         @prompt
-        def p(context):
-            """You are master of grading who can grade any text according to the user's instructions.
-            When user give you the text to grade, you do step-by-step thinking within 5 sentences and give a final result.
+        def p(context, min, max):
+            """You are master of grading who can grade any text according to the context information that the user gives.
+            When you got the text to grade, you must do step-by-step thinking within 3 sentences and output a single integer from {{min}} to {{max}}.
 
-            When doing step-by-step thinking, you must consider the following:
-            {{ context }}
+            Context: {{ context }}
 
-            Your response must strictly follow this format:
+            Now, you will receive a text to grade. Your response must strictly follow this format:
             ### Thoughts
             <STEP_BY_STEP_THOUGHTS>
             ### Result
             <NUMBER>"""
 
-        return {"role": "system", "content": p(context)}
+        return {"role": "system", "content": p(context, self.from_min, self.from_max)}
 
     def completion(self, sample: str) -> Optional[str]:
         result = llm.completion(model=self.model, messages=self.messages(sample))[

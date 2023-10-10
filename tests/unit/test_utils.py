@@ -7,8 +7,9 @@ from fastrepl.utils import (
     ensure,
     prompt,
     truncate,
-    number,
+    to_number,
     DEBUG,
+    map_number_range,
 )
 
 
@@ -279,7 +280,7 @@ def test_truncate():
     ],
 )
 def test_number(input, expected):
-    assert number(input) == expected
+    assert to_number(input) == expected
 
 
 def test_debug():
@@ -288,3 +289,32 @@ def test_debug():
 
     DEBUG(1)
     assert DEBUG == 1
+
+
+@pytest.mark.parametrize(
+    "value_input, value_output, from_min, from_max, to_min, to_max",
+    [
+        (0, 0, 0, 4, 0, 100),
+        (1, 25, 0, 4, 0, 100),
+        (2, 50, 0, 4, 0, 100),
+        (3, 75, 0, 4, 0, 100),
+        (4, 100, 0, 4, 0, 100),
+        #
+        (0, 0, 0, 4, 0, 1),
+        (1, 0.25, 0, 4, 0, 1),
+        (2, 0.5, 0, 4, 0, 1),
+        (3, 0.75, 0, 4, 0, 1),
+        (4, 1, 0, 4, 0, 1),
+        #
+        (0, 0, 0, 4, 0, 10),
+        (1, 2.5, 0, 4, 0, 10),
+        (2, 5, 0, 4, 0, 10),
+        (3, 7.5, 0, 4, 0, 10),
+        (4, 10, 0, 4, 0, 10),
+    ],
+)
+def test_map_range(value_input, value_output, from_min, from_max, to_min, to_max):
+    assert (
+        map_number_range(value_input, from_min, from_max, to_min, to_max)
+        == value_output
+    )

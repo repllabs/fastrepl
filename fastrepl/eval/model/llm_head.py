@@ -7,7 +7,7 @@ from typing import Optional, Tuple, Iterable, TypedDict, List, Dict
 from typing_extensions import Unpack, NotRequired
 
 import fastrepl.llm as llm
-from fastrepl.utils import prompt, number
+from fastrepl.utils import prompt, to_number, map_number_range
 from fastrepl.eval.base import BaseSimpleEvalNode
 
 from fastrepl.warnings import (
@@ -190,17 +190,25 @@ class LLMGradingHead(LLMEvaluationHead):
         number_to: int,
         **kwargs: Unpack[LLMEvaluationHeadParams],
     ) -> None:
-        self.number_from, self.number_to = number_from, number_to
-        kwargs.update({"options": [str(i) for i in range(number_from, number_to + 1)]})
+        self.from_min, self.from_max = 1, 5
+        self.to_min, self.to_max = number_from, number_to
+
+        # We grade within [1, 5], and map the result to [number_from, number_to].
+        options = [str(i) for i in range(self.from_min, self.from_max + 1)]
+        kwargs.update({"options": options})
         super().__init__(**kwargs)
 
     def system_message(self, sample: str, context: str) -> Dict[str, str]:
         @prompt
-        def p(context):
-            """You are master of grading who can grade any text according to the user's instructions. Only output a single integer.
-            {{context}}"""
+        def p(context, min, max):
+            """You are master of grading who can grade any text according to the context information that the user gives.
 
-        return {"role": "system", "content": p(context)}
+            Context: {{context}}
+
+            Now, you will receive a text to grade. Output a single integer number from {{min}} to {{max}}.
+            """
+
+        return {"role": "system", "content": p(context, self.from_min, self.from_max)}
 
     def final_message(self, sample: str, context: str) -> Dict[str, str]:
         return {"role": "user", "content": sample}
@@ -208,7 +216,7 @@ class LLMGradingHead(LLMEvaluationHead):
     def run(self, *, sample: str) -> Optional[str]:
         completion = self.completion(sample)
 
-        result = number(completion)
+        result = to_number(completion)
         if result is None:
             warn(
                 InvalidPredictionWarning,
@@ -216,14 +224,18 @@ class LLMGradingHead(LLMEvaluationHead):
             )
             return None
 
-        if result < self.number_from or result > self.number_to:
+        if type(result) is float:
+            warn(FloatGradingWarning)
+
+        result = map_number_range(
+            result, self.from_min, self.from_max, self.to_min, self.to_max
+        )
+
+        if result < self.to_min or result > self.to_max:
             warn(
                 InvalidPredictionWarning,
-                context=f"{result!r} is not in range [{self.number_from}, {self.number_to}].",
+                context=f"{result!r} is not in range [{self.to_min}, {self.to_max}].",
             )
             return None
-
-        if type(result) is float:
-            warn(FloatGradingWarning, context=f"{result!r} is not an integer.")
 
         return str(result)
