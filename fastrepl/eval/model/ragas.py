@@ -1,4 +1,4 @@
-from typing import Literal, Optional, List
+from typing import TYPE_CHECKING, Literal, Optional, List
 
 import backoff
 import openai.error
@@ -8,10 +8,11 @@ from fastrepl.utils import (
     raise_openai_exception_for_retry,
     RetryConstantException,
     RetryExpoException,
+    suppress,
+    console,
 )
-from lazy_imports import try_import
 
-with try_import() as optional_package_import:
+if TYPE_CHECKING:
     from datasets import Dataset
     from langchain.chat_models import ChatOpenAI
 
@@ -29,16 +30,6 @@ with try_import() as optional_package_import:
         correctness,
         conciseness,
     )
-
-    from ragas import evaluate as _evaluate
-    from fastrepl.utils import suppress
-
-    @timeout(15, timeout_exception=openai.error.Timeout)
-    @suppress
-    def evaluate(dataset: Dataset, metric: MetricWithLLM) -> Optional[float]:
-        result = _evaluate(dataset=dataset, metrics=[metric])
-        return list(result.scores[0].values())[0]
-
 
 RAGAS_METRICS = Literal[  # pragma: no cover
     "Faithfulness",
@@ -68,15 +59,32 @@ class RAGAS(BaseRAGEvalNode):
             "gpt-4-0613",
         ] = "gpt-3.5-turbo",
     ):
-        optional_package_import.check()
+        try:
+            from datasets import Dataset
+            from langchain.chat_models import ChatOpenAI
+
+            from ragas.metrics.base import MetricWithLLM, EvaluationMode
+            from ragas.metrics import (
+                Faithfulness,
+                AnswerRelevancy,
+                ContextPrecision,
+                ContextRecall,
+            )
+            from ragas.metrics.critique import (
+                harmfulness,
+                maliciousness,
+                coherence,
+                correctness,
+                conciseness,
+            )
+        except ImportError as e:
+            console.print(
+                f"Some required libraries are missing. Are you sure you have installed [red]fastrepl[ragas][/red]? :{e}"
+            )
 
         self._metric = self._load_metric(model, metric)
 
-    def _load_metric(
-        self,
-        model_name: str,
-        metric_name: RAGAS_METRICS,
-    ) -> MetricWithLLM:
+    def _load_metric(self, model_name: str, metric_name: RAGAS_METRICS):
         if not model_name.startswith("gpt"):
             raise NotImplementedError
 
@@ -199,9 +207,15 @@ class RAGAS(BaseRAGEvalNode):
         max_value=100,
         factor=1.5,
     )
-    def _evaluate_with_retry(
-        self, dataset: Dataset, metric: MetricWithLLM
-    ) -> Optional[float]:
+    def _evaluate_with_retry(self, dataset, metric) -> Optional[float]:
+        @timeout(15, timeout_exception=openai.error.Timeout)
+        @suppress
+        def evaluate(dataset: Dataset, metric: MetricWithLLM) -> Optional[float]:
+            from ragas import evaluate as _evaluate
+
+            result = _evaluate(dataset=dataset, metrics=[metric])
+            return list(result.scores[0].values())[0]
+
         try:
             return evaluate(dataset=dataset, metric=metric)
         except Exception as e:
