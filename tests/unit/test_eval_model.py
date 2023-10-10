@@ -4,6 +4,8 @@ import litellm
 
 import fastrepl
 
+# TODO: Here we should fix range to 1-5
+
 
 @pytest.fixture
 def mock_completion(monkeypatch):
@@ -105,8 +107,8 @@ class TestLLMGradingHead:
     @pytest.mark.parametrize(
         "return_value, number_from, number_to",
         [
-            ("2", 1, 3),
-            ("3", 1, 5),
+            ("2.0", 1, 5),
+            ("3.0", 1, 5),
         ],
     )
     def test_return_result(self, mock_completion, return_value, number_from, number_to):
@@ -122,8 +124,8 @@ class TestLLMGradingHead:
     @pytest.mark.parametrize(
         "return_value, number_from, number_to",
         [
-            ("1.1", 1, 3),
-            ("2.2", 1, 3),
+            ("1.1", 1, 5),
+            ("2.2", 1, 5),
         ],
     )
     def test_return_result_with_warnings(
@@ -143,10 +145,10 @@ class TestLLMGradingHead:
     @pytest.mark.parametrize(
         "return_value, number_from, number_to",
         [
-            ("-1", 1, 3),
-            ("0", 1, 3),
+            ("-1", 1, 5),
+            ("0", 1, 5),
             ("6", 1, 5),
-            ("4.1", 1, 3),
+            ("5.1", 1, 5),
         ],
     )
     def test_return_none(self, mock_completion, return_value, number_from, number_to):
