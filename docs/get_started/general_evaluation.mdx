@@ -7,9 +7,9 @@ You can classify the given text with labels(`LLMClassificationHead`), or grade w
 `LLMClassificationHeadCOT` and `LLMGradingHeadCOT` are variants of them, which use `Chain of Thought`.
 
 ```python
-from datasets import Dataset
+import fastrepl
 
-dataset = Dataset.from_dict(
+dataset = fastrepl.Dataset.from_dict(
     {
         "sample": [
             "Human: Can you help me?\nAssistant: Sure!",
@@ -20,24 +20,22 @@ dataset = Dataset.from_dict(
 ```
 ## Grading
 <CodeGroup>
-```python classification.py
+```python grading.py
 evaluator = fastrepl.SimpleEvaluator(
     node=fastrepl.LLMGradingHead(
         model="gpt-3.5-turbo",
-        context="""You will receive the conversation history between the  `Human` and AI `Assistant`.
-Please rate the helpfulness of the Assistant on a scale from 1 to 5."""
+        context="You will receive the conversation history between the Human and AI Assistant. Please rate the helpfulness of the Assistant on a scale from 1 to 5."
         number_from=1,
         number_to=5,
     )
 )
 ```
 
-```python cot_classification.py
+```python cot_grading.py
 evaluator = fastrepl.SimpleEvaluator(
     node=fastrepl.LLMGradingHeadCOT(
         model="gpt-3.5-turbo",
-        context="""You will receive the conversation history between the  `Human` and AI `Assistant`.
-Please rate the helpfulness of the Assistant on a scale from 1 to 5."""
+        context="You will receive the conversation history between the Human and AI Assistant. Please rate the helpfulness of the Assistant on a scale from 1 to 5."
         number_from=1,
         number_to=5,
     )
