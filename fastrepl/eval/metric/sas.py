@@ -3,7 +3,7 @@ from typing import Tuple, Literal, TypedDict, List
 from lazy_imports import try_import
 
 with try_import() as optional_package_import:
-    import transformers  # optional package that might not be installed
+    import transformers
     import sentence_transformers as sbert
     import numpy as np
 

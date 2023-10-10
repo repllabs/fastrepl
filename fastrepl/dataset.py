@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Callable, Dict, List, Any, cast
+from typing import Optional, Callable, Dict, List, Any, cast
 
 import httpx
 from lazy_imports import try_import
@@ -7,10 +7,6 @@ with try_import() as optional_hf:
     from datasets import Dataset as HF_Dataset
 
 with try_import() as optional_lf:
-    from langfuse.client import DatasetClient as LF_Dataset
-
-if TYPE_CHECKING:
-    from datasets import Dataset as HF_Dataset
     from langfuse.client import DatasetClient as LF_Dataset
 
 import fastrepl

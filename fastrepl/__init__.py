@@ -1,6 +1,6 @@
 from typing import Optional
 
-__version__ = "0.0.18"
+from fastrepl.version import __version__
 
 api_base: Optional[str] = "https://yujonglee--fastrepl-api.modal.run"  # TODO
 api_key: Optional[str] = None

@@ -76,7 +76,7 @@ class RAGAS(BaseRAGEvalNode):
         self,
         model_name: str,
         metric_name: RAGAS_METRICS,
-    ):
+    ) -> MetricWithLLM:
         if not model_name.startswith("gpt"):
             raise NotImplementedError
 
