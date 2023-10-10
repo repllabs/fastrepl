@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastrepl"
-version = "0.0.17"
+version = "0.0.18"
 description = "Fast Run-Eval-Polish Loop for LLM App"
 authors = ["yujonglee <yujonglee@repllabs.ai>"]
 readme = "README.md"
@@ -67,7 +67,8 @@ ignore_missing_imports = "True"
 enable_incomplete_feature = "Unpack"
 
 [tool.poetry.extras]
-rag = ["ragas", "datasets", "langfuse"]
+ragas = ["ragas", "datasets"]
+langfuse = ["langfuse"]
 sas = ["sentence-transformers", "transformers", "torch"]
 
 [tool.pytest.ini_options]
