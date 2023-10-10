@@ -47,6 +47,21 @@ class TestLocalRunnerEvaluator:
         assert result.column_names == ["sample", "result"]
         assert result["result"] == [[1, 1], [2, 2], [3, 3], [4, 5]]
 
+    def test_num_2_aggregate(self, mock_runs):
+        mock_runs([[1, 2, 3, 4], [1, 2, 3, 5]])
+
+        ds = Dataset.from_dict({"sample": [1, 2, 3, 4]})
+        eval = fastrepl.SimpleEvaluator(
+            node=fastrepl.LLMClassificationHead(context="", labels={})
+        )
+
+        result = fastrepl.local_runner(evaluator=eval, dataset=ds).run(
+            num=2, aggregate=True
+        )
+
+        assert result.column_names == ["sample", "result"]
+        assert result["result"] == [1, 2, 3, 4.5]
+
     def test_num_2_handle_none(self, mock_runs):
         mock_runs([[1, 2, 3, 4], [1, 2, 3, None]])
 

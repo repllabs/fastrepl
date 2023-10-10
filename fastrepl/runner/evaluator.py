@@ -54,7 +54,7 @@ class LocalEvaluatorRunner(BaseRunner):
 
         return results
 
-    def run(self, num=1, show_progress=True) -> Dataset:
+    def run(self, num=1, show_progress=True, aggregate=False) -> Dataset:
         disable = not show_progress
 
         try:
@@ -65,11 +65,15 @@ class LocalEvaluatorRunner(BaseRunner):
 
                 if num > 1:
                     results = [self._run_single(cb) for _ in range(num)]
-                    multiple_data = [list(item) for item in zip(*results)]
-                    return self._dataset.add_column(self._output_feature, multiple_data)
+                    multiple = [list(item) for item in zip(*results)]
 
-                single_data = self._run_single(cb)
-                return self._dataset.add_column(self._output_feature, single_data)
+                    if aggregate:
+                        multiple = [sum(item) / len(item) for item in multiple]
+
+                    return self._dataset.add_column(self._output_feature, multiple)
+
+                single = self._run_single(cb)
+                return self._dataset.add_column(self._output_feature, single)
         except ValueError as e:
             if "I/O operation on closed file" in str(e):
                 console.print("[cyan]Please re-run with `show_progress=False`")
