@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Literal, Optional, List
+from typing import Literal, Optional, List
 
 import backoff
 import openai.error
@@ -9,27 +9,7 @@ from fastrepl.utils import (
     RetryConstantException,
     RetryExpoException,
     suppress,
-    console,
 )
-
-if TYPE_CHECKING:
-    from datasets import Dataset
-    from langchain.chat_models import ChatOpenAI
-
-    from ragas.metrics.base import MetricWithLLM, EvaluationMode
-    from ragas.metrics import (
-        Faithfulness,
-        AnswerRelevancy,
-        ContextPrecision,
-        ContextRecall,
-    )
-    from ragas.metrics.critique import (
-        harmfulness,
-        maliciousness,
-        coherence,
-        correctness,
-        conciseness,
-    )
 
 RAGAS_METRICS = Literal[  # pragma: no cover
     "Faithfulness",
@@ -59,32 +39,26 @@ class RAGAS(BaseRAGEvalNode):
             "gpt-4-0613",
         ] = "gpt-3.5-turbo",
     ):
-        try:
-            from datasets import Dataset
-            from langchain.chat_models import ChatOpenAI
-
-            from ragas.metrics.base import MetricWithLLM, EvaluationMode
-            from ragas.metrics import (
-                Faithfulness,
-                AnswerRelevancy,
-                ContextPrecision,
-                ContextRecall,
-            )
-            from ragas.metrics.critique import (
-                harmfulness,
-                maliciousness,
-                coherence,
-                correctness,
-                conciseness,
-            )
-        except ImportError as e:
-            console.print(
-                f"Some required libraries are missing. Are you sure you have installed [red]fastrepl[ragas][/red]? :{e}"
-            )
-
         self._metric = self._load_metric(model, metric)
 
     def _load_metric(self, model_name: str, metric_name: RAGAS_METRICS):
+        from langchain.chat_models import ChatOpenAI
+
+        from ragas.metrics.base import MetricWithLLM
+        from ragas.metrics import (
+            Faithfulness,
+            AnswerRelevancy,
+            ContextPrecision,
+            ContextRecall,
+        )
+        from ragas.metrics.critique import (
+            harmfulness,
+            maliciousness,
+            coherence,
+            correctness,
+            conciseness,
+        )
+
         if not model_name.startswith("gpt"):
             raise NotImplementedError
 
@@ -120,6 +94,8 @@ class RAGAS(BaseRAGEvalNode):
         return metric
 
     def inputs(self) -> List[str]:
+        from ragas.metrics.base import EvaluationMode
+
         if self._metric.evaluation_mode == EvaluationMode.qac:
             return ["question", "answer", "contexts"]
         elif self._metric.evaluation_mode == EvaluationMode.qa:
@@ -138,6 +114,9 @@ class RAGAS(BaseRAGEvalNode):
         contexts: Optional[List[str]] = None,
         ground_truths: Optional[List[str]] = None,
     ) -> Optional[float]:
+        from datasets import Dataset
+        from ragas.metrics.base import EvaluationMode
+
         ds: Dataset
 
         if self._metric.evaluation_mode == EvaluationMode.qac:
@@ -208,6 +187,9 @@ class RAGAS(BaseRAGEvalNode):
         factor=1.5,
     )
     def _evaluate_with_retry(self, dataset, metric) -> Optional[float]:
+        from datasets import Dataset
+        from ragas.metrics.base import MetricWithLLM
+
         @timeout(15, timeout_exception=openai.error.Timeout)
         @suppress
         def evaluate(dataset: Dataset, metric: MetricWithLLM) -> Optional[float]:

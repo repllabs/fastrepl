@@ -1,13 +1,6 @@
 from typing import Optional, Callable, Dict, List, Any, cast
 
 import httpx
-from lazy_imports import try_import
-
-with try_import() as optional_hf:
-    from datasets import Dataset as HF_Dataset
-
-with try_import() as optional_lf:
-    from langfuse.client import DatasetClient as LF_Dataset
 
 import fastrepl
 from fastrepl.errors import DatasetPushError
@@ -96,15 +89,17 @@ class Dataset:
 
     @classmethod
     def from_hf(cls, data: Any) -> "Dataset":
-        optional_hf.check()
+        from datasets import Dataset as HF_Dataset
+
         hf_ds = cast(HF_Dataset, data)
 
         ds = Dataset()
         ds._data = hf_ds.to_dict()
         return ds
 
-    def to_hf(self) -> HF_Dataset:
-        optional_hf.check()
+    def to_hf(self):
+        from datasets import Dataset as HF_Dataset
+
         return HF_Dataset.from_dict(self._data)
 
     @classmethod
@@ -149,7 +144,8 @@ class Dataset:
 
     @classmethod
     def from_langfuse(cls, data: Any) -> "Dataset":
-        optional_lf.check()
+        from langfuse.client import DatasetClient as LF_Dataset
+
         lf_ds = cast(LF_Dataset, data)
 
         PREFIX = "_lf"
