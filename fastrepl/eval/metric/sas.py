@@ -1,12 +1,4 @@
 from typing import Tuple, Literal, TypedDict, List
-
-from lazy_imports import try_import
-
-with try_import() as optional_package_import:
-    import transformers
-    import sentence_transformers as sbert
-    import numpy as np
-
 from sklearn.metrics.pairwise import cosine_similarity
 
 from fastrepl.eval.base import BaseMetaEvalNode
@@ -26,7 +18,7 @@ class SemanticAnswerSimilarityMetric(BaseMetaEvalNode):
     __slot__ = ("model", "is_cross_encoder")
 
     def __init__(self, model_name_or_path: str, use_gpu=False):
-        optional_package_import.check()
+        import transformers
 
         config = transformers.AutoConfig.from_pretrained(model_name_or_path)
         if config.architectures is not None:
@@ -39,6 +31,8 @@ class SemanticAnswerSimilarityMetric(BaseMetaEvalNode):
         self.model = self._load_model(model_name_or_path, device=device)
 
     def _load_model(self, model_name_or_path: str, device):
+        import sentence_transformers as sbert
+
         if self.is_cross_encoder:
             return sbert.CrossEncoder(model_name_or_path, device=device)
         else:
@@ -53,6 +47,8 @@ class SemanticAnswerSimilarityMetric(BaseMetaEvalNode):
     def _compute_cross_encoder(
         self, predictions: List[List[str]], references: List[List[str]], **kwargs
     ) -> SASResult:
+        import numpy as np
+
         top_1_sas: List[float] = []
         top_k_sas: List[float] = []
         pred_label_matrix: List[List[float]] = []
@@ -85,6 +81,8 @@ class SemanticAnswerSimilarityMetric(BaseMetaEvalNode):
     def _compute_bi_encoder(
         self, predictions: List[List[str]], references: List[List[str]], **kwargs
     ) -> SASResult:
+        import numpy as np
+
         top_1_sas: List[float] = []
         top_k_sas: List[float] = []
         pred_label_matrix: List[List[float]] = []
