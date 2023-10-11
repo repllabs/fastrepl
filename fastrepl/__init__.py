@@ -12,6 +12,6 @@ from fastrepl.dataset import Dataset
 
 from fastrepl.utils import DEBUG
 
-from fastrepl.runner import local_runner, remote_runner
+from fastrepl.runner import *
 
 from fastrepl.pytest_plugin import TestReport

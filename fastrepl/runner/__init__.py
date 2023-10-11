@@ -1,11 +1,13 @@
-from typing import Union, Callable, overload
+from typing import Union, Callable, Optional, overload
 
 from fastrepl.dataset import Dataset
+from fastrepl.eval import Evaluator
+from fastrepl.generate import Generator
 
-import fastrepl
 from fastrepl.runner.evaluator import LocalEvaluatorRunner, RemoteEvaluatorRunner
 from fastrepl.runner.generator import LocalGeneratorRunner, RemoteGeneratorRunner
-from fastrepl.runner.others import LocalCustomRunner
+from fastrepl.runner.promptlayer import PromptLayerRunner
+from fastrepl.runner.custom import LocalCustomRunner
 
 
 @overload
@@ -14,13 +16,13 @@ def local_runner(*, fn: Callable, output_feature: str) -> LocalCustomRunner:
 
 
 @overload
-def local_runner(*, generator: fastrepl.Generator) -> LocalGeneratorRunner:
+def local_runner(*, generator: Generator) -> LocalGeneratorRunner:
     ...
 
 
 @overload
 def local_runner(
-    *, evaluator: fastrepl.Evaluator, dataset: Dataset, output_feature: str
+    *, evaluator: Evaluator, dataset: Dataset, output_feature: str
 ) -> LocalEvaluatorRunner:
     ...
 
@@ -48,13 +50,13 @@ def local_runner(
 
 
 @overload
-def remote_runner(*, generator: fastrepl.Generator) -> RemoteGeneratorRunner:
+def remote_runner(*, generator: Generator) -> RemoteGeneratorRunner:
     return RemoteGeneratorRunner(generator)
 
 
 @overload
 def remote_runner(
-    *, evaluator: fastrepl.Evaluator, dataset: Dataset, output_feature="result"
+    *, evaluator: Evaluator, dataset: Dataset, output_feature="result"
 ) -> RemoteEvaluatorRunner:
     return RemoteEvaluatorRunner(evaluator, dataset, output_feature)
 
@@ -66,4 +68,12 @@ def remote_runner(**kwargs) -> Union[RemoteEvaluatorRunner, RemoteGeneratorRunne
     return RemoteEvaluatorRunner(**kwargs)
 
 
-__all__ = ["local_runner", "remote_runner"]
+def pl_runner(evaluator: Evaluator, api_key: Optional[str] = None) -> PromptLayerRunner:
+    return PromptLayerRunner(evaluator=evaluator, api_key=api_key)
+
+
+__all__ = [
+    "local_runner",
+    "remote_runner",
+    "pl_runner",
+]
