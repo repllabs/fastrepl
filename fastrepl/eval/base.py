@@ -1,4 +1,4 @@
-from typing import Optional, Dict, List, Any
+from typing import Optional, Union, Dict, List, Any
 from abc import ABC, abstractmethod
 
 
@@ -22,7 +22,7 @@ class BaseEvalNode(ABC):
 
 class BaseSimpleEvalNode(BaseEvalNode):
     @abstractmethod
-    def run(self, *, sample: str) -> Optional[str]:
+    def run(self, *, sample: str) -> Optional[Union[str, float]]:
         ...
 
     def inputs(self) -> List[str]:

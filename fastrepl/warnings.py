@@ -71,9 +71,3 @@ class UnknownLLMExceptionWarning(Warning):
     @staticmethod
     def doc_url() -> str:
         return "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#unknownllmexception"  # pragma: no cover
-
-
-class FloatGradingWarning(Warning):
-    @staticmethod
-    def doc_url() -> str:
-        return "https://docs.fastrepl.com/miscellaneous/warnings_and_errors#floatgrading"  # pragma: no cover

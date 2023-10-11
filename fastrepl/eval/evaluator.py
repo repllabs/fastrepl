@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Optional, List
+from typing import Optional, Union, List
 
-from fastrepl.eval.base import BaseSimpleEvalNode, BaseRAGEvalNode
+from fastrepl.eval.base import BaseEvalNode, BaseSimpleEvalNode, BaseRAGEvalNode
 
 
 class Evaluator(ABC):
+    def __init__(self, node: BaseEvalNode) -> None:
+        self.node = node
+
     @abstractmethod
     def run(self, *args, **kwargs):
         ...
@@ -18,7 +21,7 @@ class SimpleEvaluator(Evaluator):
     def __init__(self, node: BaseSimpleEvalNode) -> None:
         self.node = node
 
-    def run(self, *, sample: str) -> Optional[str]:
+    def run(self, *, sample: str) -> Optional[Union[str, float]]:
         return self.node.run(sample=sample)
 
     def inputs(self) -> List[str]:

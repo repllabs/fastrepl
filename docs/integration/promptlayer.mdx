@@ -1,0 +1,84 @@
+---
+title: Promptlayer
+---
+
+[Promptlayer](https://promptlayer.com/home) is a prompt engineering platform that helps you with robust monitoring, prompt versioning, cost analysis, and evaluation.
+
+## Get Started
+
+```
+pip install -qq promptlayer
+```
+
+```python
+import promptlayer
+PL_API_KEY = "pl_XX" # Promptlayer API key
+promptlayer.api_key=PL_API_KEY
+
+openai = promptlayer.openai
+openai.api_key = "sk-XX" # OpenAI API key
+```
+
+Here, we are using `Promptlayer`'s drop-in replacement for `openai`. If you are looking for way to use various models, checkout [LiteLLM's PromptLayer Integration](https://docs.litellm.ai/docs/observability/promptlayer_integration).
+
+```python
+response, request_id = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "hi"},
+    ],
+    return_pl_id=True,
+)
+
+print(response.choices[0].message.content, request_id)
+# Hello! How can I assist you today? 12982004
+# Go to https://promptlayer.com/request/12982004 for details
+```
+
+`request_id` is used for scoring, which we will cover in the next section.
+
+## Scoring
+`Promptlayer` provides a way to [score](https://docs.promptlayer.com/why-promptlayer/evaluation-and-ranking#scoring) each request you made.
+With `FastREPL`, you can use LLM to help with this process.
+
+```python
+import fastrepl
+
+
+evaluator = fastrepl.SimpleEvaluator(
+    node=fastrepl.LLMGradingHead(
+        model="gpt-3.5-turbo",
+        context="Grade how much happiness does the text contain.",
+        number_from=0,
+        number_to=5,
+        references=[("happy!", 5), ("sad...", "0")], # optional
+    )
+)
+
+runner = fastrepl.pl_runner(evaluator=evaluator, api_key=PL_API_KEY)
+```
+
+```python
+def completion_with_scoring():
+    response, request_id = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "hi"},
+        ],
+        return_pl_id=True,
+    )
+    result = response.choices[0].text
+
+    ds = fastrepl.Dataset.from_dict(
+        {"sample": [result], "request_id": [request_id]}
+    )
+    runner.run(ds) # use_threading=True by default
+
+completion_with_scoring()
+```
+
+## A/B Testing With Prompt Registry
+
+TODO
