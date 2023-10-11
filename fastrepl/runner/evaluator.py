@@ -8,7 +8,7 @@ from fastrepl.dataset import Dataset
 from fastrepl.utils import getenv, console
 from fastrepl.runner.base import BaseRunner
 
-NUM_THREADS = getenv("NUM_THREADS", 8)
+NUM_THREADS = getenv("NUM_THREADS", 12)
 
 
 class LocalEvaluatorRunner(BaseRunner):

@@ -6,7 +6,7 @@ from rich.progress import Progress
 import fastrepl
 from fastrepl.utils import getenv, console
 
-NUM_THREADS = getenv("NUM_THREADS", 8)
+NUM_THREADS = getenv("NUM_THREADS", 12)
 
 
 class LocalCustomRunner:
