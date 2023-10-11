@@ -25,19 +25,23 @@ class PromptLayerRunner(BaseRunner):
                     raise KeyError("'request_id' is required but not found") from e
 
                 result = float(self._evaluator.run(**row))
-                from_min, to_max = (  # TODO: Better typing
-                    self._evaluator.node.to_min,  # type: ignore[attr-defined]
-                    self._evaluator.node.to_max,  # type: ignore[attr-defined]
-                )
-                # https://docs.promptlayer.com/reference/track-score
-                result = map_number_range(result, from_min, to_max, 0, 100)
-                result = round(result)
 
+                try:
+                    from_min, from_max = (  # TODO: Better typing
+                        self._evaluator.node.to_min,  # type: ignore[attr-defined]
+                        self._evaluator.node.to_max,  # type: ignore[attr-defined]
+                    )
+                except AttributeError:  # RAGAS
+                    from_min, from_max = 0, 1
+                finally:
+                    result = map_number_range(result, from_min, from_max, 0, 100)
+
+                # https://docs.promptlayer.com/reference/track-score
                 client.post(
                     "https://api.promptlayer.com/rest/track-score",
                     json={
                         "request_id": request_id,
-                        "score": result,
+                        "score": round(result),
                         "api_key": self.api_key,
                     },
                 )
