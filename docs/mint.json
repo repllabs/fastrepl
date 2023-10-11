@@ -60,10 +60,11 @@
       ]
     },
     {
-      "group": "Cookbook",
+      "group": "Integration",
       "pages": [
-        "cookbook/embedchain",
-        "cookbook/langfuse"
+        "integration/embedchain",
+        "integration/promptlayer",
+        "integration/langfuse"
       ]
     },
     {

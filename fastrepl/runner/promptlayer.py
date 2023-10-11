@@ -1,5 +1,7 @@
-import os
 from typing import Optional
+
+import os
+import threading
 
 from fastrepl.dataset import Dataset
 from fastrepl.eval import Evaluator
@@ -14,7 +16,7 @@ class PromptLayerRunner(BaseRunner):
         self._evaluator = evaluator
         self.api_key = os.environ.get("PL_API_KEY") if api_key is None else api_key
 
-    def run(self, ds: Dataset):
+    def _run(self, ds: Dataset):
         with httpx.Client() as client:
             for row in ds:
                 try:
@@ -22,9 +24,13 @@ class PromptLayerRunner(BaseRunner):
                 except KeyError as e:
                     raise KeyError("'request_id' is required but not found") from e
 
-                # TODO
                 result = float(self._evaluator.run(**row))
-                # result = map_number_range(...)
+                from_min, to_max = (  # TODO: Better typing
+                    self._evaluator.node.to_min,  # type: ignore[attr-defined]
+                    self._evaluator.node.to_max,  # type: ignore[attr-defined]
+                )
+                # https://docs.promptlayer.com/reference/track-score
+                result = map_number_range(result, from_min, to_max, 0, 100)
                 result = round(result)
 
                 client.post(
@@ -35,3 +41,10 @@ class PromptLayerRunner(BaseRunner):
                         "api_key": self.api_key,
                     },
                 )
+
+    def run(self, ds: Dataset, use_threading=True):
+        if use_threading:
+            thread = threading.Thread(target=self._run, args=(ds,))
+            thread.start()
+        else:
+            self._run(ds)

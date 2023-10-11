@@ -3,7 +3,7 @@ import functools
 import itertools
 
 from abc import abstractmethod
-from typing import Optional, Tuple, Iterable, TypedDict, List, Dict
+from typing import Optional, Union, Tuple, Iterable, TypedDict, List, Dict, cast
 from typing_extensions import Unpack, NotRequired
 
 import fastrepl.llm as llm
@@ -14,7 +14,6 @@ from fastrepl.warnings import (
     warn,
     VerbosityBiasWarning,
     InvalidPredictionWarning,
-    FloatGradingWarning,
 )
 from fastrepl.eval.model.utils import (
     logit_bias_from,
@@ -83,7 +82,7 @@ class LLMEvaluationHead(BaseSimpleEvalNode):
         )["choices"][0]["message"]["content"]
 
     # NOTE: It is safe to return NONE, since metric will skip prediction-reference pair if prediction is NONE
-    def run(self, *, sample: str) -> Optional[str]:
+    def run(self, *, sample: str) -> Optional[Union[str, float]]:
         result = self.completion(sample)
         if result is None:
             return None
@@ -157,10 +156,10 @@ class LLMClassificationHead(LLMEvaluationHead):
     def _compute(self, sample: str) -> Optional[str]:
         if self.position_debias_strategy == "shuffle":
             self.mapping = mappings_from_labels(self.labels, rg=self.rg)
-            return super().run(sample=sample)
+            return cast(str, super().run(sample=sample))
 
         if self.position_debias_strategy == "consensus":
-            initial_result = super().run(sample=sample)
+            initial_result = cast(str, super().run(sample=sample))
             if initial_result is None:
                 return None
 
@@ -210,10 +209,24 @@ class LLMGradingHead(LLMEvaluationHead):
 
         return {"role": "system", "content": p(context, self.from_min, self.from_max)}
 
+    def reference_messages(
+        self,
+        references: List[Tuple[str, str]],
+    ) -> List[Dict[str, str]]:
+        msgs = []
+        for input, output in references:
+            score = float(str(output).strip())
+            score = map_number_range(
+                score, self.from_min, self.from_max, self.to_min, self.to_max
+            )
+            msgs.append({"role": "user", "content": input})
+            msgs.append({"role": "assistant", "content": str(score)})
+        return msgs
+
     def final_message(self, sample: str, context: str) -> Dict[str, str]:
         return {"role": "user", "content": sample}
 
-    def run(self, *, sample: str) -> Optional[str]:
+    def run(self, *, sample: str) -> Optional[float]:
         completion = self.completion(sample)
 
         result = to_number(completion)
@@ -223,9 +236,6 @@ class LLMGradingHead(LLMEvaluationHead):
                 context=f"Unable to convert {completion!r} to number",
             )
             return None
-
-        if type(result) is float:
-            warn(FloatGradingWarning)
 
         result = map_number_range(
             result, self.from_min, self.from_max, self.to_min, self.to_max
@@ -238,4 +248,4 @@ class LLMGradingHead(LLMEvaluationHead):
             )
             return None
 
-        return str(result)
+        return result
