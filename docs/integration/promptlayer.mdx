@@ -1,13 +1,15 @@
 ---
 title: Promptlayer
+description: Prompt engineering platform that helps you with robust monitoring, prompt versioning, cost analysis, and evaluation.
 ---
 
-[Promptlayer](https://promptlayer.com/home) is a prompt engineering platform that helps you with robust monitoring, prompt versioning, cost analysis, and evaluation.
+`Promptlayer` provides a way to [score](https://docs.promptlayer.com/why-promptlayer/evaluation-and-ranking#scoring) each request you made.
+With `fastrepl`, you can use LLM to help with this process. This is especially useful when you want to `A/B test` your prompts.
 
-## Get Started
+## Setup
 
 ```
-pip install -qq promptlayer
+pip install -qq "fastrepl==0.0.20" "promptlayer"
 ```
 
 ```python
@@ -38,10 +40,7 @@ print(response.choices[0].message.content, request_id)
 
 `request_id` is used for scoring, which we will cover in the next section.
 
-## Scoring
-`Promptlayer` provides a way to [score](https://docs.promptlayer.com/why-promptlayer/evaluation-and-ranking#scoring) each request you made.
-With `FastREPL`, you can use LLM to help with this process.
-
+## General Evaluation
 ```python
 import fastrepl
 
@@ -79,6 +78,9 @@ def completion_with_scoring():
 completion_with_scoring()
 ```
 
-## A/B Testing With Prompt Registry
+## RAG evaluation
 
-TODO
+It is similar to `General Evaluation`, but we use `RAGEvaluator` instead of `SimpleEvaluator`.
+
+We have detailed [notebook](https://colab.research.google.com/github/repllabs/fastrepl/blob/main/examples/promptlayer.ipynb), and [video](https://www.loom.com/share/9f095b5a31544cd69e54f99f1bf03409?sid=2d28913e-af2f-4a87-87eb-b7879774b622) explaining it.
+
