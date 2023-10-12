@@ -1,15 +1,36 @@
 ---
 title: Introduction
-description: "`fastrepl` aims to be `end-to-end` testing infrastructure for LLM apps."
+description: If you don't evaluate your apps, you can not make real progress.
 ---
+`fastrepl` should help you evaluate how your LLM applicaion performs, and iteratively improve it.
+
+If you think it is not helpful for you, [Please let us know](mailto:yujonglee@repllabs.ai).
 
 ## Concepts
 
+### Runner
+
+`Evaluators` or `Generators` can be run with different runners.
+
+- `local_runner`: For running things locally.
+- `remote_runner`: For running things on the cloud.
+- `pl_ruuner`: For sending evaluator result to [PromptLayer](https://promptlayer.com).
+
 ### Evaluator
+We have `SimpleEvaluator` and `RAGEvaluator`.
 
 #### Evaluation Node
+You can plug in one of evaluation nodes to evaluator.
+
+For`SimpleEvaluator`:
+- `LLMClassificationHead`
+- `LLMGradingHead`
+- `LLMClassificationHeadCOT`
+- `LLMGradingHeadCOT`
+
+For`RAGEvaluator`:
+- `RAGAS`
 
 ### Generator
 
-### Runner
-
+Currently, we only have `QuestionGenerator`, and it only works with `remote_runner`.

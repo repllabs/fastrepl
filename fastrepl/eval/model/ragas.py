@@ -190,7 +190,7 @@ class RAGAS(BaseRAGEvalNode):
         from datasets import Dataset
         from ragas.metrics.base import MetricWithLLM
 
-        @timeout(15, timeout_exception=openai.error.Timeout)
+        @timeout(40, timeout_exception=openai.error.Timeout)
         @suppress
         def evaluate(dataset: Dataset, metric: MetricWithLLM) -> Optional[float]:
             from ragas import evaluate as _evaluate

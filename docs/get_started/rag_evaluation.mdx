@@ -14,7 +14,7 @@ pip install fastrepl[ragas] # don't forget to add `[ragas]`
 
 - `AnswerRelevancy`
 - `ContextRecall`
-- `ContextRelevancy`
+- `ContextPrecision`
 - `Faithfulness`
 - `harmfulness`
 - `maliciousness`
@@ -32,21 +32,29 @@ And it use these **features** in the dataset:
 Note that not all features are needed for all metrics.
 
 ```python
-from datasets import load_dataset
+evaluator = fastrepl.RAGEvaluator(
+    node=fastrepl.RAGAS(
+        model="gpt-3.5-turbo",
+        metric="Faithfulness",
+    ),
+)
 
-# https://github.com/explodinggradients/ragas/blob/main/docs/quickstart.ipynb
-ds = load_dataset("explodinggradients/fiqa", "ragas_eval")
-ds = ds.remove_columns(["contexts", "ground_truths"])
-```
+ds = fastrepl.Dataset.from_dict(
+    {
+        "question": ["how to do great work?"] * 2,
+        "contexts": [["There's no one simple way to do great work."]] * 2,
+        "answer": [
+            "Just do it.",
+            "You shouldn't look for one-size-fits-all solutions.",
+        ],
+    }
+)
 
-```python
-evaluator = fastrepl.RAGEvaluator(node=fastrepl.RAGAS(metric="AnswerRelevancy"))
+runner = fastrepl.local_runner(evaluator=evaluator, dataset=ds)
+result = runner.run()
 
-result = fastrepl.local_runner(evaluator=evaluator, dataset=ds).run(show_progress=False)
-# Dataset({
-#     features: ['question', 'model', 'answer', 'result'],
-#     num_rows: 4
-# })
+result["result"]
+# [0.0, 1.0]
 ```
 
 <Warning>We only support `local_runner` for evaluators at the moment.</Warning>
