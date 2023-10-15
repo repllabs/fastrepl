@@ -71,6 +71,7 @@
       "group": "Miscellaneous",
       "pages": [
         "miscellaneous/observability",
+        "miscellaneous/telemetry",
         "miscellaneous/warnings_and_errors",
         "miscellaneous/dealing_with_bias"
       ]
