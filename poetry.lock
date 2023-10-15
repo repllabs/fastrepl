@@ -1678,17 +1678,18 @@ files = [
 
 [[package]]
 name = "litellm"
-version = "0.6.6"
+version = "0.8.4"
 description = "Library to easily interface with LLM API providers"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "litellm-0.6.6-py3-none-any.whl", hash = "sha256:f410b0c0441d67e5aa456543ade6ba80cc1f81a29149804bd85b44f42784970a"},
-    {file = "litellm-0.6.6.tar.gz", hash = "sha256:df83deb4cd19de8be70ffc1fa9baf3183e01a6ae4f1fbb655c93cb66eea54c2a"},
+    {file = "litellm-0.8.4-py3-none-any.whl", hash = "sha256:62493c0a928327c6a3dfa1cec6e9a1d71d45b0623ea428416b88344960047df0"},
+    {file = "litellm-0.8.4.tar.gz", hash = "sha256:6cd4fd109278c2ec6312aadbb299b6465f99ed2727d0ddbd60786a99c20f50fb"},
 ]
 
 [package.dependencies]
 appdirs = ">=1.4.4,<2.0.0"
+certifi = ">=2023.7.22,<2024.0.0"
 click = "*"
 importlib-metadata = ">=6.8.0"
 jinja2 = ">=3.1.2,<4.0.0"
@@ -4738,4 +4739,4 @@ sas = ["sentence-transformers", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "05c9ebc61c34b4f026cf221e5eff8f0c5a1db41d713656bc0226deb741ee2abf"
+content-hash = "0dc9f6fd3dbc773abafb520db0576d7d4e249430d728c6096c76928e83bed0e7"

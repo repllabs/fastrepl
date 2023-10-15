@@ -11,7 +11,7 @@ python = ">=3.9,<3.12"
 openai = "^0.27.8"
 cohere = "^4.20.2"
 tiktoken = "^0.4.0"
-litellm = "^0.6.6"
+litellm = "^0.8.4"
 evaluate = "^0.4.0"
 cuid2 = "^2.0.0"
 rich = {extras = ["jupyter"], version = "^13.5.2"}
