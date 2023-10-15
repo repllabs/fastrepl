@@ -113,6 +113,10 @@ def completion(  # pragma: no cover
     """
     https://docs.litellm.ai/docs/providers
     """
+
+    if model.startswith("deepinfra/mistralai") and temperature == 0:
+        temperature = 0.0001
+
     try:
         result = litellm_completion(
             model=model,
