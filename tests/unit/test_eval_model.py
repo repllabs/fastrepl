@@ -111,7 +111,7 @@ class TestLLMGradingHead:
             (3, 1, 5),
         ],
     )
-    def test_return_result(self, mock_completion, return_value, number_from, number_to):
+    def test_basic(self, mock_completion, return_value, number_from, number_to):
         eval = fastrepl.LLMGradingHead(
             context="test",
             number_from=number_from,
@@ -122,14 +122,21 @@ class TestLLMGradingHead:
         assert eval.run(sample="") == return_value
 
     @pytest.mark.parametrize(
-        "return_value, number_from, number_to",
+        "return_value, score, number_from, number_to",
         [
-            ("0", 1, 5),
-            ("6", 1, 5),
-            ("7", 1, 5),
+            ("0", 1, 1, 5),
+            ("6", 5, 1, 5),
+            ("7", 5, 1, 5),
         ],
     )
-    def test_return_none(self, mock_completion, return_value, number_from, number_to):
+    def test_out_of_range(
+        self,
+        mock_completion,
+        score,
+        return_value,
+        number_from,
+        number_to,
+    ):
         eval = fastrepl.LLMGradingHead(
             context="test",
             number_from=number_from,
@@ -139,4 +146,4 @@ class TestLLMGradingHead:
         mock_completion([return_value])
 
         with pytest.warns():
-            assert eval.run(sample="") is None
+            assert eval.run(sample="") == score
