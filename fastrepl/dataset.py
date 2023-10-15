@@ -1,4 +1,4 @@
-from typing import Optional, Callable, Dict, List, Any, cast
+from typing import Optional, Callable, Literal, Dict, List, Any, cast
 
 import httpx
 
@@ -162,3 +162,19 @@ class Dataset:
             data["expected_outputs"].append(item.expected_output)
 
         return Dataset.from_dict(data)
+
+    def compare(
+        self,
+        metric_name: Literal["accuracy", "mse", "mae"],
+        prediction_column="prediction",
+        reference_column="reference",
+    ):
+        metric = fastrepl.load_metric(metric_name)
+
+        try:
+            predictions = self._data[prediction_column]
+            references = self._data[reference_column]
+        except KeyError as e:
+            raise ValueError(f"Column not found: {e}")
+
+        return metric.run(predictions=predictions, references=references)
