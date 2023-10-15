@@ -72,13 +72,14 @@ class LLMEvaluationHead(BaseSimpleEvalNode):
         return [system_message, *reference_messages, final_message]
 
     def completion(self, sample: str) -> Optional[str]:
+        logit_bias = logit_bias_from(self.model, [str(i) for i in self.options])
+        max_tokens = 1 if logit_bias != {} else 2
+
         return llm.completion(
             model=self.model,
             messages=self.messages(sample),
-            # NOTE: when using logit_bias for classification, max_tokens should be 1
-            # max_tokens=2 is workaround. TODO
-            max_tokens=2 if "together" in self.model else 1,
-            logit_bias=logit_bias_from(self.model, [str(i) for i in self.options]),
+            max_tokens=max_tokens,
+            logit_bias=logit_bias,
         )["choices"][0]["message"]["content"]
 
     # NOTE: It is safe to return NONE, since metric will skip prediction-reference pair if prediction is NONE
@@ -217,8 +218,9 @@ class LLMGradingHead(LLMEvaluationHead):
         for input, output in references:
             score = float(str(output).strip())
             score = map_number_range(
-                score, self.from_min, self.from_max, self.to_min, self.to_max
+                score, self.to_min, self.to_max, self.from_min, self.from_max
             )
+            score = round(score)
             msgs.append({"role": "user", "content": input})
             msgs.append({"role": "assistant", "content": str(score)})
         return msgs
@@ -242,10 +244,12 @@ class LLMGradingHead(LLMEvaluationHead):
         )
 
         if result < self.to_min or result > self.to_max:
+            closest = self.to_min if result < self.to_min else self.to_max
+
             warn(
                 InvalidPredictionWarning,
-                context=f"{result!r} is not in range [{self.to_min}, {self.to_max}].",
+                context=f"{result!r} is not in range [{self.to_min}, {self.to_max}]. Using {closest!r} instead.",
             )
-            return None
+            return closest
 
         return result
