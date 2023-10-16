@@ -10,7 +10,13 @@ from fastrepl.eval.metric.huggingface import HUGGINGFACE_BUILTIN_METRICS
 
 huggingface_builtin_metrics = list(get_args(HUGGINGFACE_BUILTIN_METRICS))
 
+try:
+    import evaluate
+except ImportError:
+    evaluate = None
 
+
+@pytest.mark.skipif(evaluate is None, reason="evaluate is not installed")
 class TestHuggingfaceMetric:
     def test_warning(self):
         m = fastrepl.load_metric("f1")
