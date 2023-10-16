@@ -38,7 +38,7 @@ litellm.cache = Cache()  # pragma: no cover
 litellm.cache.get_cache_key = custom_get_cache_key  # pragma: no cover
 
 
-@timeout(15, timeout_exception=openai.error.Timeout)
+@timeout(25, timeout_exception=openai.error.Timeout)
 def litellm_completion(**kwargs) -> litellm.ModelResponse:  # pragma: no cover
     litellm_config = {
         "function": "completion",
