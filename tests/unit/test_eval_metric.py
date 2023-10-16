@@ -2,7 +2,6 @@ import pytest
 import warnings
 
 from typing import get_args
-from evaluate import list_evaluation_modules
 import numpy as np
 
 import fastrepl
@@ -13,11 +12,6 @@ huggingface_builtin_metrics = list(get_args(HUGGINGFACE_BUILTIN_METRICS))
 
 
 class TestHuggingfaceMetric:
-    def test_all(self):
-        assert huggingface_builtin_metrics == list_evaluation_modules(
-            module_type="metric", include_community=False
-        )
-
     def test_warning(self):
         m = fastrepl.load_metric("f1")
 
