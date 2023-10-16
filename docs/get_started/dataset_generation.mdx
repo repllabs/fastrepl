@@ -6,7 +6,18 @@ description: LLM powered dataset generation
 ## Question Generation
 
 ### Local
-<Warning>We don't support `local_runner` for generators at the moment.</Warning>
+<Tip>We recommend using `remote_runner` for question generation.</Tip>
+For generating question with `local_runner`, we use `llama_index` under the hood.
+
+```python
+generator = fastrepl.QuestionGenerator(source="Hello world!")
+
+fastrepl.local_runner(generator=generator).run()
+# fastrepl.Dataset({
+#     features: ['question'],
+#     num_rows: 5
+# })
+```
 
 ### Remote
 `remote_runner` for question generation has few advantages:

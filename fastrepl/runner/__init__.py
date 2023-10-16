@@ -2,7 +2,7 @@ from typing import Union, Callable, Optional, overload
 
 from fastrepl.dataset import Dataset
 from fastrepl.eval import Evaluator
-from fastrepl.generate import Generator
+from fastrepl.gen.question import BaseGenerator
 
 from fastrepl.runner.evaluator import LocalEvaluatorRunner, RemoteEvaluatorRunner
 from fastrepl.runner.generator import LocalGeneratorRunner, RemoteGeneratorRunner
@@ -16,7 +16,7 @@ def local_runner(*, fn: Callable, output_feature: str) -> LocalCustomRunner:
 
 
 @overload
-def local_runner(*, generator: Generator) -> LocalGeneratorRunner:
+def local_runner(*, generator: BaseGenerator) -> LocalGeneratorRunner:
     ...
 
 
@@ -50,7 +50,7 @@ def local_runner(
 
 
 @overload
-def remote_runner(*, generator: Generator) -> RemoteGeneratorRunner:
+def remote_runner(*, generator: BaseGenerator) -> RemoteGeneratorRunner:
     return RemoteGeneratorRunner(generator)
 
 
