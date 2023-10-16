@@ -1,4 +1,4 @@
-from typing import List, Any, Literal, get_args
+from typing import List, Any, Literal
 
 import evaluate
 
@@ -62,8 +62,6 @@ HUGGINGFACE_BUILTIN_METRICS = Literal[
     "r_squared",
 ]
 
-HUGGINGFACE_FASTREPL_METRICS = Literal["mean_reciprocal_rank", "mean_average_precision"]
-
 
 class HuggingfaceMetric(BaseMetaEvalNode):
     __slots__ = ("name", "module")
@@ -84,17 +82,11 @@ class HuggingfaceMetric(BaseMetaEvalNode):
             "bleu",
         ]
 
-        if name in get_args(HUGGINGFACE_FASTREPL_METRICS):
+        if name not in CURRENTLY_SUPPORTED:
             raise NotImplementedError(
-                f"we have it here: 'https://huggingface.co/spaces/fastrepl/{name}', but not implemented yet."
+                f"Huggingface has it here: 'https://huggingface.co/spaces/evaluate-metric/{name}', but we don't support it at the moment."
             )
-            # self.module = evaluate.load(f"fastrepl/{name}")
-        else:
-            if name not in CURRENTLY_SUPPORTED:
-                raise NotImplementedError(
-                    f"Huggingface has it here: 'https://huggingface.co/spaces/evaluate-metric/{name}', but we don't support it at the moment."
-                )
-            self.module = evaluate.load(name)
+        self.module = evaluate.load(name)
 
     def run(self, predictions: List[Any], references: List[Any], **kwargs):
         if any(v is None for v in references):

@@ -7,13 +7,9 @@ import numpy as np
 
 import fastrepl
 from fastrepl.errors import NoneReferenceError
-from fastrepl.eval.metric.huggingface import (
-    HUGGINGFACE_BUILTIN_METRICS,
-    HUGGINGFACE_FASTREPL_METRICS,
-)
+from fastrepl.eval.metric.huggingface import HUGGINGFACE_BUILTIN_METRICS
 
 huggingface_builtin_metrics = list(get_args(HUGGINGFACE_BUILTIN_METRICS))
-huggingface_fastrepl_metrics = list(get_args(HUGGINGFACE_FASTREPL_METRICS))
 
 
 class TestHuggingfaceMetric:
@@ -53,10 +49,7 @@ class TestHuggingfaceMetric:
                 references=[0, None],
             )
 
-    @pytest.mark.parametrize(
-        "name",
-        huggingface_builtin_metrics + huggingface_fastrepl_metrics,
-    )
+    @pytest.mark.parametrize("name", huggingface_builtin_metrics)
     def test_metric(self, name):
         try:
             m = fastrepl.load_metric(name)
