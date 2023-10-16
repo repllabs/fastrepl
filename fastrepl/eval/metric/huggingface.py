@@ -1,7 +1,6 @@
 from typing import List, Any, Literal
 
-import evaluate
-
+from fastrepl.utils import console
 from fastrepl.warnings import warn, IncompletePredictionWarning
 from fastrepl.errors import NoneReferenceError, EmptyPredictionsError
 from fastrepl.eval.base import BaseMetaEvalNode
@@ -86,6 +85,15 @@ class HuggingfaceMetric(BaseMetaEvalNode):
             raise NotImplementedError(
                 f"Huggingface has it here: 'https://huggingface.co/spaces/evaluate-metric/{name}', but we don't support it at the moment."
             )
+
+        try:
+            import evaluate
+        except ImportError:
+            console.print(
+                "[cyan3]Run `pip install evaluate` before using huggingface metrics.\n"
+            )
+            raise ImportError
+
         self.module = evaluate.load(name)
 
     def run(self, predictions: List[Any], references: List[Any], **kwargs):

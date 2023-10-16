@@ -704,7 +704,7 @@ typing-inspect = ">=0.4.0,<1"
 name = "datasets"
 version = "2.14.5"
 description = "HuggingFace community-driven open-source library of datasets"
-optional = false
+optional = true
 python-versions = ">=3.8.0"
 files = [
     {file = "datasets-2.14.5-py3-none-any.whl", hash = "sha256:dd4155091034cba04d5a28711f2ed3944275ed15c5d0c5a2d0b6b9ea34a2bdfe"},
@@ -820,7 +820,7 @@ files = [
 name = "evaluate"
 version = "0.4.0"
 description = "HuggingFace community-driven open-source library of evaluation"
-optional = false
+optional = true
 python-versions = ">=3.7.0"
 files = [
     {file = "evaluate-0.4.0-py3-none-any.whl", hash = "sha256:4b528de0f270cdfb077ca4877035dc17584d2c4b1cbc3fdd46afc3942ed557fd"},
@@ -1037,7 +1037,7 @@ files = [
 name = "fsspec"
 version = "2023.6.0"
 description = "File-system specification"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "fsspec-2023.6.0-py3-none-any.whl", hash = "sha256:1cbad1faef3e391fba6dc005ae9b5bdcbf43005c9167ce78c915549c352c869a"},
@@ -1215,7 +1215,7 @@ socks = ["socksio (==1.*)"]
 name = "huggingface-hub"
 version = "0.16.4"
 description = "Client library to download and publish models, datasets and other repos on the huggingface.co hub"
-optional = false
+optional = true
 python-versions = ">=3.7.0"
 files = [
     {file = "huggingface_hub-0.16.4-py3-none-any.whl", hash = "sha256:0d3df29932f334fead024afc7cb4cc5149d955238b8b5e42dcf9740d6995a349"},
@@ -2738,7 +2738,7 @@ files = [
 name = "pyarrow"
 version = "13.0.0"
 description = "Python library for Apache Arrow"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "pyarrow-13.0.0-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:1afcc2c33f31f6fb25c92d50a86b7a9f076d38acbcb6f9e74349636109550148"},
@@ -3335,7 +3335,7 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 name = "responses"
 version = "0.18.0"
 description = "A utility library for mocking out the `requests` Python library."
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "responses-0.18.0-py3-none-any.whl", hash = "sha256:15c63ad16de13ee8e7182d99c9334f64fd81f1ee79f90748d527c28f7ca9dd51"},
@@ -4538,7 +4538,7 @@ test = ["black", "codecov", "coloredlogs", "coverage", "flake8", "mypy", "pytest
 name = "xxhash"
 version = "3.3.0"
 description = "Python binding for xxHash"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "xxhash-3.3.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:70ef7288d1cb1ad16e02d101ea43bb0e392d985d60b9b0035aee80663530960d"},
@@ -4738,4 +4738,4 @@ sas = ["sentence-transformers", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "0dc9f6fd3dbc773abafb520db0576d7d4e249430d728c6096c76928e83bed0e7"
+content-hash = "cbf1d474e630396fe1df97c67b581934f28641a4072c6ee1cd70dad432c51c80"
