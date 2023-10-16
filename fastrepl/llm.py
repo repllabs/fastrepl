@@ -127,7 +127,7 @@ def completion(  # pragma: no cover
         )
         content = result["choices"][0]["message"]["content"]
 
-        if result["choices"][0]["finish_reason"] == "length":
+        if max_tokens > 2 and result["choices"][0]["finish_reason"] == "length":
             warn(CompletionTruncatedWarning, context=content)
 
         # TODO: debug call should be done in eval side
