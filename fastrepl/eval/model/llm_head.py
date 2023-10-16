@@ -190,10 +190,18 @@ class LLMGradingHead(LLMEvaluationHead):
         number_to: int,
         **kwargs: Unpack[LLMEvaluationHeadParams],
     ) -> None:
-        self.from_min, self.from_max = 1, 5
-        self.to_min, self.to_max = number_from, number_to
+        if number_to < 0 or number_from < 0 or number_to < number_from:
+            raise ValueError
 
-        # We grade within [1, 5], and map the result to [number_from, number_to].
+        if number_to < 10 and number_from < 10 and number_to - number_from < 4:
+            # We don't need mapping
+            self.from_min, self.from_max = number_from, number_to
+            self.to_min, self.to_max = number_from, number_to
+        else:
+            # We grade within [1, 5], and map the result to [number_from, number_to].
+            self.from_min, self.from_max = 1, 5
+            self.to_min, self.to_max = number_from, number_to
+
         options = [str(i) for i in range(self.from_min, self.from_max + 1)]
         kwargs.update({"options": options})
         super().__init__(**kwargs)
