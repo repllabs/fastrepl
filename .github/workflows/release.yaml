@@ -5,6 +5,9 @@ on:
     tags:
       - "v*.*.*"
 
+env:
+  FASTREPL_TELEMETRY: 0
+
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -21,6 +21,16 @@ def _get_id():
             return id
 
 
+def _check_telemetry():
+    import os
+    import fastrepl
+
+    if os.environ.get("FASTREPL_TELEMETRY", "1") == "0":
+        return False
+
+    return fastrepl.telemetry
+
+
 def _is_colab():
     try:
         import google.colab  # type: ignore
@@ -31,11 +41,11 @@ def _is_colab():
 
 
 def _import_package():
+    if not _check_telemetry():
+        return
+
     import fastrepl
     import httpx
-
-    if not fastrepl.telemetry:
-        return
 
     def send():
         httpx.post(
