@@ -15,8 +15,6 @@ from fastrepl.utils import DEBUG
 
 from fastrepl.runner import *
 
-from fastrepl.pytest_plugin import TestReport
-
 from fastrepl.telemetry import _import_package
 
 _import_package()

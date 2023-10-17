@@ -74,7 +74,3 @@ markers = ["todo"]
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-# https://github.com/pytest-dev/pytest/issues/10590#issuecomment-1354553287
-[tool.poetry.plugins.pytest11]
-fastrepl = "fastrepl.pytest_plugin"
