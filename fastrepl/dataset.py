@@ -48,6 +48,20 @@ class Dataset:
         self._data[name] = list(values)
         return self
 
+    def add_row(self, row: Dict[str, Any]):
+        for col in self.column_names:
+            if col not in row:
+                row[col] = None
+
+        existing_size = self.__len__()
+
+        for k, v in row.items():
+            try:
+                self._data[k].append(v)
+            except KeyError:
+                self._data[k] = [None] * existing_size
+                self._data[k].append(v)
+
     def rename_column(self, old_name: str, new_name: str) -> "Dataset":
         data = {col: self._data[col] for col in self.column_names}
         data[new_name] = data.pop(old_name)
@@ -57,6 +71,9 @@ class Dataset:
         data = {col: self._data[col] for col in self.column_names}
         del data[name]
         return Dataset.from_dict(data)
+
+    def clear(self):
+        self._data = {}
 
     def map(self, func: Callable[[Dict[str, Any]], Dict[str, Any]]) -> "Dataset":
         rows = []

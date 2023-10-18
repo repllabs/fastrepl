@@ -93,6 +93,37 @@ def test_add_column_invalid():
         ds.add_column("c", [2, 2, 2, 2])
 
 
+def test_add_row_1():
+    ds = fastrepl.Dataset.from_dict({"a": [0, 0, 0], "b": [1, 1, 1]})
+    assert ds.column_names == ["a", "b"]
+
+    ds.add_row({"b": 2, "c": 2})
+
+    assert ds.to_dict() == {
+        "a": [0, 0, 0, None],
+        "b": [1, 1, 1, 2],
+        "c": [None, None, None, 2],
+    }
+
+
+def test_add_row_2():
+    ds = fastrepl.Dataset.from_dict({})
+    assert ds.column_names == []
+
+    ds.add_row({"b": 2, "c": 2})
+
+    assert ds.to_dict() == {"b": [2], "c": [2]}
+
+
+def test_add_row_3():
+    ds = fastrepl.Dataset.from_dict({"b": [1], "c": [1]})
+    assert ds.column_names == ["b", "c"]
+
+    ds.add_row({"b": 2, "c": 2})
+
+    assert ds.to_dict() == {"b": [1, 2], "c": [1, 2]}
+
+
 def test_index():
     ds = fastrepl.Dataset.from_dict({"a": [0, 0, 0], "b": [1, 1, 1]})
     assert ds["a"] == [0, 0, 0]
@@ -135,3 +166,11 @@ def test_remove():
 
     assert ds.column_names == ["b"]
     assert len(ds) == 3
+
+
+def test_clear():
+    ds = fastrepl.Dataset.from_dict({"a": [0, 0, 0], "b": [1, 1, 1]})
+    assert len(ds) == 3
+
+    ds.clear()
+    assert ds.to_dict() == {}
