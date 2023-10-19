@@ -62,6 +62,7 @@
     {
       "group": "Integration",
       "pages": [
+        "integration/llama_index",
         "integration/embedchain",
         "integration/promptlayer",
         "integration/langfuse"
