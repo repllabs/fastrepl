@@ -56,6 +56,7 @@ def _import_package():
                 "colab": _is_colab(),
                 "version": fastrepl.__version__,
             },
+            timeout=httpx.Timeout(15),
         )
 
     threading.Thread(target=send).start()
