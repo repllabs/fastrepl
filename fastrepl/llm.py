@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Optional, List, Dict, Any
 import functools
 
 import backoff
@@ -109,6 +109,8 @@ def completion(  # pragma: no cover
     temperature: float = 0,
     logit_bias: Dict[int, int] = {},
     max_tokens: int = 200,
+    functions: List[Dict[str, Any]] = [],
+    stop: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """
     https://docs.litellm.ai/docs/providers
@@ -124,6 +126,8 @@ def completion(  # pragma: no cover
             temperature=temperature,
             logit_bias=logit_bias,
             max_tokens=max_tokens,
+            functions=functions,
+            stop=stop,
         )
         content = result["choices"][0]["message"]["content"]
 
