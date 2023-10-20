@@ -3,6 +3,7 @@ from typing import Optional, Callable, Literal, Dict, List, Any, cast
 import httpx
 
 import fastrepl
+import fastrepl.llm as llm
 from fastrepl.errors import DatasetPushError
 
 
@@ -195,3 +196,37 @@ class Dataset:
             raise ValueError(f"Column not found: {e}")
 
         return metric.run(predictions=predictions, references=references)
+
+    def augment(self, multiple=3, model="gpt-4"):
+        import json
+
+        for row in self:
+            sample = {k: [v] for k, v in row.items()}
+
+            res = llm.completion(
+                model=model,
+                temperature=0.5,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are helpful assistant who can generate correct JSON string.",
+                    },
+                    {
+                        "role": "user",
+                        "content": f"Here's current sample:\n```json\n{json.dumps(sample)}```\nNow, give me same format but has {multiple} items per field. It should not be duplicated with current sample.\n\n```json\n",
+                    },
+                ],
+                stop=["```"],
+            )
+            text = res["choices"][0]["message"]["content"]
+
+            try:
+                data: dict = json.loads(text)
+
+                for row in [
+                    dict(zip(data.keys(), values)) for values in zip(*data.values())
+                ]:
+                    self.add_row(row)
+
+            except Exception:
+                continue
