@@ -7,14 +7,7 @@ description: If you don't evaluate your apps, you can not make real progress.
 If you think it is not helpful for you, [Please let us know](mailto:yujonglee@repllabs.ai).
 
 ## Concepts
-
-### Runner
-
-`Evaluators` or `Generators` can be run with different runners.
-
-- `local_runner`: For running things locally.
-- `remote_runner`: For running things on the cloud.
-- `pl_ruuner`: For sending evaluator result to [PromptLayer](https://promptlayer.com).
+In the high-level, you define `Evaluator`, prepare `Dataset`, and plug them into `Runner`.
 
 ### Evaluator
 We have `SimpleEvaluator` and `RAGEvaluator`.
@@ -31,6 +24,10 @@ For`SimpleEvaluator`:
 For`RAGEvaluator`:
 - `RAGAS`
 
-### Generator
+### Dataset
+The interface is pretty much the same as HuggingFace's `Dataset`.
 
-Currently, we only have `QuestionGenerator`, and it only works with `remote_runner`.
+### Runner
+- `local_runner`: For running things locally.
+- `remote_runner`: For running things on the cloud.
+- `pl_ruuner`: For sending evaluator result to [PromptLayer](https://promptlayer.com).
