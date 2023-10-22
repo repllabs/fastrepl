@@ -24,7 +24,7 @@ dataset = fastrepl.Dataset.from_dict(
 evaluator = fastrepl.SimpleEvaluator(
     node=fastrepl.LLMGradingHead(
         model="gpt-3.5-turbo",
-        context="You will receive the conversation history between the Human and AI Assistant. Please rate the helpfulness of the Assistant on a scale from 1 to 5."
+        context="You will receive the conversation history between the Human and AI Assistant. Please rate the helpfulness of the Assistant on a scale from 1 to 5.",
         number_from=1,
         number_to=5,
     )
@@ -35,7 +35,7 @@ evaluator = fastrepl.SimpleEvaluator(
 evaluator = fastrepl.SimpleEvaluator(
     node=fastrepl.LLMGradingHeadCOT(
         model="gpt-3.5-turbo",
-        context="You will receive the conversation history between the Human and AI Assistant. Please rate the helpfulness of the Assistant on a scale from 1 to 5."
+        context="You will receive the conversation history between the Human and AI Assistant. Please rate the helpfulness of the Assistant on a scale from 1 to 5.",
         number_from=1,
         number_to=5,
     )
