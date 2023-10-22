@@ -45,7 +45,7 @@
       "group": "Get Started",
       "pages": [
         "get_started/introduction",
-        "get_started/quickstart",
+        "get_started/installation",
         "get_started/general_evaluation",
         "get_started/rag_evaluation",
         "get_started/agent_evaluation",
