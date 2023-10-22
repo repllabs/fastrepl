@@ -1,11 +1,6 @@
 <h1 align="center">⚡♾️ FastREPL</h1>
     <p align="center">
         <p align="center">Fast Run-Eval-Polish Loop for LLM Applications.</p>
-        <p align="center">
-          <strong>
-            This project is still in the early development stage. Have questions? <a href="https://calendly.com/yujonglee/fastrepl">Let's chat!</a>
-          </strong>
-        </p>
     </p>
 <h4 align="center">
     <a href="https://github.com/fastrepl/fastrepl/actions/workflows/ci.yaml" target="_blank">
